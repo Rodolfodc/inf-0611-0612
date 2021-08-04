@@ -1,6 +1,7 @@
 ########################################
 # Teste 1b - INF-0612          
-# Nome(s): 
+# Nome(s): Nicole Nogueira Silva
+#          Rodolfo Dalla Costa
 ########################################
 
 ids <- c(172742, 172773, 172825, 172839, 172967, 173149, 173204, 173370, 174096, 174355, 174437, 174487, 174488, 174928, 175380, 175832, 176859, 176914, 176940, 177388, 177554, 177609, 177643, 177825, 177925, 178085, 178137, 178377, 178397, 178525, 178664, 178674, 178740, 178779, 181987, 182039, 182049, 182901, 183024, 183143, 183517, 183984, 184400, 185247, 185820, 186218, 187014, 187217, 188078, 188494, 188548)
@@ -24,22 +25,24 @@ rowMins <- function(m) {
 
 ## Perguntas:
 ## Você deve criar, na variável alunos, um data frame utilizando os vetores fornecidos. Além disso, sempre que utilizar algum dado já existente no arquivo, você deve referir-se a esse data frame (ou seja, você só pode utilizar os vetores fornecidos para criar esse data frame).
-alunos <-
+alunos <- data.frame(p1, p2, p3, p4)
 
 
 ## Você deve salvar no vetor medquad a média final de cada aluno (média quadrática das provas, desconsiderando a menor nota obtida), com duas casas decimais.
-medquad <-
+medquad <- sqrt((rowSums(alunos^2) - rowMins(alunos)^2)/3)
+
+#precisa validar essa conta!
 
 
 ## Você deve salvar nas variáveis mp1, mp2, mp3 e mp4 a média aritmética das notas das provas 1, 2, 3 e 4, respectivamente.
-mp1 <-
-mp2 <-
-mp3 <-
-mp4 <-
+mp1 <- mean(alunos$p1)
+mp2 <- mean(alunos$p2)
+mp3 <- mean(alunos$p3)
+mp4 <- mean(alunos$p4)
 
 
 ## Você deve salvar nas variáveis d1, dp2, dp3 e dp4 o desvio padrão das notas das provas 1, 2, 3 e 4, respectivamente.
-dp1 <-
-dp2 <-
-dp3 <-
-dp4 <-
+dp1 <- sd(alunos$p1)
+dp2 <- sd(alunos$p2)
+dp3 <- sd(alunos$p3)
+dp4 <- sd(alunos$p4)
