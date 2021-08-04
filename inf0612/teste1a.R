@@ -39,3 +39,7 @@ length(intersect(L, C)) == length(L)
 # [1] TRUE
 is.element(L, C)
 #Sim. Como podemos perceber, todos os produtos vendidos em Limeira também são vendidos em Campinas.
+
+
+#COMENTÁRIO NICOLE: acho que aqui temos que ver se todos os elementos de L estão em C e não se são do mesmo tamanho.
+#acho que a opção is.element é melhor, o que você acha?
