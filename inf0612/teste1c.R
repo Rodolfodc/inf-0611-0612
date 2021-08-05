@@ -32,16 +32,11 @@ acumLim <- sum(leituras[leituras$cidade == "Limeira",]$chuva)
 acumVin <- sum(leituras[leituras$cidade == "Vinhedo",]$chuva)
 
 ## Você deve salvar nas variáveis dmaxCamp, dmaxLim e dmaxVin, dentre os dados existentes em seu data frame, o dia do mês com maior leitura de chuva nas cidades de Campinas, Limeira e Vinhedo, respectivamente. Se existir mais de um dia com o valor máximo, você pode escolher qualquer um dos dias. Caso uma cidade não tenha leitura em algum dia, aquele dia deve ser ignorado.
-campinas <- leituras[leituras$cidade == "Campinas",]
-limeira <- leituras[leituras$cidade == "Limeira",]
-vinhedo <- leituras[leituras$cidade == "Vinhedo",]
-
-dmaxCamp <- campinas[campinas$chuva == max(campinas$chuva),1]
-dmaxLim <- limeira[limeira$chuva == max(limeira$chuva),1]
-dmaxVin <- vinhedo[vinhedo$chuva == max(vinhedo$chuva),1]
-
+dmaxCamp <- max(leituras[leituras[leituras$cidade == "Campinas",]$chuva == max(leituras[leituras$cidade == "Campinas",]$chuva),1])
+dmaxLim <- max(leituras[leituras$cidade == "Limeira",][leituras[leituras$cidade == "Limeira",]$chuva == max(leituras[leituras$cidade == "Limeira",]$chuva),1])
+dmaxVin <- max(leituras[leituras$cidade == "Vinhedo",][leituras[leituras$cidade == "Vinhedo",]$chuva == max(leituras[leituras$cidade == "Vinhedo",]$chuva),1])
 
 ## Você deve salvar nas variáveis dminCamp, dminLim e dminVin, dentre os dados existentes em seu data frame, o dia do mês com menor leitura de chuva nas cidades de Campinas, Limeira e Vinhedo, respectivamente. Se existir mais de um dia com o valor mínimo, você pode escolher qualquer um dos dias. Caso uma cidade não tenha leitura em algum dia, aquele dia deve ser ignorado.
-dminCamp <- campinas[campinas$chuva == min(campinas$chuva),1]
-dminLim <- limeira[limeira$chuva == min(limeira$chuva),1]
-dminVin <- vinhedo[vinhedo$chuva == min(vinhedo$chuva),1]
+dminCamp <- min(leituras[leituras$cidade == "Campinas",][leituras[leituras$cidade == "Campinas",]$chuva == min(leituras[leituras$cidade == "Campinas",]$chuva),1])
+dminLim <- min(leituras[leituras$cidade == "Limeira",][leituras[leituras$cidade == "Limeira",]$chuva == min(leituras[leituras$cidade == "Limeira",]$chuva),1])
+dminVin <- min(leituras[leituras$cidade == "Vinhedo",][leituras[leituras$cidade == "Vinhedo",]$chuva == min(leituras[leituras$cidade == "Vinhedo",]$chuva),1])

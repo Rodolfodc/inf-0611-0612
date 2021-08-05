@@ -35,11 +35,7 @@ intersect(V, intersect(C,L))
 
 ## Se a filial de Limeira parar a distribuicao de produtos, a filial de Campinas 
 ## possui todos os itens necessarios para atender a demanda de Limeira? 
-length(intersect(L, C)) == length(L)
-# [1] TRUE
 is.element(L, C)
+# [1] TRUE TRUE TRUE TRUE
+
 #Sim. Como podemos perceber, todos os produtos vendidos em Limeira também são vendidos em Campinas.
-
-
-#COMENTÁRIO NICOLE: acho que aqui temos que ver se todos os elementos de L estão em C e não se são do mesmo tamanho.
-#acho que a opção is.element é melhor, o que você acha?

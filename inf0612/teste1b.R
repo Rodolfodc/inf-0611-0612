@@ -29,7 +29,7 @@ alunos <- data.frame(p1, p2, p3, p4)
 
 
 ## Você deve salvar no vetor medquad a média final de cada aluno (média quadrática das provas, desconsiderando a menor nota obtida), com duas casas decimais.
-medquad <- sqrt((rowSums(alunos^2) - rowMins(alunos)^2)/3)
+medquad <- round(sqrt((rowSums(alunos^2) - rowMins(alunos)^2)/3), digits=2)
 
 #precisa validar essa conta!
 
