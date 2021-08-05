@@ -4,9 +4,8 @@
 # Trabalho 1 - Recuperação de Texto                                  #
 ######################################################################
 # Nome COMPLETO dos integrantes do grupo:                            #
-#   -                                                                #
-#   -                                                                #
-#   -                                                                #
+#   - Rodolfo Dalla Costa                                            #
+#   - Nicole Nogueira Silva                                          #
 #                                                                    #
 ######################################################################
 
@@ -26,8 +25,13 @@ library(tidyverse)
 source("./ranking_metrics.R", encoding = "UTF-8")
 source("./trabalho1_base.R", encoding = "UTF-8")
 
+# source <- function(f, encoding = 'UTF-8') {
+#   l <- readLines(f, encoding=encoding)
+#   eval(parse(text=l),envir=.GlobalEnv)
+# }
+
 # Configure aqui o diretório onde se encontram os arquivos do trabalho
-# setw("")
+setwd("")
 
 
 ######################################################################
@@ -41,7 +45,7 @@ source("./trabalho1_base.R", encoding = "UTF-8")
 docs <- process_data("time.txt", "XX-Text [[:alnum:]]", "Article_0", 
                      convertcase = TRUE, remove_stopwords = FALSE)
 # Visualizando os documentos (apenas para debuging)
-# head(docs)
+head(docs)
 
 # Lendo uma lista de consultas (não mude essa linha)
 queries <- process_data("queries.txt", "XX-Find [[:alnum:]]", 
@@ -56,21 +60,21 @@ queries <- process_data("queries.txt", "XX-Find [[:alnum:]]",
 ground_truths <- read.csv("relevance.csv", header = TRUE)
 
 # Visualizando os ground_truths (apenas para debuging)
-# head(ground_truths)
+head(ground_truths)
 # Exemplo de acesso vetor de ground_truth da consulta 1:
-# ground_truths[1,]
+ground_truths[1,]
 # Exemplo de impressão dos ids dos documentos relevantes da consulta 1:
 # Visualizando o ranking (apenas para debuging)
-# names(ground_truths)[ground_truths[1,]==1]
+names(ground_truths)[ground_truths[1,]==1]
 
 
 # Computando a matriz de termo-documento
-term_freq <- document_term_frequencies(...)
+term_freq <- document_term_frequencies(docs)
 
 # Computando as estatísticas da coleção e convertendo em data.frame
-docs_stats <- as.data.frame(document_term_frequencies_statistics(...))
+docs_stats <- as.data.frame(document_term_frequencies_statistics(term_freq, 1.2, 0.75))
 # Visualizando as estatísticas da coleção (apenas para debuging)
-# head(docs_stats)
+head(docs_stats)
 
 ######################################################################
 #
