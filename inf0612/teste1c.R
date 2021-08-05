@@ -32,7 +32,7 @@ acumLim <- sum(leituras[leituras$cidade == "Limeira",]$chuva)
 acumVin <- sum(leituras[leituras$cidade == "Vinhedo",]$chuva)
 
 ## Você deve salvar nas variáveis dmaxCamp, dmaxLim e dmaxVin, dentre os dados existentes em seu data frame, o dia do mês com maior leitura de chuva nas cidades de Campinas, Limeira e Vinhedo, respectivamente. Se existir mais de um dia com o valor máximo, você pode escolher qualquer um dos dias. Caso uma cidade não tenha leitura em algum dia, aquele dia deve ser ignorado.
-dmaxCamp <- max(leituras[leituras[leituras$cidade == "Campinas",]$chuva == max(leituras[leituras$cidade == "Campinas",]$chuva),1])
+dmaxCamp <- max(leituras[leituras$cidade == "Campinas",][leituras[leituras$cidade == "Campinas",]$chuva == max(leituras[leituras$cidade == "Campinas",]$chuva),1])
 dmaxLim <- max(leituras[leituras$cidade == "Limeira",][leituras[leituras$cidade == "Limeira",]$chuva == max(leituras[leituras$cidade == "Limeira",]$chuva),1])
 dmaxVin <- max(leituras[leituras$cidade == "Vinhedo",][leituras[leituras$cidade == "Vinhedo",]$chuva == max(leituras[leituras$cidade == "Vinhedo",]$chuva),1])
 
