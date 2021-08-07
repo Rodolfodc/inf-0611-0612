@@ -168,7 +168,7 @@ docs_proc <- process_data("time.txt", "XX-Text [[:alnum:]]",
                           "Article_0", convertcase = TRUE, 
                           remove_stopwords = TRUE)
 # Visualizando os documentos (apenas para debuging)
-# head(docs_proc)
+head(docs_proc)
 
 
 # Lendo uma lista de consultas
@@ -176,34 +176,39 @@ queries_proc <- process_data("queries.txt", "XX-Find [[:alnum:]]",
                              "Query_0", convertcase = TRUE, 
                              remove_stopwords = TRUE)
 # Visualizando as consultas (apenas para debuging)
-# head(queries_proc)
+head(queries_proc)
 
 # Computando a matriz de termo-documento
-term_freq_proc <- ...
+term_freq_proc <- document_term_frequencies(docs_proc)
 
 # Computando as estatísticas da coleção e convertendo em data.frame
-docs_stats_proc <- ...
+docs_stats_proc <- as.data.frame(document_term_frequencies_statistics(term_freq_proc, 1.2, 0.75))
 
 
 # Definindo a consulta 1 
-consulta1_proc <- ...
-n_consulta1_proc <- ...
+consulta1_proc <- queries_proc[queries_proc$doc_id == "Query_01",]
+n_consulta1_proc <- 1
 # Resultados para a consulta 1 e tf_idf
-computa_resultados(...)
+computa_resultados(consulta1_proc, ground_truths[n_consulta1_proc,], docs_stats_proc, 
+                   "tf_idf", top = 20, "TF_IDF Stop words 1")
 
 # Resultados para a consulta 1 e bm25
-computa_resultados(...)
+computa_resultados(consulta1_proc, ground_truths[n_consulta1_proc,], docs_stats_proc, 
+                   "bm25", top = 20, "TF_IDF Stop words 1")
+
 
 
 # Definindo a consulta 2 
-consulta2_proc <- ...
-n_consulta2_proc <- ...
+consulta2_proc <- queries_proc[queries_proc$doc_id == "Query_053",]
+n_consulta2_proc <- 53
 
 # Resultados para a consulta 2 e tf_idf
-computa_resultados(...)
+computa_resultados(consulta2_proc, ground_truths[n_consulta2_proc,], docs_stats_proc, 
+                   "tf_idf", top = 20, "TF_IDF Stop words 1")
 
 # Resultados para a consulta 2 e bm25
-computa_resultados(...)
+computa_resultados(consulta2_proc, ground_truths[n_consulta2_proc,], docs_stats_proc, 
+                   "bm25", top = 20, "TF_IDF Stop words 1")
 
 ######################################################################
 #
@@ -224,11 +229,11 @@ computa_resultados(...)
 # Rstudio no momemto da execução. Esse comando pode ajudar a comparar 
 # os gráfico lado a lado.
 # 
-# plots.dir.path <- list.files(tempdir(), pattern="rs-graphics",
-#                              full.names = TRUE);
-# plots.png.paths <- list.files(plots.dir.path, pattern=".png", 
-#                               full.names = TRUE)
-# file.copy(from=plots.png.paths, to="~/Desktop/")
+plots.dir.path <- list.files(tempdir(), pattern="rs-graphics",
+                              full.names = TRUE);
+plots.png.paths <- list.files(plots.dir.path, pattern=".png", 
+                               full.names = TRUE)
+file.copy(from=plots.png.paths, to="~/Desktop/")
 ######################################################################
 
 
