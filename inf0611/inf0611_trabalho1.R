@@ -125,22 +125,22 @@ n_consulta1 <- 3
 #                    top = 15, "titulo")
 
 # Resultados para a consulta 1 e tf_idf
-computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "tf_idf", top = 20, "teste")
+computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "tf_idf", top = 20, "TF_IDF 1")
 
 # Resultados para a consulta 1 e bm25
-computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "bm25", top = 20, "teste")
+computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "bm25", top = 20, "BM25 1")
 
 
 
 # Definindo a consulta 2 
-consulta2 <- ...
-n_consulta2 <- ...
+consulta2 <- queries[queries$doc_id == "Query_056", ]
+n_consulta2 <- 56
 
 # Resultados para a consulta 2 e tf_idf
-computa_resultados(...)
+computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, "tf_idf", top=20, "TF_IDF 2")
 
 # Resultados para a consulta 2 e bm25
-computa_resultados(...)
+computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, "bm25", top=20, "BM25 2")
 
 
 ######################################################################
