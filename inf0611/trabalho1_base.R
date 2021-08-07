@@ -35,9 +35,10 @@ process_data <- function(path,regex_sep, name, convertcase = FALSE, remove_stopw
 
 scores_termo_consulta <- function(docs_stats, 
                                   query_term, stat) {
-  # Seleciona as linhas que contém o termo da consulta
+  
+    # Seleciona as linhas que contém o termo da consulta
     term_stat <- docs_stats[docs_stats$term == query_term,]
-    # Seleciona as colunas com o id do documento e a estatística 
+    # Seleciona as colunas com o id do documento e a estatística
     term_stat <- term_stat[,c("doc_id", stat)]
     # Renomeando a colunas
     stat_col_name <- paste(stat, query_term, sep="-")
@@ -54,6 +55,7 @@ scores_termo_consulta <- function(docs_stats,
 get_ranking_by_stats <- function(stat_name, 
                                  docs_stats, 
                                  tokens_query) {
+  
   tokens_query <- unique(tokens_query)
   # Para cada elemento x de tokens_query, executamos 
   # uma chamada da função scores_termo_consulta e 

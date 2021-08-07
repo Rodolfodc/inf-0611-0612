@@ -31,7 +31,8 @@ source("./trabalho1_base.R", encoding = "UTF-8")
 # }
 
 # Configure aqui o diretório onde se encontram os arquivos do trabalho
-setwd("")
+setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0611/")
+
 
 
 ######################################################################
@@ -96,27 +97,27 @@ head(docs_stats)
 computa_resultados <- function(query, ground_truth, stats, stat_name, 
                                top, text) {
   # Criando ranking (função do arquivo base)
-  ranking <- get_ranking_by_stats(...)
+  ranking <- get_ranking_by_stats(stat_name, docs_stats, query$word)
   # Visualizando o ranking (apenas para debuging)
-  # head(ranking, n = 5)
+  #head(ranking, n = 5)
   
   # Calculando a precisão
-  p <- ...
+  p <- precision(ground_truth, ranking$doc_id, top)
 
   # Calculando a revocação
-  r <- ...
-
+  r <- recall(ground_truth, ranking$doc_id, top)
+  
   # Imprimindo os valores de precisão e revocação
   cat(paste("Consulta: ", query[1,1], "\nPrecisão: ", p, 
             "\tRevocação: ", r, "\n"))
   
   # Gerando o plot Precisão + Revocação (função do arquivo base)
-  plot_prec_e_rev(...) 
+  plot_prec_e_rev(ranking$doc_id, ground_truth, top, text) 
 }
 
 # Definindo a consulta 1 
-consulta1 <- ...
-n_consulta1 <- ...
+consulta1 <- queries[queries$doc_id == "Query_03",]
+n_consulta1 <- 3
 
 ## Exemplo de uso da função computa_resultados:
 # computa_resultados(consulta1, ground_truths[n_consulta1, ], 
@@ -124,10 +125,11 @@ n_consulta1 <- ...
 #                    top = 15, "titulo")
 
 # Resultados para a consulta 1 e tf_idf
-computa_resultados(...)
+computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "tf_idf", top = 20, "teste")
 
 # Resultados para a consulta 1 e bm25
-computa_resultados(...)
+computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "bm25", top = 20, "teste")
+
 
 
 # Definindo a consulta 2 
