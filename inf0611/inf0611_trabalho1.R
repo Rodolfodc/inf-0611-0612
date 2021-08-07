@@ -31,7 +31,7 @@ source("./trabalho1_base.R", encoding = "UTF-8")
 # }
 
 # Configure aqui o diretório onde se encontram os arquivos do trabalho
-setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0611/")
+setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0611/")
 
 
 
@@ -112,7 +112,8 @@ computa_resultados <- function(query, ground_truth, stats, stat_name,
             "\tRevocação: ", r, "\n"))
   
   # Gerando o plot Precisão + Revocação (função do arquivo base)
-  plot_prec_e_rev(ranking$doc_id, ground_truth, top, text) 
+  plot_prec_e_rev(ranking$doc_id, ground_truth, top, text)
+ 
 }
 
 # Definindo a consulta 1 
@@ -125,10 +126,10 @@ n_consulta1 <- 3
 #                    top = 15, "titulo")
 
 # Resultados para a consulta 1 e tf_idf
-computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "tf_idf", top = 20, "TF_IDF 1")
+computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "tf_idf", top = 20, "TF_IDF Consulta 1")
 
 # Resultados para a consulta 1 e bm25
-computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "bm25", top = 20, "BM25 1")
+computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "bm25", top = 20, "BM25 Consulta 1")
 
 
 
@@ -137,10 +138,10 @@ consulta2 <- queries[queries$doc_id == "Query_056", ]
 n_consulta2 <- 56
 
 # Resultados para a consulta 2 e tf_idf
-computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, "tf_idf", top=20, "TF_IDF 2")
+computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, "tf_idf", top=20, "TF_IDF Consulta 2")
 
 # Resultados para a consulta 2 e bm25
-computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, "bm25", top=20, "BM25 2")
+computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, "bm25", top=20, "BM25 Consulta 2")
 
 
 ######################################################################
@@ -148,10 +149,11 @@ computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, "bm25", t
 # Questão 2 - Escreva sua análise abaixo
 #
 ######################################################################
-#
-#
-#
-#
+#  Ao obrservar o resultado das estatísticas de Precisão e Revocação, observa-se que o modelo que teve melhor
+# resultado para a consulta 1 foi o modelo BM25 pois apresentou o dobro da precisão e revocação obtidas pelo 
+# modelo tf_idf. A partir dos gráficos apresentados para a conculta 1 nota-se que por meio do modelo BM25
+# é possível obter os maiores valores de precisão e revocação do que o modelo tf_idf. 
+# O mesmo podemos afirmar para a Consulta 2. 
 
 ######################################################################
 #
@@ -190,12 +192,11 @@ consulta1_proc <- queries_proc[queries_proc$doc_id == "Query_01",]
 n_consulta1_proc <- 1
 # Resultados para a consulta 1 e tf_idf
 computa_resultados(consulta1_proc, ground_truths[n_consulta1_proc,], docs_stats_proc, 
-                   "tf_idf", top = 20, "TF_IDF Stop words 1")
+                   "tf_idf", top = 20, "TF_IDF Stopwords Consulta 1")
 
 # Resultados para a consulta 1 e bm25
 computa_resultados(consulta1_proc, ground_truths[n_consulta1_proc,], docs_stats_proc, 
-                   "bm25", top = 20, "TF_IDF Stop words 1")
-
+                   "bm25", top = 20, "BM25 stropwords Consulta 2")
 
 
 # Definindo a consulta 2 
@@ -208,18 +209,19 @@ computa_resultados(consulta2_proc, ground_truths[n_consulta2_proc,], docs_stats_
 
 # Resultados para a consulta 2 e bm25
 computa_resultados(consulta2_proc, ground_truths[n_consulta2_proc,], docs_stats_proc, 
-                   "bm25", top = 20, "TF_IDF Stop words 1")
+                   "bm25", top = 20, "BM25 Stop words 1")
 
 ######################################################################
 #
 # Questão 3 - Escreva sua análise abaixo
 #
 ######################################################################
-# 
-# 
-# 
-# 
-
+#  Ao realizar o processo de remoção das stopwords não percebemos diferença entre a eficiência dos modelos tf_idf e BM25 
+# quando comparados entre si já que ambos modelos penalizam termos comuns que são frenquentes e não são discirminantes e que no caso 
+# foram removidos. Porém, ao compararmos com os resultados dos modelos obtidos sem a remoção das stopwords nota-se que tanto a revocação
+# quanto a precisão aumentam, mostando a vantagem de realizar esse processamento. Além disso, quando analisamos os resultados da Consulta 1
+# do modelo BM25 removendo as stopwords obtemos o máximo da revocação que é 1 no Top 9 enquanto o modelo sem a remoção atinge o máximo de
+# apenas 0,5 na revocação para um k de até 20.
 
 ######################################################################
 #
