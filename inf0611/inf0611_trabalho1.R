@@ -196,7 +196,7 @@ computa_resultados(consulta1_proc, ground_truths[n_consulta1_proc,], docs_stats_
 
 # Resultados para a consulta 1 e bm25
 computa_resultados(consulta1_proc, ground_truths[n_consulta1_proc,], docs_stats_proc, 
-                   "bm25", top = 20, "BM25 stropwords Consulta 2")
+                   "bm25", top = 20, "BM25 stropwords Consulta 1")
 
 
 # Definindo a consulta 2 
@@ -205,11 +205,11 @@ n_consulta2_proc <- 53
 
 # Resultados para a consulta 2 e tf_idf
 computa_resultados(consulta2_proc, ground_truths[n_consulta2_proc,], docs_stats_proc, 
-                   "tf_idf", top = 20, "TF_IDF Stop words 1")
+                   "tf_idf", top = 20, "TF_IDF Stopwords consulta 2")
 
 # Resultados para a consulta 2 e bm25
 computa_resultados(consulta2_proc, ground_truths[n_consulta2_proc,], docs_stats_proc, 
-                   "bm25", top = 20, "BM25 Stop words 1")
+                   "bm25", top = 20, "BM25 Stopwords consulta 2")
 
 ######################################################################
 #
