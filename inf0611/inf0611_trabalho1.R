@@ -31,7 +31,7 @@ source("./trabalho1_base.R", encoding = "UTF-8")
 # }
 
 # Configure aqui o diretório onde se encontram os arquivos do trabalho
-setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0611/")
+setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0611")
 
 
 
@@ -63,10 +63,10 @@ ground_truths <- read.csv("relevance.csv", header = TRUE)
 # Visualizando os ground_truths (apenas para debuging)
 # head(ground_truths)
 # Exemplo de acesso vetor de ground_truth da consulta 1:
-ground_truths[1,]
+# ground_truths[1,]
 # Exemplo de impressão dos ids dos documentos relevantes da consulta 1:
 # Visualizando o ranking (apenas para debuging)
-names(ground_truths)[ground_truths[1,]==1]
+# names(ground_truths)[ground_truths[1,]==1]
 
 
 # Computando a matriz de termo-documento
