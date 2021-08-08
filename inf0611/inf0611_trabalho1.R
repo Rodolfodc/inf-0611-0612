@@ -126,10 +126,14 @@ n_consulta1 <- 3
 #                    top = 15, "titulo")
 
 # Resultados para a consulta 1 e tf_idf
-computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "tf_idf", top = 20, "TF_IDF Consulta 1 Questao 1")
+computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, 
+                   "tf_idf", top = 20, 
+                   "Questao 2 TF_IDF queries[queries$doc_id == 1Query_03',]")
 
 # Resultados para a consulta 1 e bm25
-computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, "bm25", top = 20, "BM25 Consulta 1 Questao 1")
+computa_resultados(consulta1, ground_truths[n_consulta1, ], docs_stats, 
+                   "bm25", top = 20, 
+                   "Questao 2 BM25 queries[queries$doc_id == 'Query_03,]")
 
 
 
@@ -138,10 +142,14 @@ consulta2 <- queries[queries$doc_id == "Query_056", ]
 n_consulta2 <- 56
 
 # Resultados para a consulta 2 e tf_idf
-computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, "tf_idf", top=20, "TF_IDF Consulta 2 Questao 1")
+computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, 
+                   "tf_idf", top=20, 
+                   "Questao 2 TF_IDF queries[queries$doc_id == 'Query_056', ]")
 
 # Resultados para a consulta 2 e bm25
-computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, "bm25", top=20, "BM25 Consulta 2 Questao 1")
+computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, 
+                   "bm25", top=20, 
+                   "Questao 2 BM25 queries[queries$doc_id == 'Query_056', ]")
 
 
 ######################################################################
@@ -161,6 +169,7 @@ computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, "bm25", t
 # Ainda assim, a revocação foi mais estável, mas atingiu um patamar máximo baixo (para tf_idf foi 0.25 
 # e para bm25 foi aproximadamente 0.41) e novamente observou-se o descrescimento da precisão por causa do patamar máximo atingido 
 # pela Revocação, a revocação máxima foi atingida com aproximadamente k = 18 para tf_idf e k = 17 para bm25. 
+# Desse modo, reafirma-se que o modelo bm25 ofereceu um melhor desempenho para a recuperação das informacoes para cada consulta
 # Ressalta-se que para todos os modelos explorados os valores utilizados para os parametros b e k da função
 # document_term_frequencies_statistics foram os padrões, b = 0.5 e k = 0.2.
 ######################################################################
@@ -200,11 +209,13 @@ consulta1_proc <- queries_proc[queries_proc$doc_id == "Query_01",]
 n_consulta1_proc <- 1
 # Resultados para a consulta 1 e tf_idf
 computa_resultados(consulta1_proc, ground_truths[n_consulta1_proc,], docs_stats_proc, 
-                   "tf_idf", top = 20, "TF_IDF Stopwords Consulta 1 Questao 2")
+                   "tf_idf", top = 20, 
+                   "Questao 3 TF_IDF Stopwords queries_proc[queries_proc$doc_id == 'Query_01',]")
 
 # Resultados para a consulta 1 e bm25
 computa_resultados(consulta1_proc, ground_truths[n_consulta1_proc,], docs_stats_proc, 
-                   "bm25", top = 20, "BM25 stopwords Consulta 1 Questao 2")
+                   "bm25", top = 20, 
+                   "Questao 3 BM25 stopwords queries_proc[queries_proc$doc_id == 'Query_01',]")
 
 
 # Definindo a consulta 2 
@@ -213,11 +224,13 @@ n_consulta2_proc <- 53
 
 # Resultados para a consulta 2 e tf_idf
 computa_resultados(consulta2_proc, ground_truths[n_consulta2_proc,], docs_stats_proc, 
-                   "tf_idf", top = 20, "TF_IDF Stopwords consulta 2 Questao 2")
+                   "tf_idf", top = 20, 
+                   "Questao 3 TF_IDF Stopwords queries_proc[queries_proc$doc_id == 'Query_053',]")
 
 # Resultados para a consulta 2 e bm25
 computa_resultados(consulta2_proc, ground_truths[n_consulta2_proc,], docs_stats_proc, 
-                   "bm25", top = 20, "BM25 Stopwords consulta 2 Questao 2")
+                   "bm25", top = 20, 
+                   "Questao 3 BM25 Stopwords queries_proc[queries_proc$doc_id == 'Query_053',]")
 
 ######################################################################
 #
