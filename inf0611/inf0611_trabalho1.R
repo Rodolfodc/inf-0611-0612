@@ -46,7 +46,7 @@ setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0611/")
 docs <- process_data("time.txt", "XX-Text [[:alnum:]]", "Article_0", 
                      convertcase = TRUE, remove_stopwords = FALSE)
 # Visualizando os documentos (apenas para debuging)
-head(docs)
+# head(docs)
 
 # Lendo uma lista de consultas (não mude essa linha)
 queries <- process_data("queries.txt", "XX-Find [[:alnum:]]", 
@@ -61,7 +61,7 @@ queries <- process_data("queries.txt", "XX-Find [[:alnum:]]",
 ground_truths <- read.csv("relevance.csv", header = TRUE)
 
 # Visualizando os ground_truths (apenas para debuging)
-head(ground_truths)
+# head(ground_truths)
 # Exemplo de acesso vetor de ground_truth da consulta 1:
 ground_truths[1,]
 # Exemplo de impressão dos ids dos documentos relevantes da consulta 1:
@@ -75,7 +75,7 @@ term_freq <- document_term_frequencies(docs)
 # Computando as estatísticas da coleção e convertendo em data.frame
 docs_stats <- as.data.frame(document_term_frequencies_statistics(term_freq, 1.2, 0.75))
 # Visualizando as estatísticas da coleção (apenas para debuging)
-head(docs_stats)
+# head(docs_stats)
 
 ######################################################################
 #
@@ -99,7 +99,7 @@ computa_resultados <- function(query, ground_truth, stats, stat_name,
   # Criando ranking (função do arquivo base)
   ranking <- get_ranking_by_stats(stat_name, docs_stats, query$word)
   # Visualizando o ranking (apenas para debuging)
-  #head(ranking, n = 5)
+  # head(ranking, n = 5)
   
   # Calculando a precisão
   p <- precision(ground_truth, ranking$doc_id, top)
@@ -152,9 +152,15 @@ computa_resultados(consulta2, ground_truths[n_consulta2,], docs_stats, "bm25", t
 #  Ao obrservar o resultado das estatísticas de Precisão e Revocação, observa-se que o modelo que teve melhor
 # resultado para a consulta 1 foi o modelo BM25 pois apresentou o dobro da precisão e revocação obtidas pelo 
 # modelo tf_idf. A partir dos gráficos apresentados para a conculta 1 nota-se que por meio do modelo BM25
-# é possível obter os maiores valores de precisão e revocação do que o modelo tf_idf. 
-# O mesmo podemos afirmar para a Consulta 2. 
-
+# é possível obter os maiores valores de precisão e revocação do que o modelo tf_idf. Ainda sim os modelos demonstram
+# precisar de mais elaoracao, pois em ambos os casosa precisão teve um valor máximo de aproxiamdamente 0.25 e a revocação
+# atingiu um patamar relativamente baixo (0.5 no melhor caso), o que acabou fazendo com que a precisão, em abos os casos,
+# fosse degradando conforme o valor de K aumentava.
+# O mesmo podemos afirmar para a Consulta 2, o tf_idf tanto quanto o bm25 apresentaram o registro máximo da precisão como valor 1.0
+# mas ambos os registros se deram para valores de k baixos, no caso do tf_idf, para k=1 e no caso do bm25 para k=1 até k=5. 
+# Ainda assim, a revocação foi mais estável, mas atingiu um patamar máximo baixo (para tf_idf foi 0.25 
+# e para bm25 foi aproximadamente 0.41) e novamente observou-se o descrescimento da precisão por causa do patamar máximo atingido 
+# pela Revocação, a revocação máxima foia tinfida com aproximadamente k = 18 para tf_idf e k = 17 para bm25. 
 ######################################################################
 #
 # Questão 3
@@ -170,7 +176,7 @@ docs_proc <- process_data("time.txt", "XX-Text [[:alnum:]]",
                           "Article_0", convertcase = TRUE, 
                           remove_stopwords = TRUE)
 # Visualizando os documentos (apenas para debuging)
-head(docs_proc)
+# head(docs_proc)
 
 
 # Lendo uma lista de consultas
@@ -178,7 +184,7 @@ queries_proc <- process_data("queries.txt", "XX-Find [[:alnum:]]",
                              "Query_0", convertcase = TRUE, 
                              remove_stopwords = TRUE)
 # Visualizando as consultas (apenas para debuging)
-head(queries_proc)
+# head(queries_proc)
 
 # Computando a matriz de termo-documento
 term_freq_proc <- document_term_frequencies(docs_proc)
@@ -196,7 +202,7 @@ computa_resultados(consulta1_proc, ground_truths[n_consulta1_proc,], docs_stats_
 
 # Resultados para a consulta 1 e bm25
 computa_resultados(consulta1_proc, ground_truths[n_consulta1_proc,], docs_stats_proc, 
-                   "bm25", top = 20, "BM25 stropwords Consulta 1")
+                   "bm25", top = 20, "BM25 stopwords Consulta 1")
 
 
 # Definindo a consulta 2 
@@ -217,11 +223,11 @@ computa_resultados(consulta2_proc, ground_truths[n_consulta2_proc,], docs_stats_
 #
 ######################################################################
 #  Ao realizar o processo de remoção das stopwords não percebemos diferença entre a eficiência dos modelos tf_idf e BM25 
-# quando comparados entre si já que ambos modelos penalizam termos comuns que são frenquentes e não são discirminantes e que no caso 
+# quando comparados entre si já que ambos modelos penalizam termos comuns que são frenquentes e não são discriminantes e que, no caso, 
 # foram removidos. Porém, ao compararmos com os resultados dos modelos obtidos sem a remoção das stopwords nota-se que tanto a revocação
-# quanto a precisão aumentam, mostando a vantagem de realizar esse processamento. Além disso, quando analisamos os resultados da Consulta 1
-# do modelo BM25 removendo as stopwords obtemos o máximo da revocação que é 1 no Top 9 enquanto o modelo sem a remoção atinge o máximo de
-# apenas 0,5 na revocação para um k de até 20.
+# quanto a precisão aumentam, mostrando a vantagem de realizar esse processamento. Além disso, quando analisamos os resultados da Consulta 1
+# do modelo BM25 removendo as stopwords, obtemos o máximo da revocação que é 1 no Top 9 enquanto o modelo sem a remoção atinge o máximo de
+# apenas 0.5 na revocação para um k de até 20.
 
 ######################################################################
 #
