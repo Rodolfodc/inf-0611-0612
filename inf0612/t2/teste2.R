@@ -1,18 +1,25 @@
 ########################################
 # Teste 2         
-# Nome(s): 
+# Nome(s): Nicole Nogueira Silva
+#         Rodolfo Dalla Costa
 ########################################
 
 ## 1 - Agrupamento
 
-groupsum <-
+groupsum <- function(df,colgroup, colsum){
+  
+  name <- c(colgroup,colsum)
+  df_group <- tapply(df[[colsum]], df[[colgroup]], sum)
+  #ainda falta retornar como um data frame como solicitado
+  
+}
 
 ##### Exemplos no PDF:
-##### dia <- c(01, 01, 02, 02, 03, 03, 04, 04, 05, 05)
-##### cidade <- c('Campinas', 'Vinhedo', 'Campinas', 'Limeira', 'Campinas', 'Vinhedo', 'Campinas', 'Vinhedo', 'Limeira', 'Campinas')
-##### chuva <- c(0.15, 0.02, 0.01, 0.13, 0.12, 2.19, 1.11, 0.76, 2.98, 0.45)
-##### chuvas <- data.frame(cidade, dia, chuva)
-##### groupsum(chuvas, "cidade", "chuva")
+dia <- c(01, 01, 02, 02, 03, 03, 04, 04, 05, 05)
+cidade <- c('Campinas', 'Vinhedo', 'Campinas', 'Limeira', 'Campinas', 'Vinhedo', 'Campinas', 'Vinhedo', 'Limeira', 'Campinas')
+chuva <- c(0.15, 0.02, 0.01, 0.13, 0.12, 2.19, 1.11, 0.76, 2.98, 0.45)
+chuvas <- data.frame(cidade, dia, chuva)
+groupsum(chuvas, "cidade", "chuva")
 
 ## 2 - Binario para Decimal
 
