@@ -32,16 +32,27 @@ binToDec <-
 
 ## 3 - Ocorrencia de Palavras
 
-wordCount <-
+wordCount <- function(word, text){
+  
+  #separa o texto em palavras
+  text_words <- unlist(strsplit(text, split = "[ .,!?]"))
+  
+  #transforma em letra minúscula
+  text_words <- tolower(text_words)
+  word <- tolower(word)
+  
+  #conta a ocorrencia de word em text
+  sum(text_words == word)
+}
 
 ##### Exemplos no PDF:
-##### text <- "O rAto roeu a roupa do Rei de Roma! RainhA raivosa rasgou o resto."
-##### wordCount("rato", text)
-##### wordCount("roma", text)
-##### text <- "A vaca malHada foi molhADA por outra VACA, MOLhada e MALhaDa."
-##### wordCount("outra", text)
-##### wordCount("vaca", text)
-##### wordCount("malhada", text)
-##### text <- "Se a liga me ligasse, eu tambem ligava a liga. Mas a liga nao me liga, eu tambem nao ligo a liga."
-##### wordCount("liga", text)
-##### wordCount("ligasse", text)
+text <- "O rAto roeu a roupa do Rei de Roma! RainhA raivosa rasgou o resto."
+wordCount("rato", text)
+wordCount("roma", text)
+text <- "A vaca malHada foi molhADA por outra VACA, MOLhada e MALhaDa."
+wordCount("outra", text)
+wordCount("vaca", text)
+wordCount("malhada", text)
+text <- "Se a liga me ligasse, eu tambem ligava a liga. Mas a liga nao me liga, eu tambem nao ligo a liga."
+wordCount("liga", text)
+wordCount("ligasse", text)
