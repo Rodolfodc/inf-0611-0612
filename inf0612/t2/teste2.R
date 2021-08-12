@@ -11,7 +11,7 @@ groupsum <- function(df,colgroup, colsum){
   name <- c(colgroup,colsum)
   df_group <- tapply(df[[colsum]], df[[colgroup]], sum)
   #ainda falta retornar como um data frame como solicitado
-  
+  return(df_group)
 }
 
 ##### Exemplos no PDF:
@@ -23,12 +23,22 @@ groupsum(chuvas, "cidade", "chuva")
 
 ## 2 - Binario para Decimal
 
-binToDec <-
+binToDec <- function(...) {
+  decimal <- c()
+  for (binario in list(...)) {
+    sum <- 0
+    for(pos in 1:(length(binario))) {
+      sum <- sum + (binario[pos]*(2**(length(binario)-pos)))
+    }
+    decimal <- c(decimal, sum)
+  }
+  return(decimal)
+}
 
-##### Exemplos no PDF:
-##### binToDec(c(1, 0))
-##### binToDec(c(0, 0, 1), c(1, 1))
-##### binToDec(rep(1, 3), rep(0, 2), rep(c(1,0), 2))
+# Exemplos no PDF:
+binToDec(c(1, 0))
+binToDec(c(0, 0, 1), c(1, 1))
+binToDec(rep(1, 3), rep(0, 2), rep(c(1,0), 2))
 
 ## 3 - Ocorrencia de Palavras
 
