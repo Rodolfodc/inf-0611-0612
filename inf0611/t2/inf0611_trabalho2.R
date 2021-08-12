@@ -4,9 +4,8 @@
 # Trabalho Avaliativo 2                                          #
 #----------------------------------------------------------------#
 # Nome COMPLETO dos integrantes do grupo:                        #
-# -                                                              #
-# -                                                              #
-# -                                                              #
+# - Rodolfo Dalla costa                                          #
+# - Nicole Nogueira Silva                                        #
 #                                                                #
 #----------------------------------------------------------------#
 
@@ -14,7 +13,8 @@
 # Configuracao dos arquivos auxiliares   
 #----------------------------------------------------------------#
 # configure o caminho antes de executar
-# setwd("") 
+setwd("~/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0611/t2/") 
+
 source("./ranking_metrics.R")
 source("./trabalho2_base.R")
 
@@ -24,21 +24,21 @@ path_plantas = './plantas'
 #----------------------------------------------------------------#
 # Leitura das imagens                 
 #----------------------------------------------------------------#
-imagens <- <to-do>
+imagens <- read_images(path_plantas)
 
 #----------------------------------------------------------------#
 # Obtem classe de cada imagem             
 #----------------------------------------------------------------#
-nome_classes <- <to-do>
+nome_classes <- get_classes(path_plantas)
 
 #----------------------------------------------------------------#
 # obtem ground_truth para cada classe 
 #----------------------------------------------------------------#
-ground_truth_biloba <- <to-do>
-ground_truth_europaea <- <to-do>
-ground_truth_ilex <- <to-do>
-ground_truth_monogyna <- <to-do>
-ground_truth_regia <- <to-do>
+ground_truth_biloba <- get_ground_truth(path_plantas, nome_classes, 'biloba')
+ground_truth_europaea <- get_ground_truth(path_plantas, nome_classes, 'europaea')
+ground_truth_ilex <- get_ground_truth(path_plantas, nome_classes, 'ilex')
+ground_truth_monogyna <- get_ground_truth(path_plantas, nome_classes, 'monogyna')
+ground_truth_regia <- get_ground_truth(path_plantas, nome_classes, 'regia')
 
 
 
@@ -48,12 +48,18 @@ ground_truth_regia <- <to-do>
 
 # obtem caracteristicas de cor  
 hist_cor_desc <- function(img){
-  <to-do>
+  r <- hist(img[,,1]*255, plot=FALSE, breaks=0:255)$counts
+  g <- hist(img[,,2]*255, plot=FALSE, breaks=0:255)$counts
+  b <- hist(img[,,3]*255, plot=FALSE, breaks=0:255)$counts
+  return(c(r, g, b))
 }
 
 # obtem caracteristicas de textura   
 lbp_desc <- function(img){
-  <to-do>
+  grayScaled <- grayscale(img)
+  lbp_processado <- lbp(grayScaled[,,1,1],1)
+  lbp_versao_uniforme <- hist(lbp_processado$lbp.u2, plot=FALSE, breaks=59)$counts
+  return(c(lbp_versao_uniforme))
 }
 
 # obtem caracteristicas de forma 
@@ -74,23 +80,39 @@ Momentos <-function(img){
       x <- 0
       y <- 0
     }
-    for (i in 1:nrow(M))
-      for (j in 1:ncol(M))
-        r <- r + (i - x)^p * (j - y)^q * M[i,j]  
+    print("pre loops")
+    print(nrow(M))
+    for (i in 1:nrow(M)) {
+      print("Loop externo")
+      for (j in 1:ncol(M)) {
+        print(" Loop interno")
+        r <- r + (i - x)^p * (j - y)^q * M[i,j]
+      }
+    }
     return(r)
   }
   
-  <to-do>
+  grayScaledImg <- grayscale(img)
+  print("Imagem esta em escala de cinza")
+  
+  momento_area <- momento(grayScaledImg, 0, 0)
+  print("momento area")
+  momento_centroid <- NULL # Falta entender como montar esse
+  momento_assimetria <- momento(grayScaledImg, 3, 3)
+  momento_curtose <- momento(grayScaledImg, 4, 4)
+  
+  print("prepara para retorno")
+  return(cbind(momento_area, momento_centroid, momento_assimetria, momento_curtose))
 }
 
 #----------------------------------------------------------------#
 # obtem caracteristicas de cor, textura e forma para todas as imagens e 
 # armazena em matrizes onde uma linha representa uma imagem 
-features_c <- t(sapply(<to-do>, <to-do>))
+features_c <- t(sapply(imagens, hist_cor_desc))
 rownames(features_c) <- names(imagens)
-features_t <- <to-do>
+features_t <- t(sapply(imagens, lbp_desc))
 rownames(features_t) <- names(imagens)
-features_s <- <to-do>
+features_s <- t(sapply(imagens, Momentos))
 rownames(features_s) <- names(imagens)
 
 #----------------------------------------------------------------#
@@ -107,8 +129,11 @@ consulta_regia <- "./plantas/regia_07.jpg"
 
 # visualizando as consultas
 par(mfrow = c(3,3), mar = rep(2, 4))
-mostrarImagemColorida(<to-do>)
-<to-do>
+mostrarImagemColorida(consulta_biloba, 'Biloba')
+mostrarImagemColorida(consulta_europaea, 'Europeas')
+mostrarImagemColorida(consulta_ilex, 'Ilex')
+mostrarImagemColorida(consulta_monogyna, 'Monognya')
+mostrarImagemColorida(consulta_regia, 'Regia')
 
 #-----------------------------#
 # construindo rankings                          
