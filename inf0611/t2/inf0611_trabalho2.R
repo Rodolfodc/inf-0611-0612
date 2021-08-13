@@ -80,28 +80,21 @@ Momentos <-function(img){
       x <- 0
       y <- 0
     }
-    print("pre loops")
-    print(nrow(M))
-    for (i in 1:nrow(M)) {
-      print("Loop externo")
-      for (j in 1:ncol(M)) {
-        print(" Loop interno")
-        r <- r + (i - x)^p * (j - y)^q * M[i,j]
+    
+    for(i in 1:nrow(M)) {
+      for(j in 1:ncol(M)) {
+        r <- r + (i - x)^p * (j - y)^q * M[i,j,1,1]
       }
     }
     return(r)
   }
   
-  grayScaledImg <- grayscale(img)
-  print("Imagem esta em escala de cinza")
+  img <- grayscale(img)
+  momento_area <- momento(img, 0, 0)
+  momento_centroid <- momento(img, 2, 2, central = TRUE) # Falta entender como montar esse
+  momento_assimetria <- momento(img, 3, 3)
+  momento_curtose <- momento(img, 4, 4)
   
-  momento_area <- momento(grayScaledImg, 0, 0)
-  print("momento area")
-  momento_centroid <- NULL # Falta entender como montar esse
-  momento_assimetria <- momento(grayScaledImg, 3, 3)
-  momento_curtose <- momento(grayScaledImg, 4, 4)
-  
-  print("prepara para retorno")
   return(cbind(momento_area, momento_centroid, momento_assimetria, momento_curtose))
 }
 
@@ -138,25 +131,25 @@ mostrarImagemColorida(consulta_regia, 'Regia')
 #-----------------------------#
 # construindo rankings                          
 # para cada uma das 5 consultas, construa um ranking com base na cor
-ranking_c_biloba <- <to-do>
-ranking_c_europaea <- <to-do>
-ranking_c_ilex <- <to-do>
-ranking_c_monogyna <- <to-do>
-ranking_c_regia <- <to-do>
+ranking_c_biloba <- get_ranking_by_distance(features_c, consulta_biloba)
+ranking_c_europaea <- get_ranking_by_distance(features_c, consulta_europaea)
+ranking_c_ilex <- get_ranking_by_distance(features_c, consulta_ilex)
+ranking_c_monogyna <- get_ranking_by_distance(features_c, consulta_monogyna)
+ranking_c_regia <- get_ranking_by_distance(features_c, consulta_regia)
 
 # para cada uma das 5 consultas, construa um ranking com base na textura
-ranking_t_biloba <- <to-do>
-ranking_t_europaea <- <to-do>
-ranking_t_ilex <- <to-do>
-ranking_t_monogyna <- <to-do>
-ranking_t_regia <- <to-do>
+ranking_t_biloba <- get_ranking_by_distance(features_t, consulta_biloba)
+ranking_t_europaea <-  get_ranking_by_distance(features_t, consulta_europaea)
+ranking_t_ilex <-  get_ranking_by_distance(features_t, consulta_ilex)
+ranking_t_monogyna <-  get_ranking_by_distance(features_t, consulta_monogyna)
+ranking_t_regia <-  get_ranking_by_distance(features_t, consulta_regia)
   
 # para cada uma das 5 consultas, construa um ranking com base na forma
-ranking_s_biloba <- <to-do>
-ranking_s_europaea <- <to-do>
-ranking_s_ilex <- <to-do>
-ranking_s_monogyna <- <to-do>
-ranking_s_regia <- <to-do>
+ranking_s_biloba <- get_ranking_by_distance(features_s, consulta_biloba)
+ranking_s_europaea <- get_ranking_by_distance(features_s, consulta_europaea)
+ranking_s_ilex <- get_ranking_by_distance(features_s, consulta_ilex)
+ranking_s_monogyna <- get_ranking_by_distance(features_s, consulta_monogyna)
+ranking_s_regia <- get_ranking_by_distance(features_s, consulta_regia)
 
 #-----------------------------#
 # comparando  rankings                              
@@ -165,18 +158,21 @@ ranking_s_regia <- <to-do>
 # a precisão, revocação, taxa F1 e precisão média nos 
 # top 5, 10, 15 e 20
 
+top_k_seq <- seq(from=5,to=20,by=5)
+
 analyse_rankings <- function(ranking, ground_truth) {
-  <to-do>
+  p <- sapply(top_k_seq, function(k){precision(ground_truth, ranking, k)})
+  return(p)
 }
 
 # analisando rankings gerados com caracteristicas de cor
-analyse_rankings(<to-do>)
+analyse_rankings(ranking_c_biloba, ground_truth_biloba)
 
 # analisando rankings gerados com caracteristicas de textura
-analyse_rankings(<to-do>)
+analyse_rankings(ranking_t_biloba, ground_truth_biloba)
 
 # analisando rankings gerados com caracteristicas de forma
-analyse_rankings(<to-do>)
+analyse_rankings(ranking_s_biloba, ground_truth_biloba)
 
 
 #----------------------------------------------------------------#
