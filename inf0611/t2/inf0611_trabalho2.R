@@ -71,6 +71,7 @@ Momentos <-function(img){
   }
   
   momento <- function(M, p, q, central = FALSE) {
+    
     r <- 0
     if (central) {
       c <- centroide(M)
@@ -83,18 +84,18 @@ Momentos <-function(img){
     
     for(i in 1:nrow(M)) {
       for(j in 1:ncol(M)) {
-        r <- r + (i - x)^p * (j - y)^q * M[i,j,1,1]
+        r <- r + (i - x)^p * (j - y)^q * M[i,j]
       }
     }
     return(r)
   }
   
-  img <- grayscale(img)
-  momento_area <- momento(img, 0, 0)
-  momento_centroid <- momento(img, 2, 2, central = TRUE) # Falta entender como montar esse
-  momento_assimetria <- momento(img, 3, 3)
-  momento_curtose <- momento(img, 4, 4)
-  
+  grayImg <- grayscale(img)[,,1,1]
+  momento_area <- momento(grayImg, 0, 0)
+  momento_centroid <- momento(grayImg, 2, 2, central = TRUE) # Falta entender como montar esse
+  momento_assimetria <- momento(grayImg, 3, 3)
+  momento_curtose <- momento(grayImg, 4, 4)
+
   return(cbind(momento_area, momento_centroid, momento_assimetria, momento_curtose))
 }
 
@@ -161,8 +162,12 @@ ranking_s_regia <- get_ranking_by_distance(features_s, consulta_regia)
 top_k_seq <- seq(from=5,to=20,by=5)
 
 analyse_rankings <- function(ranking, ground_truth) {
-  p <- sapply(top_k_seq, function(k){precision(ground_truth, ranking, k)})
-  return(p)
+  p <- sapply(top_k_seq, function(k){ precision(ground_truth, ranking, k) })
+  rev <- sapply(top_k_seq, function(k) { recall(ground_truth, ranking, k) })
+  f1 <- sapply(top_k_seq, function(k) { f1_score(ground_truth, ranking, k) })
+  p_media <- sapply(top_k_seq, function(k) { ap(ground_truth, ranking, k) })
+  cbind(p, rev, f1, p_media)
+  return(cbind(p, rev, f1, p_media))
 }
 
 # analisando rankings gerados com caracteristicas de cor
