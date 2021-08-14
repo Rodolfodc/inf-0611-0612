@@ -8,10 +8,16 @@
 
 groupsum <- function(df,colgroup, colsum){
   
-  name <- c(colgroup,colsum)
-  df_group <- tapply(df[[colsum]], df[[colgroup]], sum)
-  #ainda falta retornar como um data frame como solicitado
-  return(df_group)
+  #Realiza a soma da coluna colsum agrupada por colgroup
+  df_group <- data.frame(tapply(df[[colsum]], df[[colgroup]], sum))
+  
+  #tranforma em um data.frame
+  data <- data.frame(row.names(df_group), df_group[,1])
+  
+  #renomeia as colunas
+  names(data) <- c(colgroup, colsum)
+  
+  return(data)
 }
 
 ##### Exemplos no PDF:
