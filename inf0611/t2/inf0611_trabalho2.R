@@ -171,14 +171,41 @@ analyse_rankings <- function(ranking, ground_truth) {
 }
 
 # analisando rankings gerados com caracteristicas de cor
-analyse_rankings(ranking_c_biloba, ground_truth_biloba)
+analysis_c_biloba <- analyse_rankings(ranking_c_biloba, ground_truth_biloba)
+analysis_c_europaea <- analyse_rankings(ranking_c_europaea, ground_truth_europaea)
+analysis_c_ilex <- analyse_rankings(ranking_c_ilex, ground_truth_ilex)
+analysis_c_monogyna <- analyse_rankings(ranking_c_monogyna, ground_truth_monogyna)
+analysis_c_regia <- analyse_rankings(ranking_c_regia, ground_truth_regia)
 
 # analisando rankings gerados com caracteristicas de textura
-analyse_rankings(ranking_t_biloba, ground_truth_biloba)
+analysis_t_biloba <- analyse_rankings(ranking_t_biloba, ground_truth_biloba)
+analysis_t_europaea <- analyse_rankings(ranking_t_europaea, ground_truth_europaea)
+analysis_t_ilex <- analyse_rankings(ranking_t_ilex, ground_truth_ilex)
+analysis_t_monogyna <- analyse_rankings(ranking_t_monogyna, ground_truth_monogyna)
+analysis_t_regia <- analyse_rankings(ranking_t_regia, ground_truth_regia)
 
 # analisando rankings gerados com caracteristicas de forma
-analyse_rankings(ranking_s_biloba, ground_truth_biloba)
+analysis_s_biloba <- analyse_rankings(ranking_s_biloba, ground_truth_biloba)
+analysis_s_europaea <- analyse_rankings(ranking_s_europaea, ground_truth_europaea)
+analysis_s_ilex <- analyse_rankings(ranking_s_ilex, ground_truth_ilex)
+analysis_s_monogyna <- analyse_rankings(ranking_s_monogyna, ground_truth_monogyna)
+analysis_s_regia <- analyse_rankings(ranking_s_regia, ground_truth_regia)
 
+########################################################################
+##########      Comandos para geracao das imagens       ################
+##########                                              ################
+########################################################################
+# 
+# par(mfrow=c(5,4), mar=rep(2,4))
+# sapply(ranking_c_regia[1:20], function(x) {mostrarImagemColorida(x, 'Forma Regia')}) #cores
+# 
+# par(mfrow=c(5,4), mar=rep(2,4))
+# sapply(ranking_t_regia[1:20], function(x) {mostrarImagemColorida(x, 'Forma Regia')}) #textura
+# 
+# par(mfrow=c(5,4), mar=rep(2,4))
+# sapply(ranking_s_regia[1:20], function(x) {mostrarImagemColorida(x, 'Forma Regia')}) #Forma
+# 
+########################################################################
 
 #----------------------------------------------------------------#
 # Questao 2 - RESPONDA:                   
@@ -188,25 +215,137 @@ analyse_rankings(ranking_s_biloba, ground_truth_biloba)
 # contextualizando o que foi extraído em cada descritor. Também
 # aponte pontos fortes e fracos dos descritores usados que podem
 # justificar esse comportamento.
-#                                         
-#                                         
-#                                         
-#                                         
-#                                         
-#                                         
+#
+# Analise:
+# Para esta analise foi escolhido a analise sobre a planta REGIA, abaixo estao os resultados produzidos:
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# > analysis_c_regia  #descritor de cores
+#      p          rev  f1         p_media
+# [1,] 0.8000000  0.4  0.5333333  0.8041667
+# [2,] 0.6000000  0.6  0.6000000  0.7402778
+# [3,] 0.4666667  0.7  0.5600000  0.7114469
+# [4,] 0.4000000  0.8  0.5333333  0.6725160
+
+# > analysis_t_regia  #descritor de textura
+#      p    rev  f1         p_media
+# [1,] 0.8  0.4  0.5333333  0.9500000
+# [2,] 0.7  0.7  0.7000000  0.8571429
+# [3,] 0.6  0.9  0.7200000  0.8308081
+# [4,] 0.5  1.0  0.6666667  0.8032828
+
+# > analysis_s_regia  #descritor de forma
+#      p     rev  f1         p_media
+# [1,] 0.40  0.2  0.2666667  0.7500000
+# [2,] 0.30  0.3  0.3000000  0.6428571
+# [3,] 0.20  0.3  0.2400000  0.6428571
+# [4,] 0.25  0.5  0.3333333  0.4883459
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+#
+# Ao analisar os valores resultantes para precisao e revocacao, observa-se que a textura é a caracteristica que 
+# mais se adequa no quesito do ranqueamento das imagens ja que apresenta um bom desempenho de precisao e revocacao
+# atingindo revocacao maxima com k=20 e a maior precisao com k=5, a precisao media em geral se mantem boa para essa
+# caracteristica, sendo sempre maior que 80.0%, desse. Em comparacao com a cor, a segunda melhor caracteristica 
+# para ranqueamento, que apresenta boa precisao com k=5 e maior revocacao com k=20. Por ultimo a caracteristica de forma 
+# é inadequada para o ranqueamento pois a mesma possui uma precisao baixa e uma revocacao baixa para todos os k.
+# Ao analisar visualmente as imagens resultantes, observa-se que o descritor de forma tem uma tendencia em confundir a
+# planta Monogya com a Regia, de fato a forma da Monogya pode se assemelhar a uma Regia, desse modo, percebe-se que o descritor
+# de forma para a planta Regia, nao lida adequadamente com diferencas pequenas de forma, uma observacao relativa é de que
+# a Monogya pode ser semelhante a uma Regia vista de longe por exemplo, desse modo, percebe-se que o descritor de forma poderia
+# lidar melhor com imagens em diferentes escalas da Regia, mas mesmo assim, ainda seria um descritor ruim.
+# 
+# O descritor de cor por sua vez, quando se observa as imagens que são ranqueadas, percebe-se que o mesmo tem uma tendencia
+# em ranquear imagens de da planta Europaea junto com a planta Regia. As imagens ranqueadas que podem ser observadas das plantas Regia apresentam
+# uma caracteristica de sempre serem de uma tonalidade de verde mais escuro e menos vivo, e também serem acompanhadas de uma sombra
+# mais evidente. As plantas Europaea que são juntamente ranqueadas em geral trazem uma tonalidade de verde mais escuro e um tom de folha seca,
+# assim como as folhas de Regia, desse modo percebe-se que o descritor de cor não está observando necessariamente a quantidade de cor
+# mas sim a tonalidade presente das cores e o sombreamento, visto que a maioria das plantas erronemanete ranqueadas traz consigo
+# um contorno de sombra, mesmo que bem leve. Alem disso, percebe-se tambem que o descritor aceita uma distancia pequena
+# das tonalidades, pois é possivel observar que as plantas ranqueadas vao de um tom verde amarronzado ate um tom verde escuro, desse modo, o descritor de
+# cor é um descritor com um desempenho aceitavel para k=5 ate k=10, mas fica completamente sugeito a luminosidade das imagens, que podem afetar
+# a tonalidade original de uma planta.
+# 
+# Por ultimo, o descritor de textura revelou-se como o descritor mais adequado pois, atinge revocacao maxima com k=20 e a maior precisao eh com k=5 (80%).
+# Ao analisar as imagens ranqueadas, observa-se que o modelo ranqueou tambem imagens de Europaea e Ilex, nos outros modelos, a confusao foi com apenas uma outra
+# categoria de planta. Mas percebe-se que para este modelo o ranqueamento nao fica a merce da luminosidade da foto, como acontece no de cor. Alem disso, 
+# partindo-se da definicao de textura, apresentada em aula, percebe-se que o descritor provavelmente observa o padrao do formato acompanhado da sombra e a tendencia
+# a textura presente no caule e nas ramificacoes do mesmo, tal como sua disposicao no contorno visto que essa é a caractristica mais marcante inclusive nas imagens 
+# ranqueadas que nao sao da planta Regia.
+#
+#
+#
+#
 # (b) Considerando as 5 consultas definidas, calcule a m?dia das precis?es m?dias em top 10. 
-# Avaliando por essa medida, qual descritor obteve melhores resultados? Justifique. 
+# Avaliando por essa medida, qual descritor obteve melhores resultados? Justifique.
 # Lembre-se que para justificar sua resposta, voc? pode complementar sua an?lise usando 
 # tamb?m outras medidas de avalia??o de ranking adicionais vistas na Aula 1, caso seja pertinente
-#                                         
-#                                         
-#                                         
-#                                         
-#                                         
-#                                         
-#                                         
-#                                         
-#                                         
+#
+#
+## Os vetores 'analysis' possuem 4 linhas, uma para cada k, sendo:
+#   linha 1 => k = 5
+#   linha 2 => k = 10
+#   linha 3 => k = 15
+#   linha 4 => k = 20
+#
+## Ja cada coluna esta organizada da seguinte maneira:
+#   coluna 1 => precisao (p)
+#   coluna 2 => revocacao (rev)
+#   coluna 2 => f1_score (f1)
+#   coluna 2 => precisao media (p_media)
+#
+###########################################
+
+
+p_media_c <- mean(c(analysis_c_biloba[2,4], 
+                  analysis_c_europaea[2,4], 
+                  analysis_c_ilex[2,4],
+                  analysis_c_monogyna[2,4],
+                  analysis_c_regia[2,4]))
+
+p_media_t <-  mean(c(analysis_t_biloba[2,4], 
+                     analysis_t_europaea[2,4], 
+                     analysis_t_ilex[2,4],
+                     analysis_t_monogyna[2,4],
+                     analysis_t_regia[2,4]))
+
+p_media_s <- mean(c(analysis_s_biloba[2,4], 
+                    analysis_s_europaea[2,4], 
+                    analysis_s_ilex[2,4],
+                    analysis_s_monogyna[2,4],
+                    analysis_s_regia[2,4]))
+
+map_cor <- mean_average_precision(list(ground_truth_regia, ranking_c_regia), 10)
+# __________________________________
+# |p_media_c | p_media_t | p_media_s|
+# |========= | ========= | =========|  
+# |0.9038095 | 0.8363492 | 0.7972381|
+# ----------------------------------+
+
+cg_cor <- cumulative_gain(ground_truth_regia, ranking_c_regia, 10)
+dcg_cor <- discounted_cumulative_gain(ground_truth_regia, ranking_c_regia, 10)
+ndcg_cor <- normalized_discounted_cumulative_gain(ground_truth_regia, ranking_c_regia, 10)
+
+cg_text <- cumulative_gain(ground_truth_regia, ranking_t_regia, 10)
+dcg_text <- discounted_cumulative_gain(ground_truth_regia, ranking_t_regia, 10)
+ndcg_text <- normalized_discounted_cumulative_gain(ground_truth_regia, ranking_t_regia, 10)
+
+cg_s <- cumulative_gain(ground_truth_regia, ranking_s_regia, 10)
+dcg_s <- discounted_cumulative_gain(ground_truth_regia, ranking_s_regia, 10)
+ndcg_s <- normalized_discounted_cumulative_gain(ground_truth_regia, ranking_s_regia, 10)
+
+gc <- cbind(cg_cor, cg_text, cg_s)
+dcg <- cbind(dcg_cor, dcg_text, dcg_s)
+ndcg <- cbind(ndcg_cor, ndcg_text, ndcg_s)
+
+#       Cor        Textura    Forma
+# CG   6.0000000  7.0000000  3.0000000
+# DCG  2.9220591  3.4640846  1.7640099
+# NDCG 0.6431211  0.7624165  0.3882441
+
+# Como e possivel observar, a precisao com o melhor desempenho medio foi a precisao de cor
+#
+#
+#
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
