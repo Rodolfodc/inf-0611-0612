@@ -165,7 +165,7 @@ analyse_rankings <- function(ranking, ground_truth) {
   p <- sapply(top_k_seq, function(k){ precision(ground_truth, ranking, k) })
   rev <- sapply(top_k_seq, function(k) { recall(ground_truth, ranking, k) })
   f1 <- sapply(top_k_seq, function(k) { f1_score(ground_truth, ranking, k) })
-  p_media <- sapply(top_k_seq, function(k) { ap(ground_truth, ranking, k) })
+  p_media <- sapply(top_k_seq, function(k) { average_precision(ground_truth, ranking, k) })
   cbind(p, rev, f1, p_media)
   return(cbind(p, rev, f1, p_media))
 }
@@ -246,8 +246,9 @@ analysis_s_regia <- analyse_rankings(ranking_s_regia, ground_truth_regia)
 # mais se adequa no quesito do ranqueamento das imagens ja que apresenta um bom desempenho de precisao e revocacao
 # atingindo revocacao maxima com k=20 e a maior precisao com k=5, a precisao media em geral se mantem boa para essa
 # caracteristica, sendo sempre maior que 80.0%, desse. Em comparacao com a cor, a segunda melhor caracteristica 
-# para ranqueamento, que apresenta boa precisao com k=5 e maior revocacao com k=20. Por ultimo a caracteristica de forma 
-# é inadequada para o ranqueamento pois a mesma possui uma precisao baixa e uma revocacao baixa para todos os k.
+# para ranqueamento, que apresenta boa precisao com k=5 e maior revocacao com k=20. 
+#
+# O descritor de forma   é inadequado para o ranqueamento pois o mesmo possui uma precisao baixa e uma revocacao baixa para todos os k.
 # Ao analisar visualmente as imagens resultantes, observa-se que o descritor de forma tem uma tendencia em confundir a
 # planta Monogya com a Regia, de fato a forma da Monogya pode se assemelhar a uma Regia, desse modo, percebe-se que o descritor
 # de forma para a planta Regia, nao lida adequadamente com diferencas pequenas de forma, uma observacao relativa é de que
@@ -296,30 +297,24 @@ analysis_s_regia <- analyse_rankings(ranking_s_regia, ground_truth_regia)
 ###########################################
 
 
-p_media_c <- mean(c(analysis_c_biloba[2,4], 
-                  analysis_c_europaea[2,4], 
-                  analysis_c_ilex[2,4],
-                  analysis_c_monogyna[2,4],
-                  analysis_c_regia[2,4]))
-
-p_media_t <-  mean(c(analysis_t_biloba[2,4], 
+media_ap_c <- mean(c(analysis_c_biloba[2,4], 
+                     analysis_c_europaea[2,4], 
+                     analysis_c_ilex[2,4],
+                     analysis_c_monogyna[2,4],
+                     analysis_c_regia[2,4]))
+   
+media_ap_t <- mean(c(analysis_t_biloba[2,4], 
                      analysis_t_europaea[2,4], 
                      analysis_t_ilex[2,4],
                      analysis_t_monogyna[2,4],
                      analysis_t_regia[2,4]))
 
-p_media_s <- mean(c(analysis_s_biloba[2,4], 
-                    analysis_s_europaea[2,4], 
-                    analysis_s_ilex[2,4],
-                    analysis_s_monogyna[2,4],
-                    analysis_s_regia[2,4]))
+media_ap_s <- mean(c(analysis_s_biloba[2,4], 
+                     analysis_s_europaea[2,4], 
+                     analysis_s_ilex[2,4],
+                     analysis_s_monogyna[2,4],
+                     analysis_s_regia[2,4]))
 
-map_cor <- mean_average_precision(list(ground_truth_regia, ranking_c_regia), 10)
-# __________________________________
-# |p_media_c | p_media_t | p_media_s|
-# |========= | ========= | =========|  
-# |0.9038095 | 0.8363492 | 0.7972381|
-# ----------------------------------+
 
 cg_cor <- cumulative_gain(ground_truth_regia, ranking_c_regia, 10)
 dcg_cor <- discounted_cumulative_gain(ground_truth_regia, ranking_c_regia, 10)
@@ -333,16 +328,44 @@ cg_s <- cumulative_gain(ground_truth_regia, ranking_s_regia, 10)
 dcg_s <- discounted_cumulative_gain(ground_truth_regia, ranking_s_regia, 10)
 ndcg_s <- normalized_discounted_cumulative_gain(ground_truth_regia, ranking_s_regia, 10)
 
-gc <- cbind(cg_cor, cg_text, cg_s)
+cg <- cbind(cg_cor, cg_text, cg_s)
 dcg <- cbind(dcg_cor, dcg_text, dcg_s)
 ndcg <- cbind(ndcg_cor, ndcg_text, ndcg_s)
 
+ganhos <- rbind(cg, dcg, ndcg)
+
+# _____________________________________
+# |media_ap_c | media_ap_t | media_ap_s|
+# |========== | ========== | ==========|  
+# |0.9038095  | 0.8363492  | 0.7972381 |
+# -------------------------------------+
+
+# Ganhos:
 #       Cor        Textura    Forma
 # CG   6.0000000  7.0000000  3.0000000
 # DCG  2.9220591  3.4640846  1.7640099
 # NDCG 0.6431211  0.7624165  0.3882441
 
-# Como e possivel observar, a precisao com o melhor desempenho medio foi a precisao de cor
+# Como e possivel observar, a precisao com o melhor desempenho medio foi a precisao de cor, a segunda melhor
+# foi a de textura, e a terceira a de forma. Isso reforca o fato de que eh possivel ter plantas diferentes com 
+# formators muito proximos, o que remete ao fato do descritor de forma confundir Regia com Monogya, dado que
+# a forma das duas plantas sem uma certa similaridade.
+# A textura por sua vez eh um bom descritor, apesar do desempenho intermdiario, pois, primeiro que sua precisao media_ap_s
+# esta acima de 80%, o que indica que este descritor pode identificar 80% de todo o conjunto de dados e tambem que, 
+# para o caso de plantas como a Regia, é o descritor que apresenta o melhor desempenho.
+# O descritor de cor por sua vez apresenta uma precisao meida de 90%, o que indica que ele é um excelente descritor  
+# geral, pois pode recuperar com precisao 90% de todo o conjunto de dados para k = 10.
+# Ao analisar os calculos de ganhos (ganho cumulativo, ganho cumulativo descontado e ganho cumulativo descontado normal)
+# observ-ase que o descritor que na realidade possui o melhor ganho pra os tres casos e o de textura, o que contradiz 
+# a tese de que o descritor de cor é o melhor descritor para recuperar as imagens requeridas a partir da consulta.
+# Isso se da pelo fato de que, apesar do descritor de cor ser, genericamente, um bom descritor, a precisao calculada
+# nao leva em conta a capacidade do descritor de posicionar primeiro os mais relevantes. A partir da analise de ganho,
+# pode-se observar que o descritor mais adequado para ser usado é o de textura, considerando k=10, pois ele traz um resultado o mais proximo
+# possivel do ideal, demonstrando um excelente ganho, e consegue ser preciso em 80% de todo o conjunto de imagens, nota-se que
+# apesar dos ganhos cumulativo e cumulativo descontado de cor e textura serem muito proximos, o cumulativo descontado normalizado, 
+# traz uma distancia maior entre ambos o que acaba compensando a diferenca de 10% entre ambos.
+# Tambem observa-se que o descritor de forma apresenta uma medidade de ganho baixissima, portanto, sendo de baixa precisao e com 
+# pouco ganho.
 #
 #
 #
