@@ -13,7 +13,7 @@
 # Configuracao dos arquivos auxiliares   
 #----------------------------------------------------------------#
 # configure o caminho antes de executar
-setwd("~/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0611/t2/") 
+setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0611/t2") 
 
 source("./ranking_metrics.R")
 source("./trabalho2_base.R")
@@ -378,33 +378,52 @@ ganhos <- rbind(cg, dcg, ndcg)
 
 ## obter vetores finais de caracteristicas pela concatenação de 
 # cada tipo de caracteristica (cor, textura e forma):
-features_concat = <to-do>
+features_concat = cbind(features_c, features_t, features_s)
   
 # gerar novos rankings
-ranking_concat_biloba <- <to-do>
-ranking_concat_europaea <- <to-do>
-ranking_concat_ilex <- <to-do>
-ranking_concat_monogyna <- <to-do>
-ranking_concat_regia <- <to-do>
+ranking_concat_biloba <- get_ranking_by_distance(features_concat, consulta_biloba)
+ranking_concat_europaea <- get_ranking_by_distance(features_concat, consulta_europaea)
+ranking_concat_ilex <- get_ranking_by_distance(features_concat, consulta_ilex)
+ranking_concat_monogyna <- get_ranking_by_distance(features_concat, consulta_monogyna)
+ranking_concat_regia <- get_ranking_by_distance(features_concat, consulta_regia)
+
 
 # analisando rankings gerados com caracteristicas concatenadas
-analyse_rankings(<to-do>)
+analysis_concat_biloba <- analyse_rankings(ranking_concat_biloba, ground_truth_biloba)
+analysis_concat_europaea <- analyse_rankings(ranking_concat_europaea, ground_truth_europaea)
+analysis_concat_ilex <- analyse_rankings(ranking_concat_ilex, ground_truth_ilex)
+analysis_concat_monogyna <- analyse_rankings(ranking_concat_monogyna, ground_truth_monogyna)
+analysis_concat_regia <- analyse_rankings(ranking_concat_regia, ground_truth_regia)
+
+plot_prec_e_rev(ranking_concat_regia, ground_truth_regia, 20, 'Concatenado')
+plot_prec_e_rev(ranking_s_regia, ground_truth_regia, 20, 'Forma')
+plot_prec_e_rev(ranking_c_regia, ground_truth_regia, 20, 'Cor')
+plot_prec_e_rev(ranking_t_regia, ground_truth_regia, 20, 'Textura')
 
 #----------------------------------------------------------------#
 # Questao 3 - RESPONDA:  
 # (a) Qual o impacto dessas alterações nas medidas de avaliação
 # calculadas?
-# 
+# Em relação às consultas das espécie Regia, Monogyna e Biloba, os indicadores de precisão, revocação, F1 e precisão média do descritor concatenado foram menores em relação 
+# ao uso do descritor de cor e textura enquanto o descritor de forma, o concatenado obteve indicadores iguais.
+# Já para as espécies europaea e ilex, o concatenado obteve indicadores iguais aos indicadores obtidos usando apenas a forma enquanto
+# usando o descritor de cor e textura obtivemos resultados menores.
+#
 # 
 # (b) Os descritores combinados apresentaram melhores resultados?
 # Justifique sua resposta.
-# 
-# 
-# 
+# Não. Para as espécies que são muito bem discriminadas pela forma, o discritivo concatenado apresentou desempenho igual
+# ao modelo que usa apenas a forma. Já as espécies que não são bem discriminadas pela forma, os descritores combinados
+# obtiveram resultados piores do que usando apenas a cor ou apenas a textura. Assim, não apresentaram ganhos significativos.
+
 # 
 # (c) Você acredita que algum dos descritores apresentou maior
 # influência na combinação? Justifique sua resposta.
-# 
-# 
+# Sim, ao analisarmos as estatísticas das características, temos que a matriz com as características de
+# forma possui atributos com valores bem mais elevados que as características de cor e textura, o que provavelmente
+# prevaleceu sobre o resultado. 
+#summary(rowMeans(features_c))
+#summary(rowMeans(features_t))
+#summary(rowMeans(features_s))
 # 
 #----------------------------------------------------------------#
