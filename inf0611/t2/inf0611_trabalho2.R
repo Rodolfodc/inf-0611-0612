@@ -92,7 +92,7 @@ Momentos <-function(img){
   
   grayImg <- grayscale(img)[,,1,1]
   momento_area <- momento(grayImg, 0, 0)
-  momento_centroid <- momento(grayImg, 2, 2, central = TRUE) # Falta entender como montar esse
+  momento_centroid <- momento(grayImg, 2, 2, central = TRUE)
   momento_assimetria <- momento(grayImg, 3, 3)
   momento_curtose <- momento(grayImg, 4, 4)
 
