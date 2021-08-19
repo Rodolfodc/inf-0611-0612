@@ -4,17 +4,15 @@
 # Trabalho Avaliativo 3 
 #----------------------------------------------------------------#
 # Nome COMPLETO dos integrantes dp grupo:  
-# -                                        
-# -                                        
-# -                                        
-# 
+# -Nicole Nogueira Silva                                       
+# -Rodolfo Dalla Costa                                        
 #----------------------------------------------------------------#
 
 #----------------------------------------------------------------#
 # Configuracao dos arquivos auxiliares 
 #----------------------------------------------------------------#
 # configure o caminho antes de executar
-setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0611/t3")
+setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0611/t3")
 source("./ranking_metrics.R")
 source("./trabalho3_base.R")
 
@@ -29,7 +27,7 @@ imagens <- read_images(path_plantas)
 #----------------------------------------------------------------#
 # Obtem classe de cada imagem 
 #----------------------------------------------------------------#
-nome_classes <- get_classes(path_planta)
+nome_classes <- get_classes(path_plantas)
 
 
 
@@ -116,29 +114,42 @@ rownames(features_s) <- names(imagens)
 
 # definindo as consultas
 # obs.:  use o caminho completo para a imagem
-consulta_biloba <- "./plantas/biloba_02.jpg"
-consulta_europaea <- "./plantas/europaea_01.jpg"
+
 consulta_ilex <- "./plantas/ilex_08.jpg"
-consulta_monogyna <- "./plantas/monogyna_04.jpg"
 consulta_regia <- "./plantas/regia_07.jpg"
 
+top_k <- c(5,10,15,20) 
 
 # analisando rankings
+
 analyse_rankings <- function(ranking, ground_truth) {
-  <to-do>
+  
+  p       <- sapply(top_k, function(k) { precision(ground_truth, ranking, k) })
+  rev     <- sapply(top_k, function(k) { recall(ground_truth, ranking, k) })
+  f1      <- sapply(top_k, function(k) { f1_score(ground_truth, ranking, k) })
+  p_media <- sapply(top_k, function(k) { average_precision(ground_truth, ranking, k) })
+  
+  cbind(p, rev, f1, p_media)
+  
+  return(cbind(p, rev, f1, p_media))
 }
 
-
 # criando descritor concatenando 
-desc_all <- <to-do>
+desc_all <- cbind(features_c, features_t, features_s)
+
+  
 # criando rankings com descrito concatenado
-<to-do>
-<to-do>
+
+ranking_concat_ilex  <- get_ranking_by_distance(desc_all, consulta_ilex)
+ranking_concat_regia <- get_ranking_by_distance(desc_all, consulta_regia)
 
 # analisando os rankings 
-<to-do>
-<to-do>
 
+analysis_concat_ilex  <- analyse_rankings(ranking_concat_ilex, ground_truth_ilex)
+analysis_concat_regia <- analyse_rankings(ranking_concat_regia, ground_truth_regia)
+
+plot_prec_e_rev(ranking_concat_ilex, ground_truth_ilex, 20, 'Concatenado Consulta Ilex')
+plot_prec_e_rev(ranking_concat_regia, ground_truth_regia, 20, 'Concatenado Consulta Regia')
 
 
 #----------------------------------------------------------------#
@@ -146,33 +157,57 @@ desc_all <- <to-do>
 #----------------------------------------------------------------#
 
 # calculando as distancias, descritor:  histograma de cor 
-dist_hist_<to-select> <- get_distance_vector(<to-do>, <to-do>) 
-dist_hist_<to-select> <- <to-do>
+
+dist_hist_ilex <- get_distance_vector(M = features_c, query = consulta_ilex, method="euclidean")
+dist_hist_regia <- get_distance_vector(M = features_c, query = consulta_regia, method="euclidean")
+
 
 # calculando as distancias, descritor:  textura 
-dist_text_<to-select> <- get_distance_vector(<to-do>, <to-do>) 
-dist_text_<to-select> <- <to-do> 
+
+dist_text_ilex <- get_distance_vector(M = features_t, query = consulta_ilex, method="euclidean") 
+dist_text_regia <- get_distance_vector(M = features_t, query = consulta_regia, method="euclidean") 
+
 
 # calculando as distancias, descritor:  forma 
-dist_forma_<to-select> <- get_distance_vector(<to-do>, <to-do>) 
-dist_forma_<to-select> <- <to-do> 
+
+dist_forma_ilex <- get_distance_vector(M = features_s, query = consulta_ilex, method="euclidean") 
+dist_forma_regia <- get_distance_vector(M = features_s, query = consulta_regia, method="euclidean") 
+
 
 # calculando e analisando  rankings combmin
-r_combmin_<to-select> <- names(imagens)[combmin(<to-do>, <to-do>, <to-do>)]
-r_combmin_<to-select> <- <to-do>
 
-analyse_rankings(<to-do>)
-analyse_rankings(<to-do>)
+r_combmin_ilex <- names(imagens)[combmin(dist_hist_ilex, dist_text_ilex, dist_forma_ilex)]
+r_combmin_regia <- names(imagens)[combmin(dist_hist_regia, dist_text_regia, dist_forma_regia)]
+
+analyse_rankings(r_combmin_ilex, ground_truth_ilex)
+analyse_rankings(r_combmin_regia, ground_truth_regia)
 
 
 # calculando e analisando  rankings combmax
-<to-do>
+
+r_combmax_ilex <- names(imagens)[combmax(dist_hist_ilex, dist_text_ilex, dist_forma_ilex)]
+r_combmax_regia <- names(imagens)[combmax(dist_hist_regia, dist_text_regia, dist_forma_regia)]
+
+analyse_rankings(r_combmax_ilex, ground_truth_ilex)
+analyse_rankings(r_combmax_regia, ground_truth_regia)
+
 
 # calculando e analisando  rankings combsum
-<to-do>
+
+r_combsum_ilex <- names(imagens)[combsum(dist_hist_ilex, dist_text_ilex, dist_forma_ilex)]
+r_combsum_regia <- names(imagens)[combsum(dist_hist_regia, dist_text_regia, dist_forma_regia)]
+
+analyse_rankings(r_combsum_ilex, ground_truth_ilex)
+analyse_rankings(r_combsum_regia, ground_truth_regia)
+
 
 # calculando e analisando  rankings borda
-<to-do>
+
+r_borda_ilex <- names(imagens)[bordacount(dist_hist_ilex, dist_text_ilex, dist_forma_ilex)]
+r_borda_regia <- names(imagens)[bordacount(dist_hist_regia, dist_text_regia, dist_forma_regia)]
+
+analyse_rankings(r_borda_ilex, ground_truth_ilex)
+analyse_rankings(r_borda_regia, ground_truth_regia)
 
 
 #----------------------------------------------------------------#
