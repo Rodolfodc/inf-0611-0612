@@ -179,8 +179,8 @@ dist_forma_regia <- get_distance_vector(M = features_s, query = consulta_regia, 
 r_combmin_ilex <- names(imagens)[combmin(dist_hist_ilex, dist_text_ilex, dist_forma_ilex)]
 r_combmin_regia <- names(imagens)[combmin(dist_hist_regia, dist_text_regia, dist_forma_regia)]
 
-analyse_rankings(r_combmin_ilex, ground_truth_ilex)
-analyse_rankings(r_combmin_regia, ground_truth_regia)
+analysis_combmin_ilex <- analyse_rankings(r_combmin_ilex, ground_truth_ilex)
+analysis_combmin_regia <- analyse_rankings(r_combmin_regia, ground_truth_regia)
 
 
 # calculando e analisando  rankings combmax
@@ -188,8 +188,8 @@ analyse_rankings(r_combmin_regia, ground_truth_regia)
 r_combmax_ilex <- names(imagens)[combmax(dist_hist_ilex, dist_text_ilex, dist_forma_ilex)]
 r_combmax_regia <- names(imagens)[combmax(dist_hist_regia, dist_text_regia, dist_forma_regia)]
 
-analyse_rankings(r_combmax_ilex, ground_truth_ilex)
-analyse_rankings(r_combmax_regia, ground_truth_regia)
+analysis_combmax_ilex <- analyse_rankings(r_combmax_ilex, ground_truth_ilex)
+analysis_combmax_regia <- analyse_rankings(r_combmax_regia, ground_truth_regia)
 
 
 # calculando e analisando  rankings combsum
@@ -197,8 +197,8 @@ analyse_rankings(r_combmax_regia, ground_truth_regia)
 r_combsum_ilex <- names(imagens)[combsum(dist_hist_ilex, dist_text_ilex, dist_forma_ilex)]
 r_combsum_regia <- names(imagens)[combsum(dist_hist_regia, dist_text_regia, dist_forma_regia)]
 
-analyse_rankings(r_combsum_ilex, ground_truth_ilex)
-analyse_rankings(r_combsum_regia, ground_truth_regia)
+analysis_combsum_ilex <- analyse_rankings(r_combsum_ilex, ground_truth_ilex)
+analysis_combsum_regia <- analyse_rankings(r_combsum_regia, ground_truth_regia)
 
 
 # calculando e analisando  rankings borda
@@ -206,28 +206,31 @@ analyse_rankings(r_combsum_regia, ground_truth_regia)
 r_borda_ilex <- names(imagens)[bordacount(dist_hist_ilex, dist_text_ilex, dist_forma_ilex)]
 r_borda_regia <- names(imagens)[bordacount(dist_hist_regia, dist_text_regia, dist_forma_regia)]
 
-analyse_rankings(r_borda_ilex, ground_truth_ilex)
-analyse_rankings(r_borda_regia, ground_truth_regia)
+analysis_borda_ilex <-  analyse_rankings(r_borda_ilex, ground_truth_ilex)
+analysis_borda_regia <- analyse_rankings(r_borda_regia, ground_truth_regia)
 
 
 #----------------------------------------------------------------#
+
+
 # Questao 3 - RESPONDA:                   
 # (i) 
-# 
-# 
-# 
-# 
-# 
-# 
+# Para a consulta Regia, o modelo de agregação que apresentou melhor ranking foi o "combmax"
+# pois apresentou os maiores valores de precisão, revocação, F1 e precisão média em relação aos demais
+# rankings apesar dos modelos combmax e combsum apresentaram resultados semelhantes.
 # 
 # 
 # 
 # (j) 
-# 
-# 
-# 
-# 
-# 
+# Média das precisões médias
+# mean_precision <- data.frame(analysis_borda_regia[,4],analysis_combsum_regia[,4],analysis_combmax_regia[,4],analysis_combmin_regia[,4])
+# names(mean_precision) <- c("Borda", "Combsum", "Combmax", "Combmin")
+# colMeans(mean_precision)
+#     Borda    Combsum   Combmax   Combmin 
+#0.9151976 0.9151440 0.9135488 0.6238216 
+#
+# O ranking agregado que apresentou melhor desempenho foi o de Borda já que obteve a maior precisão média comparado com
+# os outros modelos apesar de estar muito próximo ao modelo Combsum.
 # 
 # 
 #----------------------------------------------------------------#
