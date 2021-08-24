@@ -456,7 +456,12 @@ conjunto_map
 # por Borda, seguido da cor, textura, concatenado e forma, desse modo, o metodo com melhores resultados foi o de Borda. Pelo fato de haver outros rankings
 # capazes de retornar bons resultados, e pelo fato de o metodo de Borda agregar os resultados, entende-se que a posicao dos resultados relevantes no ranking 
 # agregado eh determinado pelo acumulo do ganho de todos os rankings que foram agregados, ou seja, o metodo de borda, pode potencializar o ganho dos ranking
-# o que torna ele um metodo bem interessante considerando um bom grau de certeza, por parte do usuario, na consulta realizada.
+# o que torna ele um metodo bem interessante considerando um bom grau de certeza, por parte do usuario, na consulta realizada. No entanto, este metodo só 
+# apresenta um bom resultado quando existem rankings com alguma boa precisao e revocacao, se ele for aplicado a um conjunto de rankings ruins, ele nao 
+# apresentara um resultado tao bons, ou seja, evidenciara o baixo ganho do ranking
+# 
+# media_ap_c  media_ap_t  media_ap_s  media_ap_concat  media_ap_borda
+# 0.9038095   0.8363492   0.7972381   0.7972381        0.9566667
 #
 #----------------------------------------------------------------#
 
