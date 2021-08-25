@@ -87,3 +87,13 @@ p
 bplot <- ggplot(cepagri_data[cepagri_data$ano == 2015], aes(x=mes, y= temperatura, group=mes))
 bplot <- bplot + geom_boxplot()
 bplot
+
+bplot <- ggplot(cepagri_data, aes(x=ano, y= temperatura, group=ano))
+bplot <- bplot + geom_boxplot()
+bplot
+
+bplot <- ggplot(cepagri_data, aes(x=ano, y=vento, group=ano))
+bplot <- bplot + geom_boxplot()
+bplot
+
+
