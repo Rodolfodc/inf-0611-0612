@@ -67,4 +67,14 @@ cepagri_data$mes <- unclass(cepagri_data$data)$mon + 1
 
 temp_media_ano <- tapply(cepagri_data$temperatura, cepagri_data$ano, mean)
 
+cepagri_data <- cepagri_data[cepagri_data$ano > 2014,]
+cepagri_data <- cepagri_data[cepagri_data$ano < 2021,]
 
+p <- ggplot(head(cepagri_data, 30) , aes(x = temperatura , y = umidade))
+p <- p + geom_point() + geom_line()
+p
+
+# relacao linear, daqui da pra tirar boas conclusoes
+p <- ggplot(cepagri_data , aes(x = temperatura , y = umidade))
+p <- p + geom_point() + geom_point()
+p
