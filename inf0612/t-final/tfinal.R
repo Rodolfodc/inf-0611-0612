@@ -78,3 +78,12 @@ p
 p <- ggplot(cepagri_data , aes(x = temperatura , y = umidade))
 p <- p + geom_point() + geom_point()
 p
+
+# relacao linear boa
+p <- ggplot(head(cepagri_data, 500) , aes(x = sensacao , y = umidade))
+p <- p + geom_point() + geom_point()
+p
+
+bplot <- ggplot(cepagri_data[cepagri_data$ano == 2015], aes(x=mes, y= temperatura, group=mes))
+bplot <- bplot + geom_boxplot()
+bplot
