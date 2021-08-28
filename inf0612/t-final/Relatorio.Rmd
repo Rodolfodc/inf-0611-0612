@@ -1,0 +1,148 @@
+---
+output:
+  pdf_document:
+    fig_crop: no
+    number_sections: yes
+  html_document:
+    df_print: paged
+fontsize: 11pt
+documentclass: article
+geometry:
+- a4paper
+- textwidth=18cm
+- textheight=21cm
+header-includes:
+- \usepackage[brazil, english, portuguese]{babel}
+- \usepackage[utf8]{inputenc}
+- \usepackage[T1]{fontenc}
+- \usepackage[fixlanguage]{babelbib}
+- \usepackage{times}
+- \usepackage{caption}
+- \captionsetup[table]{skip=10pt}
+- \usepackage{amsmath}
+- \usepackage{subcaption}
+---
+
+\begin{titlepage} 
+
+\begin{center} 
+{\large Universidade Estadual de Campinas}\\[0.2cm] 
+{\large Mineração de Dados COmplexos - INF0612}\\[4cm]
+
+{\bf \huge Trabalho Final}\\[4cm]
+
+{\large Grupo}\\[0.2cm]
+{\large Nicole Nogueira Silva}\\[0.2cm]
+{\large Rodolfo Dalla Costa}\\[4cm]
+
+{\large Campinas}\\[0.2cm]
+{\large 2021}
+\end{center}
+
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = F, message = F, fig.height = 3, fig.width = 4, fig.align='center')
+library(knitr)
+library(kableExtra)
+library(magrittr)
+library(tidyverse)
+```
+
+
+\section{Introdução}
+
+\section{Banco de dados}
+
+```{r}
+setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0612/t-final")
+data_source_path <- './cepagri.csv'
+cepagri_data <- read.table(data_source_path, header=FALSE, sep=';', fill = TRUE)
+names(cepagri_data) <- c("data", "temperatura", "vento", "umidade", "sensacao")
+
+
+```
+
+
+\subsection{Tratamento dos dados}
+
+```{r}
+# Removendo dados faltantes ou com erro
+cepagri_data <- cepagri_data[!is.na(cepagri_data$sensacao), ]
+
+# Analisando se os tipos estao adeuqadas
+class(cepagri_data$data)
+class(cepagri_data$temperatura)
+class(cepagri_data$vento)
+class(cepagri_data$umidade)
+class(cepagri_data$sensacao)
+
+# Convertendo para o tipo adequado
+cepagri_data$temperatura <- as.numeric(cepagri_data$temperatura)
+
+head(cepagri_data[cepagri_data$sensacao < 0, ], 10)
+
+# Sumarizando as colunas para entender possiveis outliers
+summary(cepagri_data)
+
+# Checando e removendo os outliers
+head(cepagri_data[cepagri_data$sensacao < 0, ], 10)
+head(cepagri_data[cepagri_data$sensacao > 60, ], 10)
+
+cepagri_data[cepagri_data$sensacao > 70, 5] <- NA
+
+
+#consecutive <- function(vector, k = 2) {
+#  n <- length(vector)
+#  result <- logical(n)
+  
+#  for(i in k:n) {
+#    if(all(vector[(i-k+1):i])) {
+#      result[(i-k+1): i] <- TRUE
+#    }
+#  }
+  
+#  return(result)
+#}
+
+#sum(consecutive(cepagri_data$temperatura))
+#sum(consecutive(cepagri_data$vento) & consecutive(cepagri_data$vento) & consecutive(cepagri_data$vento))
+#sum(consecutive(cepagri_data$vento, 6) & consecutive(cepagri_data$vento, 6) & consecutive(cepagri_data$vento, 6))
+
+#any(consecutive(cepagri_data$temp, 1440)) # 10 dias
+#any(consecutive(cepagri_data$temp, 1584)) # 11 dias
+
+cepagri_data[ , 1] <- as.POSIXct(cepagri_data[ , 1], format = '%d/%m/%Y-%H:%M',tz = "America/Sao_Paulo")
+
+#filtro <- consecutive(cepagri_data$temperatura, 144)
+
+cepagri_data$data <- as.POSIXlt(cepagri_data$data)
+#cepagri_data$ano <- unclass(cepagri_data$data)$year + 1900
+#cepagri_data$mes <- unclass(cepagri_data$data)$mon +1
+
+#temp_media_ano <- tapply(cepagri_data$temperatura, cepagri_data$ano, mean)
+
+cepagri_data <- cepagri_data[cepagri_data$ano > 2014,]
+cepagri_data <- cepagri_data[cepagri_data$ano < 2021,]
+```
+
+
+\subsection{Análise exploratória}
+
+\quad Exemplificando o que foi dito no tópico anterior, a figura \ref{fig:quantidade} 
+
+```{r, fig.cap="\\label{fig:quantidade} Quantidade de pacientes que possuem ou não problemas verticais", fig.pos='H'}
+#ggplot(dados,aes(x=class,fill=class))+geom_bar(stat = 'count')+labs(x = 'Quantidade de pacientes por classe') +
+#  geom_label(stat='count',aes(label=..count..), size=3) +theme_grey()
+```
+
+
+
+
+\section{Conclusão}
+
