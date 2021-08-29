@@ -279,19 +279,18 @@ p <- ggplot(cepagri_data , aes(x = temperatura , y = vento, color=sensacao))
 p <- p + geom_point() + geom_point()
 p
 ```
-Como pode ser observado no \ref{fig:gra5} nota-se quanto mais baixo a umidade e maior a temperatura, maior é a sensacao
+Como pode ser observado no \ref{fig:gra5} nota-se quanto mais fraco os ventos e maior a temperatura, maior é a sensacao termica, de certo modo, pode-se dizer que o vento influencia sim na sensacao termica, no entanto, para uma analise mais precisa e adequada, seria interessante ter o dado da temperatura do vento, claramente ventos muito fortes costumam ter temperaturas mais baixa, no entanto, uma massa de ar quente pode influencia a temperatura a subir, o que poderia causar uma sensacao termica mais alta do que o esperado para ventos mais fortes.
+
+\quad
+Uma analise interessante, tambem pode ser dada a partir da estatistica da temperatura registrada no decorrer dos anos,
+ou seja, levando em conta a media e desvio padrao, como pode-se observar na \ref{fig:gra6}
+```{r, fig.cap="\\label{fig:gra6} Legenda", fig.pos='H',  fig.width = 6}
+
+p <- ggplot(cepagri_data , aes(x = temperatura , y = vento, color=sensacao))
+p <- p + geom_point() + geom_point()
+p
 ```
-#bplot <- ggplot(cepagri_data, aes(x=ano, y= temperatura, group=ano))
-#bplot <- bplot + geom_boxplot()
-#bplot
-#
-#bplot <- ggplot(cepagri_data, aes(x=ano, y=vento, group=ano))
-#bplot <- bplot + geom_boxplot()
-#bplot
-#
-#bplot <- ggplot(t_media_allyears, aes(x=ano, y= avg, group=ano))
-#bplot <- bplot + geom_boxplot()
-#bplot
+A observacao deste grafico traz uma perspectiva muito interessante pois e possivel perceber que de 2018 a 2020, houve um aumento na media de temperaturas por ano, nota-se que a variavao se manteve muito parecida em todos os anos, mas a media subiu notavelmente. Mesmo com mais outliers pequenos para o ano de 2019 e 2018, ainda sim a media se manteve mais alta. Nessa perspectiva, reforca-se que parece haver um aquecimento geral no clima da regiao monitorada, é importante obter dados qualitativos a respeito da regiao em especifico para identeificar se o aquecimento pode ser local ou devido a adversidades climaticas naturais. No entanto, a discussao sobre o aquecimento do clima de modo geral, realizada por especialisas, independente de regiao, nao é um fato inedito e vem sendo destacado nos ultimos anos.
 
 ```
 
