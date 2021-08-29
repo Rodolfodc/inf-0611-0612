@@ -158,6 +158,15 @@ Apos essa etapa, foi entao realizada a checagem de repeticao de dados, para isso
 
 Apos isso, percebeu-se entao que haviam dados alem dos que interessavem para a analise neste relatorio, desse modo, foi removido da base qualquer dado de anos menores que 2015 ou maiores que 2020.
 
+Apos a fase inicial de analise e tratamento dos dados, o dataframe usado para o relatorio pode ser conferido na \ref{tab:dados}, onde estao as 5 primeiras linhas da base ja tratada:
+
+```{r}
+
+head(cepagri_data) %>% 
+  kable("latex", col.names = c("Data", "Temperatura", "Vento", "Umidade", "Sensação Térmica", "ano", "mes"), caption = "\\label{tab:dados}Primeiras linhas do banco de dados", booktabs = T) %>% 
+  kable_styling(latex_options = "hold_position", font_size = 8)
+
+```
 
 \section{Análise exploratória}
 
@@ -198,12 +207,6 @@ cepagri_data %>%
   geom_line(aes(color = as.factor(ano))) 
 ```
 
-t2020 <- cepagri_data[cepagri_data$ano == 2020,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
-t2019 <- cepagri_data[cepagri_data$ano == 2019,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
-t2018 <- cepagri_data[cepagri_data$ano == 2018,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
-t2017 <- cepagri_data[cepagri_data$ano == 2017,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
-t2016 <- cepagri_data[cepagri_data$ano == 2016,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
-t2015 <- cepagri_data[cepagri_data$ano == 2015,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
 
 ```{r, fig.cap="\\label{fig:gra3} Legenda", fig.pos='H',  fig.width = 6}
 
