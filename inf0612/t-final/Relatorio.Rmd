@@ -89,7 +89,7 @@ head(cepagri_data) %>%
 # Removendo dados faltantes ou com erro
 cepagri_data <- cepagri_data[!is.na(cepagri_data$sensacao), ]
 
-# Analisando se os tipos estao adeuqadas
+# Analisando se os tipos estao adequadas
 class(cepagri_data$data)
 class(cepagri_data$temperatura)
 class(cepagri_data$vento)
@@ -111,18 +111,19 @@ head(cepagri_data[cepagri_data$sensacao > 60, ], 10)
 cepagri_data[cepagri_data$sensacao > 70, 5] <- NA
 
 
-#consecutive <- function(vector, k = 2) {
-#  n <- length(vector)
-#  result <- logical(n)
+
+consecutive <- function(vector, k = 2) {
+  n <- length(vector)
+  result <- logical(n)
   
-#  for(i in k:n) {
-#    if(all(vector[(i-k+1):i])) {
-#      result[(i-k+1): i] <- TRUE
-#    }
-#  }
+  for(i in k:n) {
+    if(all(vector[(i-k+1):i])) {
+      result[(i-k+1): i] <- TRUE
+    }
+  }
   
-#  return(result)
-#}
+  return(result)
+}
 
 #sum(consecutive(cepagri_data$temperatura))
 #sum(consecutive(cepagri_data$vento) & consecutive(cepagri_data$vento) & consecutive(cepagri_data$vento))
@@ -136,10 +137,10 @@ cepagri_data[ , 1] <- as.POSIXct(cepagri_data[ , 1], format = '%d/%m/%Y-%H:%M',t
 #filtro <- consecutive(cepagri_data$temperatura, 144)
 
 cepagri_data$data <- as.POSIXlt(cepagri_data$data)
-#cepagri_data$ano <- unclass(cepagri_data$data)$year + 1900
-#cepagri_data$mes <- unclass(cepagri_data$data)$mon +1
+cepagri_data$ano <- unclass(cepagri_data$data)$year + 1900
+cepagri_data$mes <- unclass(cepagri_data$data)$mon +1
 
-#temp_media_ano <- tapply(cepagri_data$temperatura, cepagri_data$ano, mean)
+temp_media_ano <- tapply(cepagri_data$temperatura, cepagri_data$ano, mean)
 
 cepagri_data <- cepagri_data[cepagri_data$ano > 2014,]
 cepagri_data <- cepagri_data[cepagri_data$ano < 2021,]
@@ -148,12 +149,43 @@ cepagri_data <- cepagri_data[cepagri_data$ano < 2021,]
 
 \section{Análise exploratória}
 
-\quad Exemplificando o que foi dito no tópico anterior, a figura \ref{fig:quantidade} 
+\quad Na figura \ref{fig:graf1} 
 
-```{r, fig.cap="\\label{fig:quantidade} Quantidade de pacientes que possuem ou não problemas verticais", fig.pos='H'}
-#ggplot(dados,aes(x=class,fill=class))+geom_bar(stat = 'count')+labs(x = 'Quantidade de pacientes por classe') +
-#  geom_label(stat='count',aes(label=..count..), size=3) +theme_grey()
+```{r, fig.cap="\\label{fig:graf1} Legenda", fig.pos='H', fig.width = 5}
+
+cepagri_data_fac <- cepagri_data
+cepagri_data_fac$mes <- factor(cepagri_data_fac$mes, labels = c("Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"))
+
+cepagri_data_fac %>%
+  filter(umidade > 0) %>%
+  group_by(ano, mes) %>%
+  summarise(temp_media = mean(temperatura), umidade_media = mean(umidade)) %>%
+  ggplot(., aes(x = mes, y= temp_media,  fill = umidade_media))+
+  geom_boxplot() 
 ```
+
+
+```{r, fig.cap="\\label{fig:gra2} Legenda", fig.pos='H', fig.width = 6}
+
+cepagri_data_fac %>%
+  filter(umidade > 0) %>%
+  group_by(ano, mes) %>%
+  summarise(temp_media = mean(temperatura), umidade_media = mean(umidade)) %>%
+  ggplot(., aes(x = mes, y= temp_media,  colour = umidade_media))+
+  geom_point() 
+```
+
+
+```{r, fig.cap="\\label{fig:gra3} Legenda", fig.pos='H',  fig.width = 6}
+
+cepagri_data %>%
+  filter(umidade > 0) %>%
+  group_by(ano, mes) %>%
+  summarise(temp_media = mean(temperatura), umidade_media = mean(umidade)) %>%
+  ggplot(., aes(x = temp_media, y= umidade_media))+
+  geom_line(aes(color = as.factor(ano))) 
+```
+
 
 
 
