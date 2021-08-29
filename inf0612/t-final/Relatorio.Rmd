@@ -23,6 +23,7 @@ header-includes:
 - \usepackage{subcaption}
 ---
 
+```{=tex}
 \begin{titlepage} 
 
 \begin{center} 
@@ -40,11 +41,10 @@ header-includes:
 \end{center}
 
 \end{titlepage}
-
+```
 \tableofcontents
 
 \newpage
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = F, message = F, fig.height = 3, fig.width = 4, fig.align='center')
@@ -55,12 +55,9 @@ library(tidyverse)
 library(xtable)
 ```
 
-
 \section{Introdução}
 
-\quad O Centro de Pesquisas Meteorológicas e Climáticas Aplicadas à Agricultura (Cepagri) é um instituto de pesquisa que fornece informações meteorológicas
-da cidade de Campinas. Esse trabalho tem como objetivo extrair análises a partir dos dados provenientes do Cepagri e entender o compartamento do clima baseado
-nos indicadores climáticos medidos.
+\quad O Centro de Pesquisas Meteorológicas e Climáticas Aplicadas à Agricultura (Cepagri) é um instituto de pesquisa que fornece informações meteorológicas da cidade de Campinas. Esse trabalho tem como objetivo extrair análises a partir dos dados provenientes do Cepagri e entender o compartamento do clima baseado nos indicadores climáticos medidos.
 
 \section{Banco de dados}
 
@@ -81,7 +78,6 @@ head(cepagri_data) %>%
   kable_styling(latex_options = "hold_position", font_size = 8)
 
 ```
-
 
 \subsection{Tratamento dos dados}
 
@@ -117,7 +113,7 @@ consecutive <- function(vector, k = 2) {
   result <- logical(n)
   
   for(i in k:n) {
-    if(all(vector[(i-k+1):i])) {
+    if(all(vector[(i-k+1):i] == vector[i])) {
       result[(i-k+1): i] <- TRUE
     }
   }
@@ -158,19 +154,19 @@ Apos essa etapa, foi entao realizada a checagem de repeticao de dados, para isso
 
 Apos isso, percebeu-se entao que haviam dados alem dos que interessavem para a analise neste relatorio, desse modo, foi removido da base qualquer dado de anos menores que 2015 ou maiores que 2020.
 
-Apos a fase inicial de analise e tratamento dos dados, o dataframe usado para o relatorio pode ser conferido na \ref{tab:dados}, onde estao as 5 primeiras linhas da base ja tratada:
+Apos a fase inicial de analise e tratamento dos dados, o dataframe usado para o relatorio pode ser conferido na \ref{tab:dados2}, onde estao as 5 primeiras linhas da base ja tratada:
 
 ```{r}
 
 head(cepagri_data) %>% 
-  kable("latex", col.names = c("Data", "Temperatura", "Vento", "Umidade", "Sensação Térmica", "ano", "mes"), caption = "\\label{tab:dados}Primeiras linhas do banco de dados", booktabs = T) %>% 
+  kable("latex", col.names = c("Data", "Temperatura", "Vento", "Umidade", "Sensação Térmica", "ano", "mes"), caption = "\\label{tab:dados2}Primeiras linhas do banco de dados", booktabs = T) %>% 
   kable_styling(latex_options = "hold_position", font_size = 8)
 
 ```
 
 \section{Análise exploratória}
 
-\quad Na figura \ref{fig:graf1} 
+\quad Na figura \ref{fig:graf1}
 
 ```{r, fig.cap="\\label{fig:graf1} Legenda", fig.pos='H', fig.width = 5}
 
@@ -185,7 +181,6 @@ cepagri_data_fac %>%
   geom_boxplot() 
 ```
 
-
 ```{r, fig.cap="\\label{fig:gra2} Legenda", fig.pos='H', fig.width = 6}
 
 cepagri_data_fac %>%
@@ -195,7 +190,6 @@ cepagri_data_fac %>%
   ggplot(., aes(x = mes, y= temp_media,  colour = umidade_media))+
   geom_point() 
 ```
-
 
 ```{r, fig.cap="\\label{fig:gra3} Legenda", fig.pos='H',  fig.width = 6}
 
@@ -207,8 +201,7 @@ cepagri_data %>%
   geom_line(aes(color = as.factor(ano))) 
 ```
 
-
-```{r, fig.cap="\\label{fig:gra3} Legenda", fig.pos='H',  fig.width = 6}
+```{r, fig.cap="\\label{fig:gra4} Legenda", fig.pos='H',  fig.width = 6}
 
 t2020 <- cepagri_data[cepagri_data$ano == 2020,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
 t2019 <- cepagri_data[cepagri_data$ano == 2019,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
@@ -226,7 +219,7 @@ t2020$ano <- rep(2020, nrow(t2020))
 
 t_media_allyears <- rbind(t2015, t2016, t2017, t2018, t2019, t2020)
 
-p <- ggplot(t_media_allyears , aes(x = mes , y = avg, color=ano, fill=ano, ))
+p <- ggplot(t_media_allyears , aes(x = mes , y = avg, color=as.factor(ano)))
 p <- p + scale_x_discrete(limits=correct_order) + geom_point() +
   geom_line(data=t_media_allyears[t_media_allyears$ano == 2015,]) +
   geom_line(data=t_media_allyears[t_media_allyears$ano == 2016,]) +
@@ -235,7 +228,40 @@ p <- p + scale_x_discrete(limits=correct_order) + geom_point() +
   geom_line(data=t_media_allyears[t_media_allyears$ano == 2019,]) +
   geom_line(data=t_media_allyears[t_media_allyears$ano == 2020,])
 print(p+ ggtitle("Media de temperaturas de 2015 a 2020"))
+```
 
+\quad No grafico da \ref{fig:graf1} é possível observar as variacoes das temperaturas medias no decorrer dos mese nos anos de 2015 a 2020. É possivel notar que o ano de 2020 possui um padrao muito divergente com relacao aos outro anos. Em parte isso pode ser devido ao fato de haver menos dados de 2020 que dos outros anos como pode se ver \ref{tab:numero_linhas}:
+
+```{r}
+cbind(
+n2020 = nrow(cepagri_data[cepagri_data$ano ==2020,]),
+n2019 = nrow(cepagri_data[cepagri_data$ano ==2019,]),
+n2018 = nrow(cepagri_data[cepagri_data$ano ==2018,]),
+n2017 = nrow(cepagri_data[cepagri_data$ano ==2017,]),
+n2016 = nrow(cepagri_data[cepagri_data$ano ==2016,]),
+n2015 = nrow(cepagri_data[cepagri_data$ano ==2015,])
+) %>% 
+  kable("latex", col.names = c("2020", "2019", "2018", "2017", "2016", "2015"), caption = "\\label{tab:numero_linhas}Primeiras linhas do banco de dados", booktabs = T) %>% 
+  kable_styling(latex_options = "hold_position", font_size = 8)
+
+```
+
+No entanto, apesar da falta de dados que pode ser observada, o ano de 2020 foi marcado por um numero de queimadas acima do comum para o periodo de estiagem, que contemplam os meses de julho e agosto, essa informcao pode ser conferida em diversos sites assim como [este](https://g1.globo.com/pa/para/noticia/2020/09/03/queimadas-aumentam-304percent-no-para-entre-julho-e-agosto-aponta-inpe.ghtml). A analise de repeticao ou duplicidade de dados tambem  nao indicou que haviam valores repetidos por mais que um dia.
+```
+any(consecutive(cepagri_data[cepagri_data$ano == 2020,]$temperatura, 1440))
+```
+Desse modo, percebe-se que seria interessante poder cruzar os dados de queimadas na regiao de Campinas com outros dados metereologicos para identificar o perfil de influencia do aumento de queimadas no clima. Ha claramente outros fatores meteorologicos que podem influenciar nessa variacao constatada, assim como pode se tratar de erro do equipamento, ou falhas nas leituras que demoraram a ter correcao, porem, a analise dos dados de 2020 nao indica uma anormalidade relacionada aos instrumetos utilizados para a coleta da informacao, como é possivel obervsar abaixo:
+```
+summary(cepagri_data[cepagri_data$ano == 2020,]$temperatura)
+summary(cepagri_data[cepagri_data$ano == 2019,]$temperatura)
+summary(cepagri_data[cepagri_data$ano == 2018,]$temperatura)
+summary(cepagri_data[cepagri_data$ano == 2017,]$temperatura)
+summary(cepagri_data[cepagri_data$ano == 2016,]$temperatura)
+summary(cepagri_data[cepagri_data$ano == 2015,]$temperatura)
+```
+A temperatura para todo o ano de 2020 apresenta uma media geral dentro do comum, porem, percebe-se que as menores temperaturas sao mais altas do quenos outros anos, o que indica que, de fato, o ano de 2020 registrou maiores temperaturas com maior frequencia e nao se trata de um erro tecnico.
+
+```{r, fig.cap="\\label{fig:gra5} Legenda", fig.pos='H',  fig.width = 6}
 
 #bplot <- ggplot(cepagri_data, aes(x=ano, y= temperatura, group=ano))
 #bplot <- bplot + geom_boxplot()
@@ -252,4 +278,3 @@ print(p+ ggtitle("Media de temperaturas de 2015 a 2020"))
 ```
 
 \section{Conclusão}
-
