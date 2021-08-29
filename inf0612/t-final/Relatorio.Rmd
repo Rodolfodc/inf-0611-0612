@@ -146,6 +146,18 @@ cepagri_data <- cepagri_data[cepagri_data$ano > 2014,]
 cepagri_data <- cepagri_data[cepagri_data$ano < 2021,]
 ```
 
+\quad O tratamento dos dados foi realizado levando em consideração as orientações passadas em aula. Primeiramente foi necessario garantir que o comando de leitura do arquivo CSV fosse capaz de lidar com dados inesperados, como a palavra ERRO e a falta de colunas em algumas linhas. Para isso foi utilizado o argumento fill como TRUE da funcao read.table().
+
+Apos isso, todos os dados que continham NA na coluna Sensacao, resultado da conversao das linhas com valores inadequados, foram removidos.
+
+Logo em seguida, foi checado as classes de todas as colunas, constatou-se que a coluna temperatura estava com o tipo char, e deveria ser um tipo numerico, portanto foi realizada a conversao do tipo desta coluna para numerico, para garantir a integridade dos dados no dataframe.
+
+Depois disso, foi realizada a etapa de remocao de outliers. Primeiro foi avaliado com summary a estatistica do dataframe, com isso constatou-se que a sensacao termina possuia valores fora do esperado, como 99, para garantir uma integridade adequada do dataframe, foram removidos todas as linhas com sensacao acima de 60, como os unicos valores fora da variacao esperada eram 99, apenas as linhas com esse valor na coluna sensacao, foram removidas
+
+Apos essa etapa, foi entao realizada a checagem de repeticao de dados, para isso foi utilizado uma estrategia de checagem de repeticao de linhas numa variacao especifica, por exemplo, para checar se ha repeticao de dados num prazo de 10, nesse caso, a funcao percorre o dataframe observando se o elemento atual é igual aos 1440 elementos apos ele. Percebeu-se que, em termos gerais, ha uma possivel repeticao de dados no equivalente a 10 dias.
+
+Apos isso, percebeu-se entao que haviam dados alem dos que interessavem para a analise neste relatorio, desse modo, foi removido da base qualquer dado de anos menores que 2015 ou maiores que 2020.
+
 
 \section{Análise exploratória}
 
@@ -186,8 +198,55 @@ cepagri_data %>%
   geom_line(aes(color = as.factor(ano))) 
 ```
 
+t2020 <- cepagri_data[cepagri_data$ano == 2020,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+t2019 <- cepagri_data[cepagri_data$ano == 2019,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+t2018 <- cepagri_data[cepagri_data$ano == 2018,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+t2017 <- cepagri_data[cepagri_data$ano == 2017,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+t2016 <- cepagri_data[cepagri_data$ano == 2016,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+t2015 <- cepagri_data[cepagri_data$ano == 2015,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+
+```{r, fig.cap="\\label{fig:gra3} Legenda", fig.pos='H',  fig.width = 6}
+
+t2020 <- cepagri_data[cepagri_data$ano == 2020,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+t2019 <- cepagri_data[cepagri_data$ano == 2019,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+t2018 <- cepagri_data[cepagri_data$ano == 2018,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+t2017 <- cepagri_data[cepagri_data$ano == 2017,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+t2016 <- cepagri_data[cepagri_data$ano == 2016,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+t2015 <- cepagri_data[cepagri_data$ano == 2015,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
+
+t2015$ano <- rep(2015, nrow(t2015))
+t2016$ano <- rep(2016, nrow(t2016))
+t2017$ano <- rep(2017, nrow(t2017))
+t2018$ano <- rep(2018, nrow(t2018))
+t2019$ano <- rep(2019, nrow(t2019))
+t2020$ano <- rep(2020, nrow(t2020))
+
+t_media_allyears <- rbind(t2015, t2016, t2017, t2018, t2019, t2020)
+
+p <- ggplot(t_media_allyears , aes(x = mes , y = avg, color=ano, fill=ano, ))
+p <- p + scale_x_discrete(limits=correct_order) + geom_point() +
+  geom_line(data=t_media_allyears[t_media_allyears$ano == 2015,]) +
+  geom_line(data=t_media_allyears[t_media_allyears$ano == 2016,]) +
+  geom_line(data=t_media_allyears[t_media_allyears$ano == 2017,]) +
+  geom_line(data=t_media_allyears[t_media_allyears$ano == 2018,]) +
+  geom_line(data=t_media_allyears[t_media_allyears$ano == 2019,]) +
+  geom_line(data=t_media_allyears[t_media_allyears$ano == 2020,])
+print(p+ ggtitle("Media de temperaturas de 2015 a 2020"))
 
 
+#bplot <- ggplot(cepagri_data, aes(x=ano, y= temperatura, group=ano))
+#bplot <- bplot + geom_boxplot()
+#bplot
+#
+#bplot <- ggplot(cepagri_data, aes(x=ano, y=vento, group=ano))
+#bplot <- bplot + geom_boxplot()
+##bplot
+#
+#bplot <- ggplot(t_media_allyears, aes(x=ano, y= avg, group=ano))
+#bplot <- bplot + geom_boxplot()
+#bplot
+
+```
 
 \section{Conclusão}
 
