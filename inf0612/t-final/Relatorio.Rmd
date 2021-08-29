@@ -159,7 +159,7 @@ Apos a fase inicial de analise e tratamento dos dados, o dataframe usado para o 
 ```{r}
 
 head(cepagri_data) %>% 
-  kable("latex", col.names = c("Data", "Temperatura", "Vento", "Umidade", "Sensação Térmica", "ano", "mes"), caption = "\\label{tab:dados2}Primeiras linhas do banco de dados", booktabs = T) %>% 
+  kable("latex", col.names = c("Data", "Temperatura", "Vento", "Umidade", "Sensação Térmica", "ano", "mes"), caption = "\\label{tab:dados2}Primeiras linhas do banco de dados tratado", booktabs = T) %>% 
   kable_styling(latex_options = "hold_position", font_size = 8)
 
 ```
@@ -232,7 +232,15 @@ p <- p + scale_x_discrete(limits=correct_order) + geom_point() +
 print(p+ ggtitle("Media de temperaturas de 2015 a 2020"))
 ```
 
-\quad No grafico da \ref{fig:graf1} é possível observar as variacoes das temperaturas medias no decorrer dos mese nos anos de 2015 a 2020. É possivel notar que o ano de 2020 possui um padrao muito divergente com relacao aos outro anos. Em parte isso pode ser devido ao fato de haver menos dados de 2020 que dos outros anos como pode se ver \ref{tab:numero_linhas}:
+\quad Para o \ref{fig:gra4} foi necessário elaborar um dataset filtrado, que contem as medias de cada ano por mes, é possível ver o dataset na \ref{tab:temp_media_mes_ano}.
+```{r}
+
+t_media_allyears %>% 
+  kable("latex", col.names = c("Mes", "Avg (Temperatura Media", "Ano"), caption = "\\label{tab:temp_media_mes_ano} Temperaturas medias por mes de cada ano", booktabs = T) %>% 
+  kable_styling(latex_options = "hold_position", font_size = 8)
+
+```
+é possível observar as variacoes das temperaturas medias no decorrer dos meses nos anos de 2015 a 2020. É possivel notar que o ano de 2020 possui um padrao muito divergente com relacao aos outro anos. Em parte isso pode ser devido ao fato de haver menos dados de 2020 que dos outros anos como pode se ver \ref{tab:numero_linhas}:
 
 ```{r}
 cbind(
@@ -250,7 +258,7 @@ n2015 = nrow(cepagri_data[cepagri_data$ano ==2015,])
 
 No entanto, apesar da falta de dados que pode ser observada, o ano de 2020 foi marcado por um numero de queimadas acima do comum para o periodo de estiagem, que contemplam os meses de julho e agosto, essa informcao pode ser conferida em diversos sites assim como [este](https://g1.globo.com/pa/para/noticia/2020/09/03/queimadas-aumentam-304percent-no-para-entre-julho-e-agosto-aponta-inpe.ghtml). A analise de repeticao ou duplicidade de dados tambem  nao indicou que haviam valores repetidos por mais que um dia.
 ```
-any(consecutive(cepagri_data[cepagri_data$ano == 2020,]$temperatura, 1440))
+any(consecutive(cepagri_data[cepagri_data$ano == 2020,]$temperatura, 144))
 ```
 Desse modo, percebe-se que seria interessante poder cruzar os dados de queimadas na regiao de Campinas com outros dados metereologicos para identificar o perfil de influencia do aumento de queimadas no clima. Ha claramente outros fatores meteorologicos que podem influenciar nessa variacao constatada, assim como pode se tratar de erro do equipamento, ou falhas nas leituras que demoraram a ter correcao, porem, a analise dos dados de 2020 nao indica uma anormalidade relacionada aos instrumetos utilizados para a coleta da informacao, como é possivel obervsar abaixo:
 ```
@@ -264,16 +272,14 @@ summary(cepagri_data[cepagri_data$ano == 2015,]$temperatura)
 A temperatura para todo o ano de 2020 apresenta uma media geral dentro do comum, porem, percebe-se que as menores temperaturas sao mais altas do quenos outros anos, o que indica que, de fato, o ano de 2020 registrou maiores temperaturas com maior frequencia e nao se trata de um erro tecnico.
 
 \quad
-Outra analise interessante de ser realizada é a aná
+Outra analise interessante de ser realizada é a análise da sensacao termica, dada a velocidade do vento e a temperatura
 ```{r, fig.cap="\\label{fig:gra5} Legenda", fig.pos='H',  fig.width = 6}
 
-vplot <- ggplot(cepagri_data, aes(x=vento, y=mes, group=mes))
-vplot <- bplot + scale_y_discrete(limits=correct_order)  + geom_violin()
-vplot
-
+p <- ggplot(cepagri_data , aes(x = temperatura , y = vento, color=sensacao))
+p <- p + geom_point() + geom_point()
+p
 ```
-
-
+Como pode ser observado no \ref{fig:gra5} nota-se quanto mais baixo a umidade e maior a temperatura, maior é a sensacao
 ```
 #bplot <- ggplot(cepagri_data, aes(x=ano, y= temperatura, group=ano))
 #bplot <- bplot + geom_boxplot()
