@@ -218,6 +218,8 @@ t2019$ano <- rep(2019, nrow(t2019))
 t2020$ano <- rep(2020, nrow(t2020))
 
 t_media_allyears <- rbind(t2015, t2016, t2017, t2018, t2019, t2020)
+correct_order <- c("Jan","Feb","Mar","Apr","May","Jun",
+                   "Jul","Aug","Sep","Oct","Nov","Dec")
 
 p <- ggplot(t_media_allyears , aes(x = mes , y = avg, color=as.factor(ano)))
 p <- p + scale_x_discrete(limits=correct_order) + geom_point() +
@@ -261,15 +263,25 @@ summary(cepagri_data[cepagri_data$ano == 2015,]$temperatura)
 ```
 A temperatura para todo o ano de 2020 apresenta uma media geral dentro do comum, porem, percebe-se que as menores temperaturas sao mais altas do quenos outros anos, o que indica que, de fato, o ano de 2020 registrou maiores temperaturas com maior frequencia e nao se trata de um erro tecnico.
 
+\quad
+Outra analise interessante de ser realizada é a aná
 ```{r, fig.cap="\\label{fig:gra5} Legenda", fig.pos='H',  fig.width = 6}
 
+vplot <- ggplot(cepagri_data, aes(x=vento, y=mes, group=mes))
+vplot <- bplot + scale_y_discrete(limits=correct_order)  + geom_violin()
+vplot
+
+```
+
+
+```
 #bplot <- ggplot(cepagri_data, aes(x=ano, y= temperatura, group=ano))
 #bplot <- bplot + geom_boxplot()
 #bplot
 #
 #bplot <- ggplot(cepagri_data, aes(x=ano, y=vento, group=ano))
 #bplot <- bplot + geom_boxplot()
-##bplot
+#bplot
 #
 #bplot <- ggplot(t_media_allyears, aes(x=ano, y= avg, group=ano))
 #bplot <- bplot + geom_boxplot()
