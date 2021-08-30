@@ -28,7 +28,7 @@ header-includes:
 
 \begin{center} 
 {\large Universidade Estadual de Campinas}\\[0.2cm] 
-{\large Mineração de Dados COmplexos - INF0612}\\[4cm]
+{\large Mineração de Dados Complexos - INF0612}\\[4cm]
 
 {\bf \huge Trabalho Final}\\[4cm]
 
@@ -69,7 +69,7 @@ names(cepagri_data) <- c("data", "temperatura", "vento", "umidade", "sensacao")
 
 ```
 
-\quad O banco de dados utilizado para essa análise originou-se de consultas ao site do Cepagri (www.cepagri.unicamp.br) que a cada 10 minutos extraiu informações sobre a temperatura, velocidade do vento, umidade e sensação térmica. Na Tabela \ref{tab:dados} pode-se observar os 5 primeiros registros da base. Originalmente a base contém 387260 registros e 5 colunas.
+\quad O banco de dados utilizado para essa análise originou-se de consultas ao site do Cepagri (www.cepagri.unicamp.br) que a cada 10 minutos extraiu informações sobre a temperatura, velocidade do vento, umidade e sensação térmica. Na Tabela \ref{tab:dados} pode-se observar os 5 primeiros registros da base. Originalmente a base contém 387.260 registros e 5 colunas.
 
 ```{r}
 
@@ -81,28 +81,31 @@ head(cepagri_data) %>%
 
 \subsection{Tratamento dos dados}
 
+\quad O tratamento dos dados foi realizado levando em consideração as orientações passadas em aula. Primeiramente foi necessário garantir que o comando de leitura do arquivo CSV fosse capaz de lidar com dados inesperados, como a palavra ERRO e a falta de dados nas colunas de algumas linhas. Para isso foi utilizado o argumento fill como TRUE da funcao read.table().
+
+Após isso, todos os dados que continham NA na coluna Sensacao, resultado da conversão das linhas com valores inadequados, foram removidos.
+
+
 ```{r}
 # Removendo dados faltantes ou com erro
 cepagri_data <- cepagri_data[!is.na(cepagri_data$sensacao), ]
 
 # Analisando se os tipos estao adequadas
-class(cepagri_data$data)
-class(cepagri_data$temperatura)
-class(cepagri_data$vento)
-class(cepagri_data$umidade)
-class(cepagri_data$sensacao)
+#class(cepagri_data$data)
+#class(cepagri_data$temperatura)
+#class(cepagri_data$vento)
+#class(cepagri_data$umidade)
+#class(cepagri_data$sensacao)
 
 # Convertendo para o tipo adequado
 cepagri_data$temperatura <- as.numeric(cepagri_data$temperatura)
 
-head(cepagri_data[cepagri_data$sensacao < 0, ], 10)
+#head(cepagri_data[cepagri_data$sensacao < 0, ], 10)
 
-# Sumarizando as colunas para entender possiveis outliers
-summary(cepagri_data)
 
 # Checando e removendo os outliers
-head(cepagri_data[cepagri_data$sensacao < 0, ], 10)
-head(cepagri_data[cepagri_data$sensacao > 60, ], 10)
+#head(cepagri_data[cepagri_data$sensacao < 0, ], 10)
+#head(cepagri_data[cepagri_data$sensacao > 60, ], 10)
 
 cepagri_data[cepagri_data$sensacao > 70, 5] <- NA
 
@@ -142,19 +145,22 @@ cepagri_data <- cepagri_data[cepagri_data$ano > 2014,]
 cepagri_data <- cepagri_data[cepagri_data$ano < 2021,]
 ```
 
-\quad O tratamento dos dados foi realizado levando em consideração as orientações passadas em aula. Primeiramente foi necessario garantir que o comando de leitura do arquivo CSV fosse capaz de lidar com dados inesperados, como a palavra ERRO e a falta de colunas em algumas linhas. Para isso foi utilizado o argumento fill como TRUE da funcao read.table().
+\quad Logo em seguida, foi checado as classes de todas as colunas, constatou-se que a coluna temperatura estava com o tipo char, e deveria ser um tipo numérico, portanto foi realizada a conversão do tipo desta coluna para numérico para garantir a integridade dos dados no dataframe.
 
-Apos isso, todos os dados que continham NA na coluna Sensacao, resultado da conversao das linhas com valores inadequados, foram removidos.
+Depois disso, foi realizada a etapa de remoção de outliers. Primeiro foi avaliado por meio do summary, as estatística do dataframe conforme mostra a Tabela \ref{tab:dados}, com isso constatou-se que a coluna sensacao possuia valores fora do esperado como 99º. Assim, para garantir a integridade adequada do dataframe, foram removidos todas as linhas com sensacao acima de 60º.
 
-Logo em seguida, foi checado as classes de todas as colunas, constatou-se que a coluna temperatura estava com o tipo char, e deveria ser um tipo numerico, portanto foi realizada a conversao do tipo desta coluna para numerico, para garantir a integridade dos dados no dataframe.
+```{r}
+# Sumarizando as colunas para entender possiveis outliers
 
-Depois disso, foi realizada a etapa de remocao de outliers. Primeiro foi avaliado com summary a estatistica do dataframe, com isso constatou-se que a sensacao termina possuia valores fora do esperado, como 99, para garantir uma integridade adequada do dataframe, foram removidos todas as linhas com sensacao acima de 60, como os unicos valores fora da variacao esperada eram 99, apenas as linhas com esse valor na coluna sensacao, foram removidas
+summary(cepagri_data) %>% 
+  kable("latex",  caption = "\\label{tab:dados}Estatísticas sumárias do banco de dados", booktabs = T) %>% 
+  kable_styling(latex_options = "hold_position", font_size = 8)
 
-Apos essa etapa, foi entao realizada a checagem de repeticao de dados, para isso foi utilizado uma estrategia de checagem de repeticao de linhas numa variacao especifica, por exemplo, para checar se ha repeticao de dados num prazo de 10, nesse caso, a funcao percorre o dataframe observando se o elemento atual é igual aos 1440 elementos apos ele. Percebeu-se que, em termos gerais, ha uma possivel repeticao de dados no equivalente a 10 dias.
+```
 
-Apos isso, percebeu-se entao que haviam dados alem dos que interessavem para a analise neste relatorio, desse modo, foi removido da base qualquer dado de anos menores que 2015 ou maiores que 2020.
+\quad  Após essa etapa, foi então realizada a checagem de repetição de dados, para isso foi utilizado uma estratégia de checagem de repetição de linhas numa variação especfica, por exemplo, para checar se existe repetição de dados num prazo de 10, nesse caso, a função percorre o dataframe observando se o elemento atual é igual aos 1440 elementos após ele. Percebeu-se que, em termos gerais, existe uma possível repetição de dados no equivalente a 10 dias.
 
-Apos a fase inicial de analise e tratamento dos dados, o dataframe usado para o relatorio pode ser conferido na \ref{tab:dados2}, onde estao as 5 primeiras linhas da base ja tratada:
+Além disso, percebeu-se que havia dados além dos que interessavam para a análise, desse modo, foi removido da base qualquer registro de anos menores que 2015 ou maiores que 2020. Após a fase inicial de tratamento dos dados, o dataframe usado para o relatório pode ser conferido na Tabela \ref{tab:dados2}, onde estão as 5 primeiras linhas da base ja tratada.
 
 ```{r}
 
@@ -166,42 +172,48 @@ head(cepagri_data) %>%
 
 \section{Análise exploratória}
 
-\quad Na figura \ref{fig:graf1}
+\quad Como apresentado anteriormente, a base de dados contém informações sobre a temperatura ao longo do tempo para a cidade de Campinas. Podemos começar a análise entendendo o comportamento das temperaturas médias de cada mês ao longo dos anos de 2015 a 2020. A Figura \ref{fig:graf1} apresenta o boxplot dessa medida. 
 
-```{r, fig.cap="\\label{fig:graf1} Legenda", fig.pos='H', fig.width = 5}
+Pode-se observar que o mês que possui temperaturas mais constantes ao longo dos anos é o mês de Dezembro já que apresentou menor variação. Enquanto isso, os meses de Janeiro e Junho costumam ter alta amplitude na temperatura média. 
+
+```{r, fig.cap="\\label{fig:graf1} Boxplot da temperatura média de Campinas por mês.", fig.pos='H', fig.width = 5}
 
 cepagri_data_fac <- cepagri_data
 cepagri_data_fac$mes <- factor(cepagri_data_fac$mes, labels = c("Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"))
 
 cepagri_data_fac %>%
-  filter(umidade > 0) %>%
+  #filter(umidade > 0) %>%
   group_by(ano, mes) %>%
   summarise(temp_media = mean(temperatura), umidade_media = mean(umidade)) %>%
-  ggplot(., aes(x = mes, y= temp_media,  fill = umidade_media))+
-  geom_boxplot() 
+  ggplot(., aes(x = mes, y= temp_media))+
+  geom_boxplot() +
+  labs(x = "Mês", y = "Temperatura Média")
 ```
 
-```{r, fig.cap="\\label{fig:gra2} Legenda", fig.pos='H', fig.width = 6}
+Semelhante à Figura \ref{fig:graf1}, podemos analisar o comportamento da Umidade do ar média em cada mês para todos os anos da base como mostra a Figura \ref{fig:graf2}. Nota-se que os meses de Junho a Setembro, a cidade costuma ter menores médias de umidade relativa do ar, caracterizando o inverno seco comum ao bioma da região.
+
+```{r, fig.cap="\\label{fig:graf2} Temperatura e umidade média de Campinas por mês.", fig.pos='H', fig.width = 6}
 
 cepagri_data_fac %>%
-  filter(umidade > 0) %>%
+  #filter(umidade > 0) %>%
   group_by(ano, mes) %>%
   summarise(temp_media = mean(temperatura), umidade_media = mean(umidade)) %>%
   ggplot(., aes(x = mes, y= temp_media,  colour = umidade_media))+
-  geom_point() 
+  geom_point() +
+  labs(x = "Mês", y = "Temperatura Média", colour = "Umidade média")
 ```
 
-```{r, fig.cap="\\label{fig:gra3} Legenda", fig.pos='H',  fig.width = 6}
+```{r, fig.cap="\\label{fig:graf3} Legenda", fig.pos='H',  fig.width = 6}
 
-cepagri_data %>%
-  filter(umidade > 0) %>%
-  group_by(ano, mes) %>%
-  summarise(temp_media = mean(temperatura), umidade_media = mean(umidade)) %>%
-  ggplot(., aes(x = temp_media, y= umidade_media))+
-  geom_line(aes(color = as.factor(ano))) 
+#cepagri_data %>%
+#  filter(umidade > 0) %>%
+#  group_by(ano, mes) %>%
+#  summarise(temp_media = mean(temperatura), umidade_media = mean(umidade)) %>%
+#  ggplot(., aes(x = temp_media, y= umidade_media))+
+#  geom_line(aes(color = as.factor(ano))) 
 ```
 
-```{r, fig.cap="\\label{fig:gra4} Legenda", fig.pos='H',  fig.width = 6}
+```{r, fig.cap="\\label{fig:graf4} Média das temperaturas por ano", fig.pos='H',  fig.width = 6}
 
 t2020 <- cepagri_data[cepagri_data$ano == 2020,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
 t2019 <- cepagri_data[cepagri_data$ano == 2019,] %>% group_by(mes) %>% summarise(avg = mean(temperatura,na.rm = TRUE))
@@ -229,18 +241,20 @@ p <- p + scale_x_discrete(limits=correct_order) + geom_point() +
   geom_line(data=t_media_allyears[t_media_allyears$ano == 2018,]) +
   geom_line(data=t_media_allyears[t_media_allyears$ano == 2019,]) +
   geom_line(data=t_media_allyears[t_media_allyears$ano == 2020,])
-print(p+ ggtitle("Media de temperaturas de 2015 a 2020"))
+print(p + labs(x = "Mês", y = "Temperatura Média", colour = "Ano"))
 ```
 
-\quad Para o \ref{fig:gra4} foi necessário elaborar um dataset filtrado, que contem as medias de cada ano por mes, é possível ver o dataset na \ref{tab:temp_media_mes_ano}.
+\quad Para o gráfico da Figura \ref{fig:graf4} foi necessário elaborar um dataset filtrado que contém as médias de cada ano por mês, é possível ver o dataset na Tabela \ref{tab:temp_media_mes_ano}.
+
 ```{r}
 
-t_media_allyears %>% 
-  kable("latex", col.names = c("Mes", "Avg (Temperatura Media", "Ano"), caption = "\\label{tab:temp_media_mes_ano} Temperaturas medias por mes de cada ano", booktabs = T) %>% 
+head(t_media_allyears) %>% 
+  kable("latex", col.names = c("Mes", "Avg (Temperatura Media", "Ano"), caption = "\\label{tab:temp_media_mes_ano} Dataset com as temperaturas médias por mês de cada ano", booktabs = T) %>% 
   kable_styling(latex_options = "hold_position", font_size = 8)
 
 ```
-é possível observar as variacoes das temperaturas medias no decorrer dos meses nos anos de 2015 a 2020. É possivel notar que o ano de 2020 possui um padrao muito divergente com relacao aos outro anos. Em parte isso pode ser devido ao fato de haver menos dados de 2020 que dos outros anos como pode se ver \ref{tab:numero_linhas}:
+
+Por meio da Tabela \ref{tab:temp_media_mes_ano} é possível observar as variações das temperaturas médias no decorrer dos meses nos anos de 2015 a 2020. É possivel notar que o ano de 2020 possui um padrão muito divergente com relação aos outro anos. Em partes, isso pode ser devido ao fato de haver menos dados de 2020 que dos outros anos como pode se ver na Tabela \ref{tab:numero_linhas}:
 
 ```{r}
 cbind(
@@ -256,42 +270,56 @@ n2015 = nrow(cepagri_data[cepagri_data$ano ==2015,])
 
 ```
 
-No entanto, apesar da falta de dados que pode ser observada, o ano de 2020 foi marcado por um numero de queimadas acima do comum para o periodo de estiagem, que contemplam os meses de julho e agosto, essa informcao pode ser conferida em diversos sites assim como [este](https://g1.globo.com/pa/para/noticia/2020/09/03/queimadas-aumentam-304percent-no-para-entre-julho-e-agosto-aponta-inpe.ghtml). A analise de repeticao ou duplicidade de dados tambem  nao indicou que haviam valores repetidos por mais que um dia.
-```
-any(consecutive(cepagri_data[cepagri_data$ano == 2020,]$temperatura, 144))
-```
-Desse modo, percebe-se que seria interessante poder cruzar os dados de queimadas na regiao de Campinas com outros dados metereologicos para identificar o perfil de influencia do aumento de queimadas no clima. Ha claramente outros fatores meteorologicos que podem influenciar nessa variacao constatada, assim como pode se tratar de erro do equipamento, ou falhas nas leituras que demoraram a ter correcao, porem, a analise dos dados de 2020 nao indica uma anormalidade relacionada aos instrumetos utilizados para a coleta da informacao, como é possivel obervsar abaixo:
-```
-summary(cepagri_data[cepagri_data$ano == 2020,]$temperatura)
-summary(cepagri_data[cepagri_data$ano == 2019,]$temperatura)
-summary(cepagri_data[cepagri_data$ano == 2018,]$temperatura)
-summary(cepagri_data[cepagri_data$ano == 2017,]$temperatura)
-summary(cepagri_data[cepagri_data$ano == 2016,]$temperatura)
-summary(cepagri_data[cepagri_data$ano == 2015,]$temperatura)
-```
-A temperatura para todo o ano de 2020 apresenta uma media geral dentro do comum, porem, percebe-se que as menores temperaturas sao mais altas do quenos outros anos, o que indica que, de fato, o ano de 2020 registrou maiores temperaturas com maior frequencia e nao se trata de um erro tecnico.
+No entanto, apesar da falta de dados que pode ser observada, o ano de 2020 foi marcado por um número de queimadas acima do comum para o periodo de estiagem, que contemplam os meses de julho e agosto, essa informação pode ser conferida em diversos sites assim como [este](https://g1.globo.com/pa/para/noticia/2020/09/03/queimadas-aumentam-304percent-no-para-entre-julho-e-agosto-aponta-inpe.ghtml). 
 
-\quad
-Outra analise interessante de ser realizada é a análise da sensacao termica, dada a velocidade do vento e a temperatura
-```{r, fig.cap="\\label{fig:gra5} Legenda", fig.pos='H',  fig.width = 6}
+```{r}
+#any(consecutive(cepagri_data[cepagri_data$ano == 2020,]$temperatura, 144))
+```
+
+Desse modo, percebe-se que seria interessante  cruzar os dados de queimadas na região de Campinas com outros dados metereológicos para identificar o perfil de influência do aumento de queimadas no clima. Existe claramente outros fatores meteorológicos que podem influenciar nessa variação constatada, assim como pode se tratar de erro do equipamento, ou falhas nas leituras que demoraram a ter correção, porém, a análise dos dados de 2020 não indica uma anormalidade relacionada aos instrumetos utilizados para a coleta da informação, como é possivel observar na Tabela \ref{tab:medias_ano}.
+
+```{r}
+
+cepagri_data %>%
+  group_by(ano) %>%
+  summarise(Min = min(temperatura), Mediana = median(temperatura), Media = mean(temperatura), Max = max(temperatura)) %>%
+  kable("latex",  caption = "\\label{tab:medias_ano}Estatísticas da temperatura por ano.", booktabs = T) %>% 
+  kable_styling(latex_options = "hold_position", font_size = 8)
+
+#summary(cepagri_data[cepagri_data$ano == 2020,]$temperatura)
+#summary(cepagri_data[cepagri_data$ano == 2019,]$temperatura)
+#summary(cepagri_data[cepagri_data$ano == 2018,]$temperatura)
+#summary(cepagri_data[cepagri_data$ano == 2017,]$temperatura)
+#summary(cepagri_data[cepagri_data$ano == 2016,]$temperatura)
+#summary(cepagri_data[cepagri_data$ano == 2015,]$temperatura)
+```
+
+A temperatura para todo o ano de 2020 apresenta uma média geral dentro do comum, porém, percebe-se que as menores temperaturas são mais altas do que nos outros anos, o que indica que, de fato, o ano de 2020 registrou maiores temperaturas com maior frequência e não se trata de um erro técnico.
+
+\quad Outra análise interessante de ser realizada é a análise da sensação termica, dada a velocidade do vento e a temperatura apresentada na Figura \ref{fig:gra5}
+
+```{r, fig.cap="\\label{fig:gra5} Temperatura conforme velocidade do vento e sensação térmica.", fig.pos='H',  fig.width = 6}
 
 p <- ggplot(cepagri_data , aes(x = temperatura , y = vento, color=sensacao))
-p <- p + geom_point() + geom_point()
+p <- p + geom_point() + geom_point() + labs(x = "Temperatura", y = "Vento", color = "Sensação")
 p
 ```
-Como pode ser observado no \ref{fig:gra5} nota-se quanto mais fraco os ventos e maior a temperatura, maior é a sensacao termica, de certo modo, pode-se dizer que o vento influencia sim na sensacao termica, no entanto, para uma analise mais precisa e adequada, seria interessante ter o dado da temperatura do vento, claramente ventos muito fortes costumam ter temperaturas mais baixa, no entanto, uma massa de ar quente pode influencia a temperatura a subir, o que poderia causar uma sensacao termica mais alta do que o esperado para ventos mais fortes.
 
-\quad
-Uma analise interessante, tambem pode ser dada a partir da estatistica da temperatura registrada no decorrer dos anos,
-ou seja, levando em conta a media e desvio padrao, como pode-se observar na \ref{fig:gra6}
-```{r, fig.cap="\\label{fig:gra6} Legenda", fig.pos='H',  fig.width = 6}
+Como pode ser observado no gráfico da Figura \ref{fig:gra5} nota-se quanto mais fraco os ventos e maior a temperatura, maior é a sensacao termica, de certo modo, pode-se dizer que o vento influencia sim na sensacao termica, no entanto, para uma analise mais precisa e adequada, seria interessante ter o dado da temperatura do vento, claramente ventos muito fortes costumam ter temperaturas mais baixa, no entanto, uma massa de ar quente pode influencia a temperatura a subir, o que poderia causar uma sensacao termica mais alta do que o esperado para ventos mais fortes.
 
-p <- ggplot(cepagri_data , aes(x = temperatura , y = vento, color=sensacao))
-p <- p + geom_point() + geom_point()
-p
-```
-A observacao deste grafico traz uma perspectiva muito interessante pois e possivel perceber que de 2018 a 2020, houve um aumento na media de temperaturas por ano, nota-se que a variavao se manteve muito parecida em todos os anos, mas a media subiu notavelmente. Mesmo com mais outliers pequenos para o ano de 2019 e 2018, ainda sim a media se manteve mais alta. Nessa perspectiva, reforca-se que parece haver um aquecimento geral no clima da regiao monitorada, é importante obter dados qualitativos a respeito da regiao em especifico para identeificar se o aquecimento pode ser local ou devido a adversidades climaticas naturais. No entanto, a discussao sobre o aquecimento do clima de modo geral, realizada por especialisas, independente de regiao, nao é um fato inedito e vem sendo destacado nos ultimos anos.
+```{r, fig.cap="\\label{fig:gra6} Variação da temperatura conforme o ano.", fig.pos='H',  fig.width = 6}
+
+ggplot(cepagri_data , aes(x = ano , y = temperatura, group = ano, color = as.factor(ano)))+ 
+  geom_boxplot()+ 
+  labs(x = "Ano", y = "Temperatura", color = "Ano")
 
 ```
+
+A observação da Figura \ref{fig:gra6} traz uma perspectiva muito interessante pois é possivel perceber que de 2018 a 2020, houve um aumento na media de temperaturas por ano, nota-se que a variavao se manteve muito parecida em todos os anos, mas a media subiu notavelmente. Mesmo com mais outliers pequenos para o ano de 2019 e 2018, ainda sim a media se manteve mais alta.
+
+\newpage
 
 \section{Conclusão}
+
+ Por fim, após as análises da base, reforça-se que parece haver um aquecimento geral no clima da região monitorada. Logo, é fundamental obter dados qualitativos a respeito da região em específico para identeificar se o aquecimento pode ser local ou devido a adversidades climaticas naturais. No entanto, a discussão sobre o aquecimento do clima de modo geral, realizada por especialistas, independente de região, não é um fato inédito e isolado e vem sendo destaque nos últimos anos dada a sua importância.
+
