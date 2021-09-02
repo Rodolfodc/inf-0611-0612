@@ -53,17 +53,15 @@ itemFrequencyPlot(transacoes, support=0.05, cex.names=0.8)
 
 a)  Descreva a base de dados discutindo os resultados das funções acima.
 
-**Resposta:** <!-- Escreva sua resposta abaixo -->
+**Resposta:**
 
 A base de dados eh composta por um conjunto de produtos consumiveis, como cafe, pao, chocolate quente ou cha, ao todo sao 91 itens diferentes na existentes. Nenhum registro contem itens repetidos, ao todo, sao 2579 transacoes (cada linha eh uma transacao), o mais comum eh ter um conjunto de 3 itens presente nas transacoes (esse padrao ocorre 1041 vezes), e eh possivel encontar um conjunto de ate 10 itens, porem, este ultimo, numa unica transacao.
 
-<!-- Fim da resposta -->
-
 b)  Ao gerarmos o gráfico de frequências, temos uma representação visual de uma informação já presente no resultado da função `summary`. Contudo, esse gráfico nos dá uma visão mais ampla da base. Assim podemos ver a frequência de outros itens em relação aos 10 mais frequentes. Quais informações podemos obter a partir desse gráfico (e da análise anterior) para nos ajudar na extração de regras de associação com o algoritmo `apriori`? Isto é, como a frequência dos itens pode afetar os parâmetros de configuração do algoritmo `apriori`?
 
-**Resposta:** <!-- Escreva sua resposta abaixo -->
+**Resposta:**
 
-<!-- Fim da resposta -->
+Os graficos de frequencia revelam o vies presente na base de dados. Neste caso, o grafico indica por exemplo, que o item cafe foi muito mais comprado que qualquer outro item, ou seja, o algoritmo `apriori` tendenciosamente encontrara muitas regras que envolvem conjuntos com item cafe e que terao muitos resultados diferentes, portanto o algoritmo precisara ser ajustado para ter, por exemplo, um baixo suporte minimo ou ate mesmo um suporte maximo, afim de evitar os problemas relacionados ao vies.
 
 # Atividade 2 -- Minerando Regras (*3,5 pts*)
 
