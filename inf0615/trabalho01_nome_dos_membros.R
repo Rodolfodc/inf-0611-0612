@@ -7,7 +7,7 @@
 #
 #
 # Funcao de Apoio ao Trabalho 01 de Aprendizado Supervisionado I. 
-# Esta fun??o escreve a formula dos modelos polinomiais. 
+# Esta função escreve a formula dos modelos polinomiais. 
 # Parametros:
 
 # real_feature_names: Um vetor com os nomes dos atributos continuos que voce
@@ -22,12 +22,12 @@
 #                            para este parametro quando chamar a funcao.
 #
 #
-# degree: Grau que voc? deseja que os atributos reais em "real_feature_names"
+# degree: Grau que você deseja que os atributos reais em "real_feature_names"
 #         sejam elevados. Ao chamar a funcao, escreva explicitamente
 #         o grau desejado. Por exemplo, para grau igual 2, escreva degree=2
 
-# Vejam os exerc?cios 02 e 03 para ver o funcionamento 
-# de uma funcao similar a essa.
+# Vejam os exercícios 02 e 03 para ver o funcionamento 
+# de uma função similar a essa.
 
 
 getHypothesis <- function(real_feature_names, categorical_feature_names=F, degree=3){
@@ -90,11 +90,41 @@ train_set %>%
     geom_boxplot()
 
 
+###
+
+#Normalização Z-Norma
+train_set <- train_set[, c(2:14,16,17)]
+val_set <- val_set[, c(2:14,16,17)]
+
+mean_features <- apply(train_set[,2:ncol(train_set)-1], 2, mean)
+mean_features
+
+sd_features <- apply(train_set[,2:ncol(train_set)-1], 2, sd)
+sd_features
+
+train_set[,2:ncol(train_set)-1] <- sweep(train_set[,2:ncol(train_set-1)], 2, mean_features, "-")
+train_set[,2:ncol(train_set)-1] <- sweep(train_set[,2:ncol(train_set-1)], 2, sd_features, "/")
+summary(train_set)
+
+val_set[,2:ncol(val_set)-1] <- sweep(val_set[,2:ncol(val_set)-1], 2, mean_features, "-")
+val_set[,2:ncol(val_set)-1] <- sweep(val_set[,2:ncol(val_set)-1], 2, sd_features, "/")
+
+
+summary(val_Set)
+
+#Baseline
+
+feature_names <- colnames(train_set)[1:ncol(train_set)-1]
+feature_names
+
+hypothesis <- getHypothesis(feature_names, 1)
+hypothesis
+
+## Baseline ##
+baseline <- lm(formula=hypothesis, data=train_set)
+
+summary(baseline)
+
 # Descomente a linha abaixo apenas quando o conjunto de teste esiver dispon?vel
 #test_set <- read.csv("test_set_air_quality.csv", stringsAsFactors=TRUE)
-
-
-
-
-
 
