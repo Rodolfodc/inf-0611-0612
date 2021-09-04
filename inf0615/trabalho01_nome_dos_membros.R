@@ -59,13 +59,13 @@ getHypothesis <- function(real_feature_names, categorical_feature_names=F, degre
 library(tidyverse)
 library(GGally)
 
-setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0615")
+setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0615")
 
 # Comandos que leem os conjuntos de treino e de validacao
 train_set <- read.csv("training_set_air_quality.csv", stringsAsFactors=TRUE)
 val_set <- read.csv("validation_set_air_quality.csv", stringsAsFactors=TRUE)
 
-# Desenvolvam o trabalho a partir daqui, apos executarem os comandos a cima
+# Desenvolvam o trabalho a partir daqui, apos executarem os comandos acima
 
 #Inspecionando o banco de dados
 str(train_set)
@@ -73,7 +73,8 @@ str(train_set)
 summary(train_set)
 
 sum(is.na(train_set))
-
+nrow(train_set)
+# relatorio: Ha features discretas, podemos converter os valores para numeros inteiros ou utilizar one hot encoding
 #Visualização dos dados
 train_set %>%
     sample_n(., size = 900) %>%
@@ -82,6 +83,11 @@ train_set %>%
 train_set %>%
     sample_n(., size = 10000) %>%
     ggplot(., aes(x=PM2.5, y= target, color = NO2, size = SO2))+
+    geom_point(aes(alpha = 0.1))
+
+train_set %>%
+    sample_n(., size = 10000) %>%
+    ggplot(., aes(x=PM10, y= target, color = NO2, size = SO2))+
     geom_point(aes(alpha = 0.1))
 
 train_set %>%
@@ -96,25 +102,25 @@ train_set %>%
 train_set <- train_set[, c(2:14,16,17)]
 val_set <- val_set[, c(2:14,16,17)]
 
-mean_features <- apply(train_set[,2:ncol(train_set)-1], 2, mean)
+mean_features <- apply(train_set[,2:(ncol(train_set)-1)], 2, mean)
 mean_features
 
-sd_features <- apply(train_set[,2:ncol(train_set)-1], 2, sd)
+sd_features <- apply(train_set[,2:(ncol(train_set)-1)], 2, sd)
 sd_features
 
-train_set[,2:ncol(train_set)-1] <- sweep(train_set[,2:ncol(train_set-1)], 2, mean_features, "-")
-train_set[,2:ncol(train_set)-1] <- sweep(train_set[,2:ncol(train_set-1)], 2, sd_features, "/")
+train_set[,2:(ncol(train_set)-1)] <- sweep(train_set[,2:(ncol(train_set)-1)], 2, mean_features, "-")
+train_set[,2:ncol(train_set)-1] <- sweep(train_set[,2:(ncol(train_set)-1)], 2, sd_features, "/")
 summary(train_set)
 
-val_set[,2:ncol(val_set)-1] <- sweep(val_set[,2:ncol(val_set)-1], 2, mean_features, "-")
-val_set[,2:ncol(val_set)-1] <- sweep(val_set[,2:ncol(val_set)-1], 2, sd_features, "/")
+val_set[,2:(ncol(train_set)-1)-1] <- sweep(val_set[,2:(ncol(train_set)-1)-1], 2, mean_features, "-")
+val_set[,2:(ncol(train_set)-1)-1] <- sweep(val_set[,2:(ncol(train_set)-1)-1], 2, sd_features, "/")
 
 
-summary(val_Set)
+summary(val_set)
 
 #Baseline
 
-feature_names <- colnames(train_set)[1:ncol(train_set)-1]
+feature_names <- colnames(train_set)[1:(ncol(train_set)-1)]
 feature_names
 
 hypothesis <- getHypothesis(feature_names, 1)
@@ -122,8 +128,18 @@ hypothesis
 
 ## Baseline ##
 baseline <- lm(formula=hypothesis, data=train_set)
+lm.r <- lm(formula=hypothesis, data=train_set)
 
 summary(baseline)
+
+lm.r
+
+layout(matrix(1:4,2,2))
+plot(lm.r)
+
+# Modelo1, considerando todas as colunas exxceto ano
+valPred <- predict(baseline, val_set)
+trainPred <- predict(baseline, train_set)
 
 # Descomente a linha abaixo apenas quando o conjunto de teste esiver dispon?vel
 #test_set <- read.csv("test_set_air_quality.csv", stringsAsFactors=TRUE)
