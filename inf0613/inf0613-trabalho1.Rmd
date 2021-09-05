@@ -83,26 +83,31 @@ inspect(regras2[1:30])
 
 inspect(regras3[1:30])
 
-inspect(sort(regras3, by=c("lift", "confidence", "support"), decreasing=TRUE))
+#inspect(sort(regras3, by=c("lift", "confidence", "support"), decreasing=TRUE))
+sorted_regras3 <- sort(regras3, by=c("confidence", "support"), decreasing=TRUE)
+inspect(sorted_regras3)
+plot(sorted_regras3[1:10], method="graph")
+
 ```
 
 ## Análises
 
 a)  Quais as regras mais interessantes geradas a partir dessa base? Justifique.
 
-**Resposta:** 
+**Resposta:**
 
-1. {Postcard} =\> {Tshirt} 0.001163 0.750 0.001551 241.78 3
-2. {Bread,Salad,Scandinavian} =\> {Extra Salami or Feta}
-3. {Juice,Salad,Spanish Brunch} =\> {Extra Salami or Feta}
-4. {Bread,Cake,Salad} =\> {Extra Salami or Feta}
-5. {Coffee,Juice,Salad,Spanish Brunch} =\> {Extra Salami or Feta}
-6. {Bread,Cake,Coffee,Salad} =\> {Extra Salami or Feta} 
-7. {Hack the stack} =\> {Art Tray}
-8. {Bread,Extra Salami or Feta} =\> {Salad}
+1.  {Cake,Hearty & Seasonal} =\> {Coffee} 
+2.  {Bread,Extra Salami or Feta} =\> {salad}
+3.  {Farm House,Toast} =\> {Coffee} 
+4.  {Extra Salami or Feta,Spanish Brunch} =\> {Coffee} 
+5.  {Bread,Sandwich,Spanish Brunch} =\> {Coffee}
+6.  {Basket} =\> {Coffee}
+7.  {Salad,Toast} =\> {Coffee}  
+8.  {Scandinavian,Toast} =\> {Coffee}
+9.  {Farm House,Juice} =\> {Coffee}
+10. {Coke,Muffin} =\> {Coffee}
 
-Acima estao listadas as 8 primeiras regras decorrentes da ultima inspecao nas regras do conjunto 3. O conjunto 3 foi eleito como o melhor suporte/confianca pois elabora 524 regras e traz perspectivas interessantes de conjuntos de itens, o que foi notado com menor frequencia nos outro itens.
-As 8 regras acima estao ordenadas de maneira decrescente com relacao ao lift,confianca e suporte. Essas regras sao bem interessantes pois, por exemplo, percebe-se na primeira regra o perfil de compras de um turista, a compra de um cartao postal leva a compra de uma camisa. As regras 2 a 6 sao interessantes pois trazem regras de conjuntos que nao possuem os dois itens mais frequentes (bread e coffee), como e o caso da regra 3, ou trazem a perspectiva de conjunto de itens aliados a regras. Ou seja, as 8 regras selecionadas acima sao muito interessantes pois revelam perfis de consumo, como o caso do turista, ou revelam tendencias de consumidores comuns.
+Acima estao listadas as 10 primeiras regras elaboradas pelo algoritmo apriori, percebe-se que essas regras podem parecer interessantes pois todas elas possuem um suporte alto e confianca maxima, no entanto, é importante ressaltar a frequencia alta de itens como coffee e bread em todo o dataset. Contudo, as regras acima sao interessantes no ponto de vista que elas revelam perfis de consumo eventualmente diferentes. Na primeira regra pode-se notar que no lhs ha itens que sao comprados com menos frequencia, o que indica que essa regra é mais relevante que uma regra que relacione bread e coffee, que sao itens muito frequentes. A regra 2 tambem revela-se uma regra muito interessante pois seus itens distoam dos itens que sao mais comuns nas transacoes e portanto revelam um perfil mais direcionado de consumo.
 
 # Atividade 3 -- Medidas de Interesse (*3,5 pts*)
 
@@ -110,17 +115,20 @@ Vimos na aula que, mesmo após as podas do algoritmo `apriori`, ainda temos algu
 
 ```{r atv3-code}
 # Compute as medidas de interesse 
-
+medidas_interesse <- interestMeasure(regras3, c("conviction", "lift", "oddsRatio"), transacoes)
 
 # Apresente as regras ordenadas por lift
-
+sorted_lift <- sort(regras3, by=c("lift"), decreasing=TRUE)
 
 # Apresente as regras ordenadas por convicção
-
+sorted_conviction <- sort(medidas_interesse$conviction, decreasing = TRUE, index.return = TRUE, na.last=TRUE)$ix
 
 # Apresente as regras ordenadas por razão de chances
+sorted_oddsRation <- sort(medidas_interesse$oddsRatio, decreasing = TRUE, index.return = TRUE, na.last=TRUE)$ix
 
-
+inspect(sorted_lift[1:10])
+inspect(regras3[sorted_conviction][1:10])
+inspect(regras3[sorted_oddsRation][1:10])
 ```
 
 ## Análise
@@ -128,5 +136,20 @@ Vimos na aula que, mesmo após as podas do algoritmo `apriori`, ainda temos algu
 a)  Quais as regras mais interessantes do conjunto? Justifique.
 
 **Resposta:** <!-- Escreva sua resposta abaixo -->
+
+## lyft
+
+1.  {Postcard} =\> {Tshirt} 0.001163 0.750 0.001551 241.78 3
+2.  {Bread,Salad,Scandinavian} =\> {Extra Salami or Feta}
+3.  {Juice,Salad,Spanish Brunch} =\> {Extra Salami or Feta}
+4.  {Bread,Cake,Salad} =\> {Extra Salami or Feta}
+5.  {Coffee,Juice,Salad,Spanish Brunch} =\> {Extra Salami or Feta}
+6.  {Bread,Cake,Coffee,Salad} =\> {Extra Salami or Feta}
+7.  {Hack the stack} =\> {Art Tray}
+8.  {Bread,Extra Salami or Feta} =\> {Salad}
+
+Acima estao listadas as 8 primeiras regras decorrentes da ultima inspecao nas regras do conjunto 3. O conjunto 3 foi eleito como o melhor suporte/confianca pois elabora 524 regras e traz perspectivas interessantes de conjuntos de itens, o que foi notado com menor frequencia nos outro itens. As 8 regras acima estao ordenadas pelo lyft, pois a medida do lyft revela uma perspectiva de confianca na regra. 
+Essas regras sao bem interessantes pois, por exemplo, percebe-se na primeira regra o perfil de compras de um turista, a compra de um cartao postal leva a compra de uma camisa. As regras 2 a 6 sao interessantes pois trazem regras de conjuntos que nao possuem os dois itens mais frequentes (bread e coffee), como e o caso da regra 3, ou trazem a perspectiva de conjunto de itens aliados a regras. Ou seja, as 8 regras selecionadas acima sao muito interessantes pois revelam perfis de consumo, como o caso do turista, ou revelam tendencias de consumidores comuns.
+
 
 <!-- Fim da resposta -->
