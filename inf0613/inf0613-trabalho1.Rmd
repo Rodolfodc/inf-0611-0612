@@ -1,10 +1,12 @@
 ---
-title: INF0613 -- Aprendizado de Máquina Não Supervisionado
-output: pdf_document
+title: "INF0613 -- Aprendizado de Máquina Não Supervisionado"
+author:
+- Nicole Nogueira
+- Rodolfo Dalla Costa
 subtitle: Trabalho 1 - Regras de Associação
-author: 
-  - Nicole Nogueira 
-  - Rodolfo Dalla Costa
+output:
+  word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include = FALSE}
@@ -22,6 +24,7 @@ Antes de começar a implementação do seu trabalho configure o *workspace* e im
 # Adicione os demais pacotes usados
 # Bibliotecas usadas neste trabalho:
 library(arules)
+library(arulesViz)
 
 # Configurando ambiente de trabalho:
 setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0613")
@@ -34,10 +37,10 @@ Dado um caminho para uma base de dados, leia as transações e faça uma anális
 
 ```{r atv1-code}
 # Ler transações
-transacoes <- read.transactions(file.choose(), format="basket", sep=",")
+transacoes <- read.transactions("bakery.csv", format="basket", sep=",")
 
 # Visualizando transações
-inspect(transacoes)
+inspect(transacoes[1:10])
 
 # Sumário da base
 summary(transacoes)
@@ -55,13 +58,13 @@ a)  Descreva a base de dados discutindo os resultados das funções acima.
 
 **Resposta:**
 
-A base de dados eh composta por um conjunto de produtos consumiveis, como cafe, pao, chocolate quente ou cha, ao todo sao 91 itens diferentes na existentes. Nenhum registro contem itens repetidos, ao todo, sao 2579 transacoes (cada linha eh uma transacao), o mais comum eh ter um conjunto de 3 itens presente nas transacoes (esse padrao ocorre 1041 vezes), e eh possivel encontar um conjunto de ate 10 itens, porem, este ultimo, numa unica transacao.
+> A base de dados eh composta por um conjunto de produtos consumiveis, como cafe, pao, chocolate quente ou cha, ao todo sao 91 itens diferentes. Nenhum registro contem itens repetidos, ao todo, sao 2579 transacoes (cada linha eh uma transacao), o mais comum eh ter um conjunto de 3 itens presente nas transacoes (esse padrao ocorre 1041 vezes), e eh possivel encontar um conjunto de ate 10 itens, porem, este ultimo, numa unica transacao. Os 3 produtos mais frequentes sao Coffee, Bread e Tea, sendo que suas frequencias sao 1403, 808 e 617 respectivamente. O conjunto tem uma densidade de 0.0352, ou seja, 3,52% de celulas nao-zero na matriz. E alem disso o numero medio de transacoes possui 3.02 itens.
 
 b)  Ao gerarmos o gráfico de frequências, temos uma representação visual de uma informação já presente no resultado da função `summary`. Contudo, esse gráfico nos dá uma visão mais ampla da base. Assim podemos ver a frequência de outros itens em relação aos 10 mais frequentes. Quais informações podemos obter a partir desse gráfico (e da análise anterior) para nos ajudar na extração de regras de associação com o algoritmo `apriori`? Isto é, como a frequência dos itens pode afetar os parâmetros de configuração do algoritmo `apriori`?
 
 **Resposta:**
 
-Os graficos de frequencia revelam o vies presente na base de dados. Neste caso, o grafico indica por exemplo, que o item cafe foi muito mais comprado que qualquer outro item, ou seja, o algoritmo `apriori` tendenciosamente encontrara muitas regras que envolvem conjuntos com item cafe e que terao muitos resultados diferentes, portanto o algoritmo precisara ser ajustado para ter, por exemplo, um baixo suporte minimo, afim de evitar os problemas relacionados ao vies. Alem disso, ja se espera que qualquer regras que correlacionem com cafe, merecem uma atencao redobrada ja que o cafe eh um item extremamente frequente e, portanto, sua confianca sera alta.
+> Os graficos de frequencia revelam o vies presente na base de dados. Neste caso, o grafico indica por exemplo, que o item cafe foi muito mais comprado que qualquer outro item, ou seja, o algoritmo `apriori` tendenciosamente encontrara muitas regras que envolvem conjuntos com item cafe e que terao muitos resultados diferentes, portanto o algoritmo precisara ser ajustado para ter, por exemplo, um baixo suporte minimo, afim de evitar os problemas relacionados ao vies. Alem disso, ja se espera que qualquer regras que correlacionem com cafe, merecem uma atencao redobrada ja que o cafe eh um item extremamente frequente e, portanto, sua confianca sera alta.
 
 # Atividade 2 -- Minerando Regras (*3,5 pts*)
 
@@ -77,32 +80,28 @@ regras2 <- apriori(transacoes, parameter=list(supp=0.05, conf=0.08))
 # Conjunto 3: suporte = 0.0006   e confiança = 0.7    
 regras3 <- apriori(transacoes, parameter=list(supp=0.0006, conf=0.7))
 
-inspect(regras1)
+inspect(sort(regras1, by=c("support"), decreasing = TRUE))
 
-inspect(regras2[1:30])
+inspect(sort(regras2, by=c("support"), decreasing = TRUE)[1:5])
 
-inspect(regras3[1:30])
+inspect(sort(regras3, by=c("support"), decreasing = TRUE)[1:5])
 
-inspect(sort(regras3, by=c("lift", "confidence", "support"), decreasing=TRUE))
+plot(sort(regras1, by=c("support"), decreasing = TRUE), method="graph")
+plot(sort(regras2, by=c("support"), decreasing = TRUE)[1:5], method="graph")
+plot(sort(regras3, by=c("support"), decreasing = TRUE)[1:5], method="graph")
+
 ```
 
 ## Análises
 
 a)  Quais as regras mais interessantes geradas a partir dessa base? Justifique.
 
-**Resposta:** 
+**Resposta:** 1. {Toast} =\> {Coffee} 2. {Keeping It Local} =\> {Coffee}\
+3. {Extra Salami or Feta} =\> {Coffee}\
+4. {Extra Salami or Feta} =\> {Salad}\
+5. {Extra Salami or Feta,Salad} =\> {Coffee}
 
-1. {Postcard} =\> {Tshirt} 0.001163 0.750 0.001551 241.78 3
-2. {Bread,Salad,Scandinavian} =\> {Extra Salami or Feta}
-3. {Juice,Salad,Spanish Brunch} =\> {Extra Salami or Feta}
-4. {Bread,Cake,Salad} =\> {Extra Salami or Feta}
-5. {Coffee,Juice,Salad,Spanish Brunch} =\> {Extra Salami or Feta}
-6. {Bread,Cake,Coffee,Salad} =\> {Extra Salami or Feta} 
-7. {Hack the stack} =\> {Art Tray}
-8. {Bread,Extra Salami or Feta} =\> {Salad}
-
-Acima estao listadas as 8 primeiras regras decorrentes da ultima inspecao nas regras do conjunto 3. O conjunto 3 foi eleito como o melhor suporte/confianca pois elabora 524 regras e traz perspectivas interessantes de conjuntos de itens, o que foi notado com menor frequencia nos outro itens.
-As 8 regras acima estao ordenadas de maneira decrescente com relacao ao lift,confianca e suporte. Essas regras sao bem interessantes pois, por exemplo, percebe-se na primeira regra o perfil de compras de um turista, a compra de um cartao postal leva a compra de uma camisa. As regras 2 a 6 sao interessantes pois trazem regras de conjuntos que nao possuem os dois itens mais frequentes (bread e coffee), como e o caso da regra 3, ou trazem a perspectiva de conjunto de itens aliados a regras. Ou seja, as 8 regras selecionadas acima sao muito interessantes pois revelam perfis de consumo, como o caso do turista, ou revelam tendencias de consumidores comuns.
+Acima estao listadas as 5 primeiras regras do conjunto 3. O conjunto 3 foi o que apresentou uma gama maior e mais interessante de regras (ao todo 524 regras). Apesar de manter muitas regras de associacao com o item coffee, eh possivel observar na regra 4 por exemplo uma perspectiva distinta do vies do dataset pois nao envolve nenhum dos 3 itens mais frequentes e portanto indica que esta regra eh de fato um padrao que pode ser minerado da base. Como ja era esperado, a mineracao utilizando o `apriori` teve um desempenho mais interessante quando o suporte minimo considerado foi alterado para um valor muito baixo, afim de evitar perder itens raros ou evidenciar regras obvias ou enviesadas, mas a confianca foi mantida num patamar mais alto (70%) o que permitiu a mineracao de mais regras e garantem que essas regras estejam presentes em mais conjuntos.
 
 # Atividade 3 -- Medidas de Interesse (*3,5 pts*)
 
@@ -110,23 +109,39 @@ Vimos na aula que, mesmo após as podas do algoritmo `apriori`, ainda temos algu
 
 ```{r atv3-code}
 # Compute as medidas de interesse 
-
+medidas_interesse <- interestMeasure(regras3, c("conviction", "lift", "oddsRatio"), transacoes)
 
 # Apresente as regras ordenadas por lift
-
+sorted_lift <- sort(regras3, by=c("lift"), decreasing=TRUE)
 
 # Apresente as regras ordenadas por convicção
-
+sorted_conviction <- sort(medidas_interesse$conviction, decreasing = TRUE, index.return = TRUE, na.last=TRUE)$ix
 
 # Apresente as regras ordenadas por razão de chances
+sorted_oddsRation <- sort(medidas_interesse$oddsRatio, decreasing = TRUE, index.return = TRUE, na.last=TRUE)$ix
+head(sort(medidas_interesse$oddsRatio, decreasing=TRUE))
 
+inspect(sorted_lift[1:10])
+inspect(regras3[sorted_conviction][1:10])
+inspect(regras3[sorted_oddsRation][1:10])
 
+# Verificando se existe alguma medida de conviccao dentro do consideado ideal (valor >1 e <=5)
+any(medidas_interesse[medidas_interesse$conviction >= 1 && medidas_interesse$conviction <= 5,]$conviction,na.rm = TRUE)
 ```
 
 ## Análise
 
 a)  Quais as regras mais interessantes do conjunto? Justifique.
 
-**Resposta:** <!-- Escreva sua resposta abaixo -->
+**Resposta:** Para os conjuntos, o que destaca as regras mais interessantes, eh a metrica do Lyft, que trata a independencia de ambos conjuntos da regra. \#\# lyft
 
-<!-- Fim da resposta -->
+> 1.  {Postcard} =\> {Tshirt} 0.001163 0.750 0.001551 241.78 3
+> 2.  {Bread,Salad,Scandinavian} =\> {Extra Salami or Feta}
+> 3.  {Juice,Salad,Spanish Brunch} =\> {Extra Salami or Feta}
+> 4.  {Bread,Cake,Salad} =\> {Extra Salami or Feta}
+> 5.  {Coffee,Juice,Salad,Spanish Brunch} =\> {Extra Salami or Feta}
+> 6.  {Bread,Cake,Coffee,Salad} =\> {Extra Salami or Feta}
+> 7.  {Hack the stack} =\> {Art Tray}
+> 8.  {Bread,Extra Salami or Feta} =\> {Salad}
+
+> Acima estao listadas as 8 primeiras regras decorrentes da ultima inspecao nas regras do conjunto 3. O conjunto 3 foi eleito como o melhor suporte/confianca pois elabora 524 regras e traz perspectivas interessantes de conjuntos de itens, o que foi notado com menor frequencia nos outro conjuntos As 8 rrevelam uma perspectiva de confianca na regra. Elas sao bem interessantes pois, por exemplo, percebe-se na primeira regra, o perfil de compras de um turista, a compra de um cartao postal leva a compra de uma camisa. As regras 2 a 6 sao interessantes pois trazem regras de conjuntos que nao possuem os dois itens mais frequentes (bread e coffee), como e o caso da regra 3. Desse modo, as 8 regras selecionadas acima sao muito interessantes pois revelam perfis de consumo, como o caso do turista, ou revelam tendencias de consumidores comuns. Alem disso, a ordenacao de regras por conviccao nao trouxe resultados interessantes dentro dos patamares esperados e o conjunto de regras ordenado por razao de chances retornou uma perspectiva parecida, um ponto interessante do ordenacao por razao de chances, eh que essa ordenacao trouxe em primeiro mais regras que envolvem menos itens com alta frequencia no dataset. Desse modo, a ordenacao por Lyft demonstra trazer um perspectiva de perfis de consumo mais interessante diante das outras medidas de interesse, ja que elenca regras que fogem ao vies logo nas primeiras 8 regras e revelam composicoes de conjuntos com menor presencao de itens muito frequentes.
