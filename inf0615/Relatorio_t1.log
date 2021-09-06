@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.8.28)  5 SEP 2021 18:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.8.28)  5 SEP 2021 23:55
 entering extended mode
 **./Relatorio_t1.tex
 (Relatorio_t1.tex
@@ -367,48 +367,87 @@ Package: grffile 2019/11/11 v2.1 Extended file name support for graphics (legac
 y)
 Package grffile Info: This package is an empty stub for compatibility on input 
 line 40.
-) (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty
+) (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
+Package: babel 2021/06/02 3.60 The Babel package
+(C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.def
+File: babel.def 2021/06/02 3.60 Babel common definitions
+\babel@savecnt=\count285
+\U@D=\dimen163
+\l@unhyphenated=\language79
+(C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
+\bbl@readstream=\read2
+)
+\bbl@dirlevel=\count286
+*************************************
+* Local config file bblopts.cfg used
+*
+(C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+(C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/babel-portuges\brazil.l
+df
+Language: portuges 2021/07/09 v1.2t Portuguese support from the babel system
+Package babel Info: Hyphen rules for 'brazil' set to \l@portuguese
+(babel)             (\language56). Reported on input line 111.
+Package babel Info: Making " an active character on input line 143.
+)
+(C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/babel-english\english.l
+df
+Language: english 2017/06/06 v3.3r English support from the babel system
+Package babel Info: Hyphen rules for 'canadian' set to \l@english
+(babel)             (\language0). Reported on input line 102.
+Package babel Info: Hyphen rules for 'australian' set to \l@ukenglish
+(babel)             (\language73). Reported on input line 105.
+Package babel Info: Hyphen rules for 'newzealand' set to \l@ukenglish
+(babel)             (\language73). Reported on input line 108.
+)
+(C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/babel-portuges\portugue
+se.ldf
+Language: portuges 2021/07/09 v1.2t Portuguese support from the babel system
+)) (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.st
+y
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
-\heavyrulewidth=\dimen163
-\lightrulewidth=\dimen164
-\cmidrulewidth=\dimen165
-\belowrulesep=\dimen166
-\belowbottomsep=\dimen167
-\aboverulesep=\dimen168
-\abovetopsep=\dimen169
-\cmidrulesep=\dimen170
-\cmidrulekern=\dimen171
-\defaultaddspace=\dimen172
-\@cmidla=\count285
-\@cmidlb=\count286
-\@aboverulesep=\dimen173
-\@belowrulesep=\dimen174
-\@thisruleclass=\count287
-\@lastruleclass=\count288
-\@thisrulewidth=\dimen175
+\heavyrulewidth=\dimen164
+\lightrulewidth=\dimen165
+\cmidrulewidth=\dimen166
+\belowrulesep=\dimen167
+\belowbottomsep=\dimen168
+\aboverulesep=\dimen169
+\abovetopsep=\dimen170
+\cmidrulesep=\dimen171
+\cmidrulekern=\dimen172
+\defaultaddspace=\dimen173
+\@cmidla=\count287
+\@cmidlb=\count288
+\@aboverulesep=\dimen174
+\@belowrulesep=\dimen175
+\@thisruleclass=\count289
+\@lastruleclass=\count290
+\@thisrulewidth=\dimen176
 ) (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/tools\longtable.sty
 Package: longtable 2021-05-07 v4.16 Multi-page Table package (DPC)
 \LTleft=\skip54
 \LTright=\skip55
 \LTpre=\skip56
 \LTpost=\skip57
-\LTchunksize=\count289
-\LTcapwidth=\dimen176
+\LTchunksize=\count291
+\LTcapwidth=\dimen177
 \LT@head=\box52
 \LT@firsthead=\box53
 \LT@foot=\box54
 \LT@lastfoot=\box55
 \LT@gbox=\box56
-\LT@cols=\count290
-\LT@rows=\count291
-\c@LT@tables=\count292
-\c@LT@chunks=\count293
+\LT@cols=\count292
+\LT@rows=\count293
+\c@LT@tables=\count294
+\c@LT@chunks=\count295
 \LT@p@ftn=\toks27
 ) (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
 Package: array 2021/04/20 v2.5e Tabular extension package (FMi)
-\col@sep=\dimen177
+\col@sep=\dimen178
 \ar@mcellbox=\box57
-\extrarowheight=\dimen178
+\extrarowheight=\dimen179
 \NC@list=\toks28
 \extratabsurround=\skip58
 \backup@length=\skip59
@@ -416,19 +455,19 @@ Package: array 2021/04/20 v2.5e Tabular extension package (FMi)
 ) (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/multirow\multirow.sty
 Package: multirow 2021/03/15 v2.8 Span multiple rows of a table
 \multirow@colwidth=\skip60
-\multirow@cntb=\count294
+\multirow@cntb=\count296
 \multirow@dima=\skip61
-\bigstrutjot=\dimen179
+\bigstrutjot=\dimen180
 ) (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/wrapfig\wrapfig.sty
-\wrapoverhang=\dimen180
-\WF@size=\dimen181
-\c@WF@wrappedlines=\count295
+\wrapoverhang=\dimen181
+\WF@size=\dimen182
+\c@WF@wrappedlines=\count297
 \WF@box=\box59
 \WF@everypar=\toks29
 Package: wrapfig 2003/01/31  v 3.6
 ) (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count296
+\c@float@type=\count298
 \float@exts=\toks30
 \float@box=\box60
 \@float@everytoks=\toks31
@@ -449,25 +488,25 @@ Package: tabu 2019/01/11 v2.9 - flexible LaTeX tabulars (FC+tabu-fixed)
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/varwidth\varwidth.sty
 Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
 \@vwid@box=\box62
-\sift@deathcycles=\count297
-\@vwid@loff=\dimen182
-\@vwid@roff=\dimen183
+\sift@deathcycles=\count299
+\@vwid@loff=\dimen183
+\@vwid@roff=\dimen184
 )
-\c@taburow=\count298
-\tabu@nbcols=\count299
-\tabu@cnt=\count300
-\tabu@Xcol=\count301
-\tabu@alloc=\count302
-\tabu@nested=\count303
-\tabu@target=\dimen184
-\tabu@spreadtarget=\dimen185
-\tabu@naturalX=\dimen186
-\tabucolX=\dimen187
-\tabu@Xsum=\dimen188
-\extrarowdepth=\dimen189
-\abovetabulinesep=\dimen190
-\belowtabulinesep=\dimen191
-\tabustrutrule=\dimen192
+\c@taburow=\count300
+\tabu@nbcols=\count301
+\tabu@cnt=\count302
+\tabu@Xcol=\count303
+\tabu@alloc=\count304
+\tabu@nested=\count305
+\tabu@target=\dimen185
+\tabu@spreadtarget=\dimen186
+\tabu@naturalX=\dimen187
+\tabucolX=\dimen188
+\tabu@Xsum=\dimen189
+\extrarowdepth=\dimen190
+\abovetabulinesep=\dimen191
+\belowtabulinesep=\dimen192
+\tabustrutrule=\dimen193
 \tabu@thebody=\toks33
 \tabu@footnotes=\toks34
 \tabu@box=\box63
@@ -497,52 +536,52 @@ Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
 \UL@hyphenbox=\box69
 \UL@skip=\skip65
 \UL@hook=\toks35
-\UL@height=\dimen193
-\UL@pe=\count304
-\UL@pixel=\dimen194
+\UL@height=\dimen194
+\UL@pe=\count306
+\UL@pixel=\dimen195
 \ULC@box=\box70
 Package: ulem 2019/11/18
-\ULdepth=\dimen195
+\ULdepth=\dimen196
 ) (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/makecell\makecell.sty
 Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
-\rotheadsize=\dimen196
-\c@nlinenum=\count305
+\rotheadsize=\dimen197
+\c@nlinenum=\count307
 \TeXr@lab=\toks36
 )
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
 tex.def
 File: l3backend-pdftex.def 2021-05-07 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count306
+\l__color_backend_stack_int=\count308
 \l__pdf_internal_box=\box71
 ) (Relatorio_t1.aux)
 \openout1 = `Relatorio_t1.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 88.
-LaTeX Font Info:    ... okay on input line 88.
-LaTeX Info: Redefining \microtypecontext on input line 88.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 89.
+LaTeX Font Info:    ... okay on input line 89.
+LaTeX Info: Redefining \microtypecontext on input line 89.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using protrusion set `basicmath'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 88.
+LaTeX Info: Redefining \showhyphens on input line 89.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
@@ -553,16 +592,16 @@ File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
 ii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count307
-\scratchdimen=\dimen197
+\scratchcounter=\count309
+\scratchdimen=\dimen198
 \scratchbox=\box72
-\nofMPsegments=\count308
-\nofMParguments=\count309
+\nofMPsegments=\count310
+\nofMParguments=\count311
 \everyMPshowfont=\toks37
-\MPscratchCnt=\count310
-\MPscratchDim=\dimen198
-\MPnumerator=\count311
-\makeMPintoPDFobject=\count312
+\MPscratchCnt=\count312
+\MPscratchDim=\dimen199
+\MPnumerator=\count313
+\makeMPintoPDFobject=\count314
 \everyMPtoPDFconversion=\toks38
 )
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
@@ -575,7 +614,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 fg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-Package hyperref Info: Link coloring OFF on input line 88.
+Package hyperref Info: Link coloring OFF on input line 89.
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty
@@ -585,11 +624,11 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 lestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count313
+\c@section@level=\count315
 )
-LaTeX Info: Redefining \ref on input line 88.
-LaTeX Info: Redefining \pageref on input line 88.
-LaTeX Info: Redefining \nameref on input line 88.
+LaTeX Info: Redefining \ref on input line 89.
+LaTeX Info: Redefining \pageref on input line 89.
+LaTeX Info: Redefining \nameref on input line 89.
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -625,39 +664,39 @@ LaTeX Info: Redefining \nameref on input line 88.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 9
-0.
+1.
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/lm\ot1lmr.fd
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 9
-0.
+1.
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/lm\omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-90.
+91.
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/lm\omslmsy.fd
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-90.
+91.
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/lm\omxlmex.fd
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 90.
+(Font)              <12> on input line 91.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 90.
+(Font)              <8> on input line 91.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 90.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 90.
+(Font)              <6> on input line 91.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 91.
 
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 90.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 91.
 
 (C:\Users\nicol\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -665,14 +704,14 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 112.
+(Font)              <5> on input line 113.
 
-Overfull \hbox (20.93565pt too wide) in paragraph at lines 112--125
+Overfull \hbox (20.93565pt too wide) in paragraph at lines 113--126
  [][] 
  []
 
 
-Overfull \hbox (42.2156pt too wide) in paragraph at lines 130--145
+Overfull \hbox (42.2156pt too wide) in paragraph at lines 131--146
  [][] 
  []
 
@@ -683,7 +722,7 @@ xt4): destination with the same identifier (name{table.1}) has been already use
 d, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.170 
+l.171 
       ]
 <Relatorio_t1_files/figure-latex/unnamed-chunk-4-1.pdf, id=21, 469.755pt x 325.
 215pt>
@@ -691,7 +730,7 @@ File: Relatorio_t1_files/figure-latex/unnamed-chunk-4-1.pdf Graphic file (type
 pdf)
 <use Relatorio_t1_files/figure-latex/unnamed-chunk-4-1.pdf>
 Package pdftex.def Info: Relatorio_t1_files/figure-latex/unnamed-chunk-4-1.pdf 
- used on input line 173.
+ used on input line 174.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 <Relatorio_t1_files/figure-latex/unnamed-chunk-5-1.pdf, id=23, 469.755pt x 325.
 215pt>
@@ -699,13 +738,13 @@ File: Relatorio_t1_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type
 pdf)
 <use Relatorio_t1_files/figure-latex/unnamed-chunk-5-1.pdf>
 Package pdftex.def Info: Relatorio_t1_files/figure-latex/unnamed-chunk-5-1.pdf 
- used on input line 188.
+ used on input line 190.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [2pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) 
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.194 
+l.196 
        <./Relatorio_t1_files/figure-latex/unnamed-chunk-4-1.pdf>]
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -714,53 +753,53 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.252 P
+l.254 P
        or fim, vamos testar o modelo de regressão aumentando o grau daspdfTeX 
 warning (ext4): destination with the same identifier (name{table.2}) has been a
 lready used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.252 P
+l.254 P
        or fim, vamos testar o modelo de regressão aumentando o grau das <./Rel
 atorio_t1_files/figure-latex/unnamed-chunk-5-1.pdf>]
-<Relatorio_t1_files/figure-latex/unnamed-chunk-10-1.pdf, id=55, 469.755pt x 325
+<Relatorio_t1_files/figure-latex/unnamed-chunk-11-1.pdf, id=58, 469.755pt x 325
 .215pt>
-File: Relatorio_t1_files/figure-latex/unnamed-chunk-10-1.pdf Graphic file (type
+File: Relatorio_t1_files/figure-latex/unnamed-chunk-11-1.pdf Graphic file (type
  pdf)
-<use Relatorio_t1_files/figure-latex/unnamed-chunk-10-1.pdf>
-Package pdftex.def Info: Relatorio_t1_files/figure-latex/unnamed-chunk-10-1.pdf
-  used on input line 262.
+<use Relatorio_t1_files/figure-latex/unnamed-chunk-11-1.pdf>
+Package pdftex.def Info: Relatorio_t1_files/figure-latex/unnamed-chunk-11-1.pdf
+  used on input line 266.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 [4pdfTeX warning (ext4): destination with the same identifier (name{table.3}) h
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.271 \end{document}
-                    pdfTeX warning (ext4): destination with the same identifier
- (name{figure.3}) has been already used, duplicate ignored
+l.286 
+      pdfTeX warning (ext4): destination with the same identifier (name{figure.
+3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.271 \end{document}
-                     <./Relatorio_t1_files/figure-latex/unnamed-chunk-10-1.pdf>
-] (Relatorio_t1.aux) ) 
+l.286 
+       <./Relatorio_t1_files/figure-latex/unnamed-chunk-11-1.pdf>] [5] (Relator
+io_t1.aux) ) 
 Here is how much of TeX's memory you used:
- 14164 strings out of 478864
- 215107 string characters out of 2848660
- 585835 words of memory out of 3000000
- 31726 multiletter control sequences out of 15000+600000
- 440581 words of font info for 88 fonts, out of 8000000 for 9000
+ 14992 strings out of 478864
+ 227610 string characters out of 2848660
+ 616564 words of memory out of 3000000
+ 32515 multiletter control sequences out of 15000+600000
+ 441079 words of font info for 94 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 74i,9n,80p,519b,338s stack positions out of 5000i,500n,10000p,200000b,80000s
-{C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/enc/d
-vips/lm/lm-ec.enc}<C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/type1/pub
-lic/lm/lmbx12.pfb><C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/type1/pub
-lic/lm/lmr10.pfb><C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/type1/publ
-ic/lm/lmr12.pfb><C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/type1/publi
-c/lm/lmr17.pfb><C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/type1/public
-/lm/lmr8.pfb>
-Output written on Relatorio_t1.pdf (4 pages, 799130 bytes).
+ 74i,9n,80p,519b,356s stack positions out of 5000i,500n,10000p,200000b,80000s
+{C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm
+-ec.enc}<C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmb
+x12.pfb><C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr
+10.pfb><C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr1
+2.pfb><C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr17
+.pfb><C:/Users/nicol/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.p
+fb>
+Output written on Relatorio_t1.pdf (5 pages, 803636 bytes).
 PDF statistics:
- 108 PDF objects out of 1000 (max. 8388607)
- 19 named destinations out of 1000 (max. 500000)
- 20528 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 119 PDF objects out of 1000 (max. 8388607)
+ 22 named destinations out of 1000 (max. 500000)
+ 20536 words of extra memory for PDF output out of 20736 (max. 10000000)
 

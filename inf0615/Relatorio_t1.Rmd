@@ -5,6 +5,8 @@ subtitle: Trabalho 1 - Regressão Linear
 author: 
 - Nicole Nogueira Silva
 - Rodolfo Dalla Costa
+header-includes:
+- \usepackage[brazil, english, portuguese]{babel}
 ---
 
 ```{r setup, include = FALSE}
@@ -52,14 +54,14 @@ getHypothesis <- function(real_feature_names, categorical_feature_names=F, degre
 ###################################
 ####   Define MAE function     ####
 MAE <- function(preds, labels){
-  mae_values <- sum(abs(preds-labels))/length(preds)
+  mae_values <- round(sum(abs(preds-labels))/length(preds),2)
   return(mae_values)
 }
 
 ####################################
 ####   Define MSE function     ####
 MSE <- function(preds, labels){
-  mse_values <- sum((preds-labels)**2)/length(preds)
+  mse_values <- round(sum((preds-labels)**2)/length(preds),2)
   return(mse_values)
 }
 
@@ -68,7 +70,7 @@ MSE <- function(preds, labels){
 R2 <- function(pred, true){
   rss <- sum((pred - true) ^ 2)
   tss <- sum((true - mean(true)) ^ 2)
-  r2 <- 1 - rss/tss
+  r2 <- round(1 - rss/tss,2)
   return(r2)
 }
 ```
@@ -106,7 +108,7 @@ summary(train_set[,10:ncol(train_set)]) %>%
 O banco de dados foi dividido em 3 blocos, um conjunto de treinamento que será utilizado para treinar os modelos, um conjunto de validação para mensurar o desempenho dos modelos e um conjunto de teste. A base de treino possui `r nrow(train_set)` linhas e `r ncol(train_set)` colunas enquanto a base de validação possui `r nrow(val_set)` linhas e as mesmas colunas do conjunto de treino.
 Nota-se que o banco de dados não possui dados faltantes, se houvesse, o ideal é avaliar se a informação faltante é erro de preenchimento no momento da coleta ou se realmente traz uma informação relevante. 
 
-A partir do summary apresentado na Tabela \ref{tab:dados} é possível notar que a variável "wd", que indica a direção do vento no momento da coleta, é a única variável categorizada da base. Para lidar com isso, podemos tranformar a variável utilizando a técnica de One-Hot-encoding.
+A partir do summary apresentado na Tabela \ref{tab:dados} é possível notar que a variável "wd", que indica a direção do vento no momento da coleta, é a única variável categorizada da base. Para lidar com isso, tranformamos a variável utilizando a técnica de One-Hot-encoding.
 
 
 ```{r}
@@ -177,13 +179,15 @@ cor(train_set) %>%
 
 ```
 
-O gráfico da Figura \ref{fig:graf2} apresenta a distribuição da concentração de CO em relação a concentração de PM2.5 no ar. É possível observar que existe uma relação linear entre as variáveis já que a concentração de CO aumenta conforme o PM2.5 aumenta também o que indica que ajustar um modelo de regrssão linear pode ser vantajoso.
+O gráfico da Figura \ref{fig:graf2} apresenta a distribuição da concentração de CO em relação a concentração de PM2.5 no ar. É possível observar que existe uma relação linear entre as variáveis já que a concentração de CO aumenta conforme o PM2.5 aumenta também, o que indica que ajustar um modelo de regrssão linear pode ser uma estratégia adequada.
 
-```{r, fig.cap="\\label{fig:graf2} Correlações e distribuição 2 a 2 das variáveis.", fig.pos='H'}
+```{r, fig.cap="\\label{fig:graf2} Distribuição da concentração de CO e de PM2.5 variando o NO2 e SO2.", fig.pos='H'}
 train_set %>%
     sample_n(., size = 10000) %>%
     ggplot(., aes(x=PM2.5, y= target, color = NO2, size = SO2))+
-    geom_point(aes(alpha = 0.1))
+    geom_point(aes(alpha = 0.1)) +
+  theme_bw() +
+  labs( y = "Concentração de CO")
 
 ```
 
@@ -253,14 +257,16 @@ r2_test_baseline <- R2(testPred, test_set$target)
 
 result_baseline_test <- cbind(Set = "Teste",mae_test_baseline,mse_test_baseline,r2_test_baseline)
 
+```
+
+Para predizer o valor da concentração do monóxido de carbono, primeiro é importante avaliar um modelo de regressão linear mais simples com todas as variáveis, esse será o baseline. A Tabela \ref{tab:baseline} apresenta as medidas do erro médio (MAE), erro quadrático médio (MSE) e o R2 do baseline para os dados de treino, validação e teste. O baseline apresentou um MAE de `r round(mae_test_baseline,1)` no conjunto de teste. 
+
+```{r}
 rbind(result_baseline_train, result_baseline_val,result_baseline_test) %>%
   kable("latex",  caption = "\\label{tab:baseline}Resultado do baseline nos conjuntos de treino, validação e teste", booktabs = T, col.names = c("", "MAE", "MSE", "R2")) %>% 
   kable_styling(latex_options = "hold_position", font_size = 8)
   
 ```
-
-Para predizer o valor da concentração do monóxido de carbono primeiro é importante avaliar um modelo de regressão linear com todas as variáveis, esse será o baseline. A Tabela \ref{tab:baseline} apresenta as medidas do erro médio (MAE), erro quadrático médio (MSE) e o R2 do baseline para os dados de treino, validação e teste. O baseline apresentou um MAE de `r round(mae_test_baseline,1)` no conjunto de teste. 
-
 
 
 
@@ -279,7 +285,7 @@ mae_val_baseline <- MAE(valPred1, val_set$target)
 mse_val_baseline <- MSE(valPred1, val_set$target)
 r2_val_baseline <- R2(valPred1, val_set$target)
 
-result_baseline_val1 <- cbind(mae_val_baseline,mse_val_baseline,r2_val_baseline)
+result_baseline_val1 <- cbind(model = "2 a 2", mae_val_baseline,mse_val_baseline,r2_val_baseline)
 
 comb2 <- lm(target ~ I(year^1) + I(month^1) + I(day^1) + I(hour^1) + (I(PM2.5^1) + 
     I(PM10^1) + I(SO2^1) + I(NO2^1) + I(O3^1) + I(TEMP^1) + I(PRES^1) + 
@@ -294,10 +300,10 @@ mae_val_baseline <- MAE(valPred2, val_set$target)
 mse_val_baseline <- MSE(valPred2, val_set$target)
 r2_val_baseline <- R2(valPred2, val_set$target)
 
-result_baseline_val2 <- cbind(mae_val_baseline,mse_val_baseline,r2_val_baseline)
+result_baseline_val2 <- cbind(model = "3 a 3", mae_val_baseline,mse_val_baseline,r2_val_baseline)
 
 rbind(result_baseline_val1, result_baseline_val2) %>%
-  kable("latex",  caption = "\\label{tab:comb1_2}Resultado das combinações nos conjuntos de treino, validação e teste", booktabs = T, col.names = c("MAE", "MSE", "R2")) %>% 
+  kable("latex",  caption = "\\label{tab:comb1_2}Resultado das combinações nos conjuntos de treino, validação e teste", booktabs = T, col.names = c("Modelo", "MAE", "MSE", "R2")) %>% 
   kable_styling(latex_options = "hold_position", font_size = 8)
 
 
@@ -308,10 +314,8 @@ mae_test_comb2 <- MAE(testPred2, test_set$target)
 
 ```
 
-Para melhorar a predição do CO, vamos criar um modelo com combinação de features. Para esse modelo, vamos utlizar todas as variáveis e combinar 2 a 2 as variáveis PM2.5, PM10, SO2, NO2, O3, TEMP, PRES e DEWP. Os resultados do MAE, MSE e R2 para o conjunto de validação podem ser observados na Tabela x. A primeira linha corresponde aos resultados do modelo com combinação 2 a 2 enquanto a segunda linha é o modelo utilizando a combinação 3 a 3. É possível observar que o o melhor modelo desta categoria foi o modelo com combinação 3 a 3. Aplicando esse modelo no conjunto de teste obtivemos um MAE de `r round(mae_test_comb2,1)`.
+Para melhorar a predição do CO, vamos criar um modelo com combinação de features. Para esse modelo, vamos utlizar todas as variáveis e combinar 2 a 2 as variáveis PM2.5, PM10, SO2, NO2, O3, TEMP, PRES e DEWP. Os resultados do MAE, MSE e R2 para o conjunto de validação podem ser observados na Tabela \ref{tab:comb1_2}. A primeira linha corresponde aos resultados do modelo com combinação 2 a 2 enquanto a segunda linha é o modelo utilizando a combinação 3 a 3. É possível observar que o o melhor modelo desta categoria foi o modelo com combinação 3 a 3. Aplicando esse modelo no conjunto de teste obtivemos um MAE de `r round(mae_test_comb2,1)`.
 
-Por fim, vamos testar o modelo de regressão aumentando o grau das features. O gráfico da Figura x apresenta o MAE para cada polinômio no conjunto de treino e validação. Podemos reparar que até o grau x estamos com underfit enquanto a partir do grau y temos overfit. Dessa forma, o ponto ótimo do modelo dessa categoria é de grau b. 
-Ajustando o nosso melhor modelo polinomial de grau b no conjunto de teste obtivemos um MAE de n.
 
 ```{r}
 #polinomial
@@ -378,14 +382,26 @@ for(i in 1:10){
 treino_resumo <- data.frame(grau = seq(1:10), MAE = total_mae_train_poly, set = rep("Treino", 10))
 val_resumo <- data.frame(grau = seq(1:10), MAE = total_mae_val_poly, set = rep("Validação", 10))
 
+# best model polinomial 
+
+best_poly <- lm(formula=formulas[[5]], data=train_set)
+testPred3 <- predict(best_poly, test_set)
+
+mae_test_poly <- MAE(testPred3, test_set$target)
+
 ```
+
+Por fim, vamos testar o modelo de regressão aumentando o grau das features. O gráfico da Figura \ref{fig:mae} apresenta o MAE para cada polinômio no conjunto de treino e validação. Podemos reparar que até o grau 3 estamos com underfitting pois o erro no treino e na validação são altos e muito similares. Porém, a partir do grau 6 temos overfitting já que o erro médio no conjunto de validação começa crescer enquanto no conjunto de treino cai. Dessa forma, o ponto ótimo do modelo dessa categoria é o modelo de grau 5. 
+Ajustando o nosso melhor modelo polinomial de grau 5 no conjunto de teste obtivemos um MAE de `r round(mae_test_poly, 2)`.
 
 ```{r, fig.cap="\\label{fig:mae} MAE do treino e validação para cada grau.", fig.pos='H'}
 rbind(treino_resumo, val_resumo) %>%
-  ggplot(., aes(x = grau, y = MAE, group = set, color = set)) + 
-  geom_line()
+  ggplot(., aes(x = as.factor(grau), y = MAE, group = set, color = set)) + 
+  geom_line() +
+  theme_bw() +
+  labs(x = "Complexidade do polinômio", y = "MAE", color = "Data Set")
 ```
 
-#Conclusão
+# Conclusão
 
-
+O modelo que apresentou menor erro médio foi o modelo utilizando todas as variáveis com grau 1 e a combinação 3 a 3 das variáveis que possuem maior correlação com a concentração de monóxido de carbono. O baseline, modelo mais simples, apresentou o pior desempenho quando comparado com os outros. O modelo polinomial apresentou resultados razoáveis porém possui uma complexidade alta e exige muito processamento para treinar. Assim, o modelo com combinação 3 a 3 tem vantagem além de possuir o menor MAE. É interessante observar que, selecionar melhor quais variáveis são mais relevantes para predizer a concentração de CO trouxe ganhos significativos no erro médio. 
