@@ -1,0 +1,164 @@
+---
+title: INF0615 -- Aprendizado de Máquina Supervisionado
+subtitle: Trabalho 2 - Regressão Logistica
+author: 
+- Rodolfo Dalla Costa
+- Nicole Nogueira
+date: "9/11/2021"
+output: word_document
+header-includes:
+- \usepackage[brazil, english, portuguese]{babel}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, message = FALSE, warning = FALSE, tidy = FALSE, fig.align='center')
+options(digits = 3)
+library(tidyverse)
+library(knitr)
+library(corrplot)
+library(kableExtra)
+library(magrittr)
+library(glmnet)
+library(caret)
+library(pROC)
+
+setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0615/t2")
+
+set.seed(12)
+
+```
+
+```{r}
+
+getHypothesis <- function(feature_names, degree){
+  
+  hypothesis_string <- "hypothesis <- formula(target ~ "
+  for(d in 1:degree){
+    for(i in 1:length(feature_names)){
+      hypothesis_string <- paste(hypothesis_string, 
+                                 "I(", feature_names[i], "^", d, ") + ",
+                                 sep = "")
+    }
+  }
+  hypothesis_string <- substr(hypothesis_string, 1, nchar(hypothesis_string)-3)
+  hypothesis_string <- paste(hypothesis_string, ")")
+  hypothesis <- eval(parse(text=hypothesis_string))
+  return(hypothesis)
+}
+
+calculaMatrizConfusaoRelativa <- function(cm){
+  
+  # Aplicamos a transposi��o para garantir que a referencia
+  # fique nas linhas e a predicao nas colunas
+  cm_absolute = t(cm$table)
+  
+  # SEMPRE construam e reportem a matriz de confusao relativa!
+  cm_relative = cm_absolute
+  
+  cm_relative[1,1] = round(cm_absolute[1,1]/sum(cm_absolute[1,]), digits=2)
+  cm_relative[1,2] = round(cm_absolute[1,2]/sum(cm_absolute[1,]), digits=2)
+  cm_relative[2,1] = round(cm_absolute[2,1]/sum(cm_absolute[2,]), digits=2)
+  cm_relative[2,2] = round(cm_absolute[2,2]/sum(cm_absolute[2,]), digits=2)
+  
+  return(cm_relative)  
+}
+
+TPR <- function(cm, data_set) {
+  TP <- cm$table[1]
+  n_positive <- sum(data_set$target == 1)
+  return(TP / n_positive)
+}
+
+TNR <- function(cm, data_set) {
+  TN <- cm$table[1]
+  n_negative <- sum(data_set$target == 0)
+  return(TN/n_negative)
+}
+
+LR_predict_and_get_cm <- function(model, x_values, data_set, pesos, lambda) {
+  
+  predicted <- predict(model, newx=x_values, type="response")
+  
+  predictedTarget <- predicted
+  predictedTarget[predicted >= 0.5] <- 1
+  predictedTarget[predicted < 0.5] <- 0
+  
+  cm <- confusionMatrix(data = as.factor(predictedTarget), 
+                        reference = as.factor(data_set$target), 
+                        positive='1')
+  
+  cm_relative <- calculaMatrizConfusaoRelativa(cm)
+  
+  acc <- (cm_relative[1,1] + cm_relative[2,2])/2
+  
+  tpr <- TPR(cm, data_set)
+  tnr <- TNR(cm, data_set)
+  
+  return(c(acc, tpr, tnr, cm, cm_relative))
+}
+
+train_and_get_accuracy <- function(lambda_list, train_set, val_set, pesos) {
+  acc_train<- c()
+  acc_val<- c()
+  
+  feature_names <- colnames(train_set)[1:(ncol(train_set)-1)]
+  hypothesis <- getHypothesis(feature_names, 1)
+  
+  i<- 1
+  for(lambda in lambda_list) {
+    
+    x_data <- model.matrix(hypothesis, train_set)
+    y_data <- train_set$target
+    
+    x_val_data <- model.matrix(hypothesis, val_set)
+    y_val_data <- val_set$target
+    
+    LRModel <- glmnet(x_data, y_data, family="binomial" , weights = pesos,
+                      standardize = FALSE, alpha=0, lambda = lambda)
+    
+    acc_train[i] <- LR_predict_and_get_cm(LRModel, x_data, train_set, pesos, lambda)[1]
+    acc_val[i] <- LR_predict_and_get_cm(LRModel, x_val_data, val_set, pesos, lambda)[1]
+    i <- i+1
+  }
+  return(list(acc_train, acc_val))
+}
+```
+
+# Introducao
+O sistema imunologico humano, é o sistema responsavel por proteger o corpo de antigenos como virus e bacterias. A producao de globulos brancos, nome dado as celular que compoe o sistema imunologico, 
+# Banco de dados
+
+```{r}
+# Comandos que leem os conjuntos de treino e de validacao
+train_set <- read.csv("training_set_air_quality.csv", stringsAsFactors=TRUE)
+val_set <- read.csv("validation_set_air_quality.csv", stringsAsFactors=TRUE)
+test_set <- read.csv("test_set_air_quality.csv", stringsAsFactors=TRUE )
+
+
+#Inspecionando o banco de dados
+#str(train_set)
+
+summary(train_set[,2:9]) %>% 
+  kable("latex",  caption = "\\label{tab:dados}Estatísticas sumárias do banco de dados", booktabs = T) %>% 
+  kable_styling(latex_options = "hold_position", font_size = 8)
+
+summary(train_set[,10:ncol(train_set)]) %>% 
+  kable("latex", booktabs = T) %>% 
+  kable_styling(latex_options = "hold_position", font_size = 8)
+
+
+trainData <- read.csv("proteins_training_set.csv", stringsAsFactors=TRUE)
+valData <- read.csv("proteins_validation_set.csv", stringsAsFactors=TRUE)
+
+str(trainData)
+
+summary(trainData) %>%
+  kable("latex",  caption = "\\label{tab:dados}Estatísticas sumárias do banco de dados", booktabs = T) %>% 
+  kable_styling(latex_options = "hold_position", font_size = 8)
+
+
+summary(valData) %>%
+  kable("latex",  caption = "\\label{tab:dados}Estatísticas sumárias do banco de dados", booktabs = T) %>% 
+  kable_styling(latex_options = "hold_position", font_size = 8)
+
+```
