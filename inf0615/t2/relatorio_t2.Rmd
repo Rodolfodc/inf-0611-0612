@@ -5,10 +5,10 @@ author:
 - Nicole Nogueira
 date: "9/11/2021"
 output:
-  pdf_document: default
-  word_document: default
   html_document:
     df_print: paged
+  pdf_document: default
+  word_document: default
 subtitle: Trabalho 2 - Regressão Logistica
 header-includes: \usepackage[brazil, english, portuguese]{babel}
 ---
@@ -26,7 +26,7 @@ library(caret)
 library(pROC)
 
 #setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0615/t2")
-setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0613/t2")
+setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0615/t2")
 set.seed(12)
 
 ```
@@ -323,95 +323,28 @@ Apos a etapda de inspecao dos dados, foi realizada a normalizacao utilizando o m
 # Resultados e Conclusão
 ```{r}
 
-lambda_values <- c(100, 10, 1.0, 0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10)
+## Normalizacao Z-norma 
+mean_features <- apply(trainData[,1:(ncol(trainData)-1)], 2, mean)
+mean_features
 
-acc_baseline <- c()
-loss_baseline <- c()
-acc_val_baseline <- c()
-loss_val_baseline <- c()
-acc_test_baseline <- c()
-loss_test_baseline <- c()
+sd_features <- apply(trainData[,1:(ncol(trainData)-1)], 2, sd)
+sd_features
 
-i <- 1
+trainData[,1:(ncol(trainData)-1)] <- sweep(trainData[,1:(ncol(trainData)-1)], 2, mean_features, "-")
+trainData[,1:(ncol(trainData)-1)] <- sweep(trainData[,1:(ncol(trainData)-1)], 2, sd_features, "/")
+summary(trainData)
 
-for(lambda in lambda_values) {
-  xTrain <- model.matrix(hypothesis, trainData)
-  yTrain <- trainData$target
-  
-  baselineModel <- glmnet(xTrain, yTrain, family="binomial", maxit=1e+5, 
-                          standardize = FALSE, alpha=0.008, lambda = lambda)
-  
-  trainPred <- predict(baselineModel, newx=xTrain, type="response")
-  
-  trainClassPred <- trainPred
-  trainClassPred[trainPred >= 0.3] <- 1
-  trainClassPred[trainPred < 0.3] <- 0
-  
-  cm_train <- confusionMatrix(data = as.factor(trainClassPred), 
-                        reference = as.factor(trainData$target), 
-                        positive='1')
-  
-  
-  cm_relative_train <- calculaMatrizConfusaoRelativa(cm)
+valData[,1:(ncol(valData)-1)] <- sweep(valData[,1:(ncol(valData)-1)], 2, mean_features, "-")
+valData[,1:(ncol(valData)-1)] <- sweep(valData[,1:(ncol(valData)-1)], 2, sd_features, "/")
+summary(valData)
 
-  acc_baseline[i] <- (cm_relative[1,1] + cm_relative[2,2])/2
-  
-  loss_baseline[i] <- getLoss(yTrain, trainClassPred)
-  
-  x_val <- model.matrix(hypothesis, valData)
-  y_val <- valData$target
-  valPred <- predict(baselineModel, newx = x_val, type="response")
-  
-  #converting to class
-  valClassPred <- valPred
-  
-  #### THRESHOLD ####
-  # Threshold = 0.5
-  valClassPred[valPred >= 0.5] <- 1
-  valClassPred[valPred < 0.5] <- 0
-  
-  cm_val <- confusionMatrix(data = as.factor(valClassPred), 
-                        reference = as.factor(valData$target), 
-                        positive='1')
+trainData$target <- as.factor(trainData$target)
 
-  cm_relative_val <- calculaMatrizConfusaoRelativa(cm)
+table(trainData$target)
 
-  acc_val_baseline[i] <- (cm_relative[1,1] + cm_relative[2,2])/2
-  
-  loss_val_baseline[i] <- getLoss(y_val, valClassPred)
-  
-  x_val <- model.matrix(hypothesis, testData)
-  y_val <- testData$target
-  testPred <- predict(baselineModel, newx = x_val, type="response")
-  
-  #converting to class
-  valClassPred <- testPred
-  
-  #### THRESHOLD ####
-  # Threshold = 0.5
-  testClassPred[valPred >= 0.5] <- 1
-  testClassPred[valPred < 0.5] <- 0
-  
-  cm_test <- confusionMatrix(data = as.factor(testClassPred), 
-                        reference = as.factor(testClassPred$target), 
-                        positive='1')
-  cm_test
-  
-  cm_test_relative <- calculaMatrizConfusaoRelativa(cm)
-  cm_test_relative
-  i <- i+1
-}
- baseline_train_tpr <- TPR(cm_train, trainData)
- baseline_val_tpr <- TPR(cm_val, valData)
- baseline_test_tpr <- TPR(cm_test, trainData)
- 
- baseline_train_tnr <- TNR(cm_train, trainData)
- baseline_val_tnr <- TNR(cm_val, valData)
- baseline_test_npr <- TNR(cm_test, trainData)
- 
- cm_relative_train
- cm_relative_test
- cm_test_relative
+feature_names <- colnames(trainData)[1:(ncol(trainData)-1)]
+hypothesis <- getHypothesis(feature_names, 1)
+
 ```
 
 ```{r}
