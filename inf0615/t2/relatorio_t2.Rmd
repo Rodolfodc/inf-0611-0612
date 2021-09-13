@@ -92,7 +92,7 @@ calculaMatrizConfusaoRelativa <- function(cm){
 }
 
 TPR <- function(cm, data_set) {
-  TP <- cm$table[1]
+  TP <- cm$table[4]
   n_positive <- sum(data_set$target == 1)
   return(TP / n_positive)
 }
@@ -404,7 +404,16 @@ for(lambda in lambda_values) {
  baseline_train_tpr <- TPR(cm_train, trainData)
  baseline_val_tpr <- TPR(cm_val, valData)
  baseline_test_tpr <- TPR(cm_test, trainData)
+ 
+ baseline_train_tnr <- TNR(cm_train, trainData)
+ baseline_val_tnr <- TNR(cm_val, valData)
+ baseline_test_npr <- TNR(cm_test, trainData)
+ 
+ cm_relative_train
+ cm_relative_test
+ cm_test_relative
 ```
+
 ```{r}
 
 ```
