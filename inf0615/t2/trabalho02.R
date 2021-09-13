@@ -378,27 +378,26 @@ pesos[trainData$target==0] <- w_negative
 
 undersampled_data <- undersampling_balance(trainData)
 
-comb1 <- target ~ I(start_position^3) + I(end_position^3) +
-    I(chou_fasman^6) + I(emini^8) + I(isoelectric_point^8) + 
-  I(aromaticity^4) + I(hydrophobicity^6)
+comb1 <- target ~ (I(start_position^2) + I(end_position^2) + I(isoelectric_point^1))^4 +
+    (I(chou_fasman^1) + I(emini^1) + I(aromaticity^1))^4 + I(hydrophobicity^6)
+  
 
 
 feature_names <- colnames(trainData)[1:(ncol(trainData)-1)]
-hypothesis2 <- getHypothesis(feature_names, 8)
+hypothesis2 <- getHypothesis(feature_names, 12)
 
-accuracies3 <- train_and_get_accuracy(lambda_values, trainData, testData, 
+accuracies3 <- train_and_get_accuracy(lambda_values, trainData, sarsData, 
                                       dataWeights = pesos, comb1)
-
 
 acc_train <- accuracies3[[1]]$acc_train
 acc_val <- accuracies3[[1]]$acc_val
 
-plot_acc('hypothesis test - 8', acc_train, acc_val, baseline_acc, lambda_values)
+plot_acc('comb1 - 2 e 4', acc_train, acc_val, baseline_acc, lambda_values)
 
 loss_train <- accuracies3[[1]]$train_loss
 loss_val <- accuracies3[[1]]$val_loss
 
-plot_loss('hypothesis test - 8', loss_train, loss_val, lambda_values)
+plot_loss('comb1 - 2 e 4', loss_train, loss_val, lambda_values)
 
 
 
