@@ -10,7 +10,7 @@ library(pROC)
 
 
 setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0615/t2")
-source("DMwR.R")
+#source("DMwR.R")
 
 set.seed(12)
 
@@ -111,21 +111,35 @@ LR_predict_and_get_cm <- function(model, x_values, data_set, threshold = 0.5) {
 }
 
 train_and_get_accuracy <- function(lambda_list, train_set, val_set, 
+                                   test_set, sars_set,
                                    dataWeights = NULL, hypothesis =NULL,
                                    threshold = 0.5) {
   acc_train<- c()
   acc_val<- c()
+  acc_test<- c()
+  acc_sars<- c()
   
   train_loss <- c()
   val_loss <- c()
+  test_loss <- c()
+  sars_loss <- c()
   
   train_tpr <- c()
   train_tnr <- c()
+  
   val_tpr <- c()
   val_tnr <- c()
   
+  test_tpr <- c()
+  test_tnr <- c()
+  
+  sars_tpr <- c()
+  sars_tnr <- c()
+  
   train_cm_relative <- list()
   val_cm_relative <- list()
+  test_cm_relative <- list()
+  sars_cm_relative <- list()
   
   feature_names <- colnames(train_set)[1:(ncol(train_set)-1)]
   if(is.null(hypothesis))
@@ -139,6 +153,12 @@ train_and_get_accuracy <- function(lambda_list, train_set, val_set,
     
     x_val_data <- model.matrix(hypothesis, val_set)
     y_val_data <- val_set$target
+    
+    x_test_data <- model.matrix(hypothesis, test_set)
+    y_test_data <- test_set$target
+    
+    x_sars_data <- model.matrix(hypothesis, sars_set)
+    y_sars_data <- sars_set$target
     
     if(is.null(dataWeights))
     {
@@ -161,19 +181,37 @@ train_and_get_accuracy <- function(lambda_list, train_set, val_set,
     df_val <- as.data.frame(val_predicted[1])
     acc_val[i] <- df_val$acc
     val_loss[i] <- df_val$mean_loss
-    val_tpr[i] <- df_train$tpr
-    val_tnr[i] <- df_train$tnr
+    val_tpr[i] <- df_val$tpr
+    val_tnr[i] <- df_val$tnr
+    
+    test_predicted <- LR_predict_and_get_cm(LRModel, x_test_data, test_set)
+    df_test <- as.data.frame(test_predicted[1])
+    acc_test[i] <- df_test$acc
+    test_loss[i] <- df_test$mean_loss
+    test_tpr[i] <- df_test$tpr
+    test_tnr[i] <- df_test$tnr 
+    
+    sars_predicted <- LR_predict_and_get_cm(LRModel, x_sars_data, sars_set)
+    df_sars <- as.data.frame(sars_predicted[1])
+    acc_sars[i] <- df_sars$acc
+    sars_loss[i] <- df_sars$mean_loss
+    sars_tpr[i] <- df_sars$tpr
+    sars_tnr[i] <- df_sars$tnr
     
     train_cm_relative[[i]] <- train_predicted[2]
     val_cm_relative[[i]] <- val_predicted[2]
+    test_cm_relative[[i]] <- test_predicted[2]
+    sars_cm_relative[[i]] <- sars_predicted[2]
     
     i <- i+1
   }
   
-  result <-data.frame(acc_train, acc_val, train_loss, val_loss, train_tpr, train_tnr,
-                      val_tpr, val_tnr)
+  result <-data.frame(acc_train, acc_val, acc_test, acc_sars, 
+                      train_loss, val_loss, test_loss, sars_loss,
+                      train_tpr, train_tnr,val_tpr, val_tnr,
+                      test_tpr, test_tnr, sars_tpr, sars_tnr)
   
-  return(list(result, train_cm_relative, val_cm_relative))
+  return(list(result, train_cm_relative, val_cm_relative, test_cm_relative, sars_cm_relative))
 }
 
 undersampling_balance <- function(data_set) {
@@ -188,46 +226,50 @@ undersampling_balance <- function(data_set) {
   return(newTrainData)
 }
 
-plot_acc <- function(title, acc_train, acc_val, acc_baseline, lambda_values) {
+plot_acc <- function(title, acc_train, acc_val, baseline_acc, 
+                     acc_test, acc_sars, lambda_values) {
   plot(acc_train, xlab="Regularization factor (lambda)", ylab="Acc Balanced", 
        pch="+", col="red",  xaxt="n", 
-       ylim=c(min(c(acc_train, acc_val, baseline_acc[[2]])),
-              max(c(acc_train, acc_val, baseline_acc[[2]]))))
+       ylim=c(min(c(acc_train, acc_val, baseline_acc, acc_test, acc_sars)),
+              max(c(acc_train, acc_val, baseline_acc, acc_test, acc_sars))))
   
   axis(1, at=1:length(lambda_values), labels=lambda_values, cex.axis=0.5, las=2)
   points(acc_val, pch="*", col="blue")
-  #points(rep(acc_baseline[[2]], length(acc_val)), pch="o", col="green")
-  points(baseline_acc[[2]][1:length(acc_val)], pch="o", col="green")
+  points(baseline_acc[1:length(acc_val)], pch="o", col="green")
   
   
   lines(acc_train, col="red", lty=2)
   lines(acc_val, col="blue", lty=2)
-  #lines(rep(acc_baseline[[2]], length(acc_val)), col="green", lty=2)
-  lines(baseline_acc[[2]][1:length(acc_val)], col="green", lty=2)
-  legend(0.5, 01, legend=c("Train", "Validation", "Baseline"),
-         col=c("red","blue","green"), lty=2, cex=0.7)
+  lines(acc_test, col="black", lty=2)
+  lines(acc_sars, col="brown", lty=2)
+  lines(baseline_acc, col="green", lty=2)
+  legend("center", 1 , legend=c("Train", "Validation", "Baseline", "Test", "SARS"),
+         col=c("red","blue","green", "black", "brown"), lty=2, cex=0.7)
   title(title)
 }
 
 
-plot_loss <- function(title, loss_train, loss_val, lambda_values) {
-  loss_train <- accuracies3[[1]]$train_loss
-  loss_val <- accuracies3[[1]]$val_loss
+plot_loss <- function(title, loss_train, loss_val, loss_baseline,
+                      loss_test, loss_sars, lambda_values) {
+
   plot(loss_train, xlab="Regularization factor (lambda)", ylab="Loss", 
        pch="+", col="red",  xaxt="n", 
-       ylim=c(min(c(loss_train, loss_val)),
-              max(c(loss_train, loss_val))))
+       ylim=c(min(c(loss_train, loss_val, loss_baseline, loss_test, loss_sars)),
+              max(c(loss_train, loss_val, loss_baseline, loss_test, loss_sars))))
   
   
   axis(1, at=1:length(lambda_values), labels=lambda_values, 
        cex.axis=0.5, las=2)
   
   points(loss_val, pch="*", col="blue")
+  points(loss_baseline, pch="*", col="green")
   
   lines(loss_train, col="red", lty=2)
   lines(loss_val, col="blue", lty=2)
-  legend(5, 0.5, legend=c("Train", "Validation"),
-         col=c("red","blue"), lty=2, cex=0.7)
+  lines(loss_test, col="black", lty=2)
+  lines(loss_sars, col="brown", lty=2)
+  legend(5, 0.5, legend=c("Train", "Validation", "Baseline", "Test", "SARS"),
+         col=c("red","blue", "green", "black", "brown"), lty=2, cex=0.7)
   title(title)
 }
 ##############################################################################
@@ -292,56 +334,63 @@ hypothesis <- getHypothesis(feature_names, 1)
 
 lambda_values <- c(100, 10, 1.0, 0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10)
 
-xTrain <- model.matrix(hypothesis, trainData)
-yTrain <- trainData$target
+acc_baseline <- c()
+loss_baseline <- c()
+acc_val_baseline <- c()
+loss_val_baseline <- c()
 
-baselineModel <- glmnet(xTrain, yTrain, family="binomial", maxit=1e+5, 
-                        standardize = FALSE, alpha=0.008, lambda = 1e-6)
+i <- 1
 
-trainPred <- predict(baselineModel, newx=xTrain, type="response")
-
-trainClassPred <- trainPred
-trainClassPred[trainPred >= 0.3] <- 1
-trainClassPred[trainPred < 0.3] <- 0
-
-cm <- confusionMatrix(data = as.factor(trainClassPred), 
-                      reference = as.factor(trainData$target), 
-                      positive='1')
-
-cm
-
-cm_relative <- calculaMatrizConfusaoRelativa(cm)
-cm_relative
-
-acc_baseline <- (cm_relative[1,1] + cm_relative[2,2])/2
-acc_baseline
-
-
-x_val <- model.matrix(hypothesis, valData)
-y_val <- valData$target
-valPred <- predict(baselineModel, newx = x_val, type="response")
-
-#converting to class
-valClassPred <- valPred
-
-#### THRESHOLD ####
-# Threshold = 0.5
-valClassPred[valPred >= 0.5] <- 1
-valClassPred[valPred < 0.5] <- 0
-
-cm <- confusionMatrix(data = as.factor(valClassPred), 
-                      reference = as.factor(valData$target), 
-                      positive='1')
-cm
-
-cm_relative <- calculaMatrizConfusaoRelativa(cm)
-cm_relative
-acc_val_baseline <- (cm_relative[1,1] + cm_relative[2,2])/2
-acc_val_baseline
-
-baseline_acc <- train_and_get_accuracy(lambda_values, trainData, valData)
-baseline_loss <- baseline_acc$train_loss
-baseline_acc <- baseline_acc$train_acc
+for(lambda in lambda_values) {
+  xTrain <- model.matrix(hypothesis, trainData)
+  yTrain <- trainData$target
+  
+  baselineModel <- glmnet(xTrain, yTrain, family="binomial", maxit=1e+5, 
+                          standardize = FALSE, alpha=0.008, lambda = lambda)
+  
+  trainPred <- predict(baselineModel, newx=xTrain, type="response")
+  
+  trainClassPred <- trainPred
+  trainClassPred[trainPred >= 0.3] <- 1
+  trainClassPred[trainPred < 0.3] <- 0
+  
+  cm <- confusionMatrix(data = as.factor(trainClassPred), 
+                        reference = as.factor(trainData$target), 
+                        positive='1')
+  
+  cm
+  
+  cm_relative <- calculaMatrizConfusaoRelativa(cm)
+  cm_relative
+  
+  acc_baseline[i] <- (cm_relative[1,1] + cm_relative[2,2])/2
+  
+  loss_baseline[i] <- getLoss(yTrain, trainClassPred)
+  
+  x_val <- model.matrix(hypothesis, valData)
+  y_val <- valData$target
+  valPred <- predict(baselineModel, newx = x_val, type="response")
+  
+  #converting to class
+  valClassPred <- valPred
+  
+  #### THRESHOLD ####
+  # Threshold = 0.5
+  valClassPred[valPred >= 0.5] <- 1
+  valClassPred[valPred < 0.5] <- 0
+  
+  cm <- confusionMatrix(data = as.factor(valClassPred), 
+                        reference = as.factor(valData$target), 
+                        positive='1')
+  cm
+  
+  cm_relative <- calculaMatrizConfusaoRelativa(cm)
+  cm_relative
+  acc_val_baseline[i] <- (cm_relative[1,1] + cm_relative[2,2])/2
+  
+  loss_val_baseline[i] <- getLoss(y_val, valClassPred)
+  i <- i+1
+}
 
 # ROC Curve for baseline
 ROC <- roc(valData$target, valPred[,1], direction="<")
@@ -378,26 +427,34 @@ pesos[trainData$target==0] <- w_negative
 
 undersampled_data <- undersampling_balance(trainData)
 
-comb1 <- target ~ (I(start_position^2) + I(end_position^2) + I(isoelectric_point^1))^4 +
-    (I(chou_fasman^1) + I(emini^1) + I(aromaticity^1))^4 + I(hydrophobicity^6)
+comb1 <- target ~ (I(start_position^1) + I(end_position^1))^4 + (I(chou_fasman^1) + 
+  I(emini^1))^10 + I(kolaskar_tongaonkar^1) + I(parker^1) + I(isoelectric_point^6) + 
+  (I(aromaticity^1) + I(hydrophobicity^1))^10 + I(stability^1)
   
 
 
 feature_names <- colnames(trainData)[1:(ncol(trainData)-1)]
-hypothesis2 <- getHypothesis(feature_names, 12)
+hypothesis <- getHypothesis(feature_names, 8)
 
-accuracies3 <- train_and_get_accuracy(lambda_values, trainData, sarsData, 
+results <- train_and_get_accuracy(lambda_values, trainData, testData,
+                                      testData, sarsData,
                                       dataWeights = pesos, comb1)
 
-acc_train <- accuracies3[[1]]$acc_train
-acc_val <- accuracies3[[1]]$acc_val
+acc_train <- results[[1]]$acc_train
+acc_val <- results[[1]]$acc_val
+acc_test <- results[[1]]$acc_test
+acc_sars <- results[[1]]$acc_sars
 
-plot_acc('comb1 - 2 e 4', acc_train, acc_val, baseline_acc, lambda_values)
+plot_acc('comb1 - 2 e 4', acc_train, acc_val, acc_val_baseline, 
+         acc_test, acc_sars, lambda_values)
 
-loss_train <- accuracies3[[1]]$train_loss
-loss_val <- accuracies3[[1]]$val_loss
+loss_train <- results[[1]]$train_loss
+loss_val <- results[[1]]$val_loss
+loss_test <- results[[1]]$test_loss
+loss_sars <- results[[1]]$sars_loss
 
-plot_loss('comb1 - 2 e 4', loss_train, loss_val, lambda_values)
+plot_loss('comb1 - 2 e 4', loss_train, loss_val, loss_val_baseline, 
+          loss_test, loss_sars, lambda_values)
 
 
 
