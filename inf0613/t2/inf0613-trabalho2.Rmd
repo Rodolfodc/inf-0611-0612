@@ -68,8 +68,10 @@ speech_pca <- prcomp(speech[,1:617], scale = FALSE)
 
 # Analisando as componentes com o comando summary
 #summary(speech_pca)
-summary(speech_pca)$importance %>% data.frame() %>% select(1:4)
+importance <- data.frame(summary(speech_pca)$importance)
 
+importance %>%
+  select(., 1:6)
 
 ```
 
@@ -105,7 +107,7 @@ e) Faça um breve resumo dos resultados dos itens *a)-d)* destacando o impacto d
 
 **Resposta:** 
 
-\quad A redução de dimensionalidade é um processo importante na análise e construção de intepretação dos dados. Sua utilização é grande importância para identificar e descartar informações redundantes, de forma a reduzir computacionalmente o tempo e armazenamento, assim como gerar modelos e visualizações mais simples e intuitivas. A análise de componentes principais é uma das técnicas de fácil aplicação para obtenção desses resultados. Utilizando essa técnica no banco de dados Speech, a partir de somente 38 componentes, já seriamos capazes de representar 80% da variação total dos nossos dados, já correspondendo a um ótimo resultado. Aumentando para 91, 170 e 382 componentes, teríamos respectivamente 90%, 95%, 99% da variabilidade dos dados representada, enquanto que inicialmente possuíamos 618 atributos a disposição para utilização. 
+\quad A redução de dimensionalidade para bases com grande número de features é um processo muito importante tanto para interpretação quanto para reduzir tempo de processamento e descartar informações reduntates.Utilizando essa técnica no banco de dados Speech, a partir de somente 38 componentes, já seriamos capazes de representar 80% da variação total dos nossos dados, já correspondendo a um ótimo resultado. Aumentando para 91, 170 e 382 componentes, teríamos respectivamente 90%, 95%, 99% da variabilidade dos dados representada, enquanto que inicialmente possuíamos 618 atributos a disposição para utilização. 
 
 # Atividade 2 -- Análise de Componentes Principais e Normalização (*3,5 pts*)
 
@@ -159,8 +161,7 @@ f) Qual opção parece ser mais adequada para esse conjunto de dados? Justifique
 
 **Resposta:** 
 
-\quad Através das componentes obtidos por meio dos dois métodos, podemos concluir que a análise de componentes principais sem normalização se demonstrou mais efetiva. Para todas as variâncias acumuladas avaliadas, o primeiro método necessitou de menos componentes, reduzindo a dimensionalidade e apresentando maior simplicidade no modelo.
-
+\quad Por meio das técnicas apresentadas pelos dois métodos, nota-se que a análise de componentes principais sem realizar a normalização demonstrou-se mais eficaz na redução de dimensionalidade dos nossos dados pois, para todas as variâncias acumuladas avaliadas, o primeiro método necessitou de menos componentes.
 
 # Atividade 3 -- Visualização a partir da Redução (*3,0 pts*)
 
@@ -183,12 +184,12 @@ b) Aplique a redução de dimensionalidade com a técnica UMAP e gere um gráfic
 ```{r atv3b-code}
 
 # Aplicando redução de dimensionalidade com a técnica UMAP
-set.seed(21) # semente fixa para reprodutibilidade 
+
 speech_umap <- umap(as.matrix(speech[,1:617]))
 
 # Gerando o gráfico de dispersão
-plot(speech_umap$layout , col= as.factor(speech$LETRA) , xlab="dimensao 1", 
-     ylab="dimensao2", pch =16)
+plot(speech_umap$layout , col= as.factor(speech$LETRA) , xlab="Dimensão 1", 
+     ylab="Dimensão 2", pch =16)
 
 
 ```
@@ -198,14 +199,17 @@ c) Aplique a redução de dimensionalidade com a técnica T-SNE e gere um gráfi
 ```{r atv3c-code}
 
 # Aplicando redução de dimensionalidade com a técnica T-SNE
-sum(duplicated(speech)) #verificando dados repetidos
-set.seed(21)
+
+#verificando dados repetidos
+sum(duplicated(speech)) 
+
+set.seed(46)
 
 tsne <- Rtsne(as.matrix(speech[,1:617]), perplexity = 30, dims=2)
 
 
 # Gerando o gráfico de dispersão
-plot(tsne$Y, col= as.factor(speech$LETRA) , xlab="dimensao 1", ylab="dimensao 2", 
+plot(tsne$Y, col= as.factor(speech$LETRA) , xlab="Dimensão 1", ylab="Dimensão 2", 
      pch=16)
 
 
@@ -219,5 +223,5 @@ d) Qual técnica você acredita que apresentou a melhor projeção? Justifique.
 
 **Resposta:** 
 
-\quad Analisando os gráficos gerados a partir das 3 técnicas de redução de dimensionalidade, é possível concluir que a técnica de T-SNE se apresentou mais efetiva para o banco de dados em questão. Para o problema em questão, temos 26 categorias da nossa variável resposta. Ao analisarmos o resultado do PCA, não é possível distinguir nenhum grupo. Utilizando o UMAP, alguns agrupamentos de categorias já ficam mais evidentes, porém alguns registros ficam muito misturados e é com o T-SNE em que conseguimos ter visualizações mais espaçadas e claras de algumas categorias. 
+\quad Analisando os gráficos gerados a partir das 3 técnicas de redução de dimensionalidade, é possível concluir que a técnica de T-SNE mostrou-se mais efetiva para o banco de dados em questão. Na base de dados temos 26 categorias da variável resposta. Ao analisarmos o resultado do PCA, não é possível distinguir nenhum grupo. Utilizando o UMAP, alguns agrupamentos de categorias já ficam mais evidentes, porém alguns registros ficam muito misturados e é com o T-SNE em que conseguimos ter visualizações mais espaçadas e claras de algumas categorias. 
 
