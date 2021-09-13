@@ -71,7 +71,7 @@ calculaMatrizConfusaoRelativa <- function(cm){
 }
 
 TPR <- function(cm, data_set) {
-  TP <- cm$table[1]
+  TP <- cm$table[4]
   n_positive <- sum(data_set$target == 1)
   return(TP / n_positive)
 }
@@ -338,6 +338,8 @@ acc_baseline <- c()
 loss_baseline <- c()
 acc_val_baseline <- c()
 loss_val_baseline <- c()
+acc_test_baseline <- c()
+loss_test_baseline <- c()
 
 i <- 1
 
@@ -389,6 +391,26 @@ for(lambda in lambda_values) {
   acc_val_baseline[i] <- (cm_relative[1,1] + cm_relative[2,2])/2
   
   loss_val_baseline[i] <- getLoss(y_val, valClassPred)
+  
+  x_val <- model.matrix(hypothesis, testData)
+  y_val <- testData$target
+  testPred <- predict(baselineModel, newx = x_val, type="response")
+  
+  #converting to class
+  valClassPred <- testPred
+  
+  #### THRESHOLD ####
+  # Threshold = 0.5
+  testClassPred[valPred >= 0.5] <- 1
+  testClassPred[valPred < 0.5] <- 0
+  
+  cm_test <- confusionMatrix(data = as.factor(testClassPred), 
+                        reference = as.factor(testClassPred$target), 
+                        positive='1')
+  cm_test
+  
+  cm_relative <- calculaMatrizConfusaoRelativa(cm)
+  cm_relative
   i <- i+1
 }
 
@@ -434,18 +456,18 @@ comb1 <- target ~ (I(start_position^1) + I(end_position^1))^4 + (I(chou_fasman^1
 
 
 feature_names <- colnames(trainData)[1:(ncol(trainData)-1)]
-hypothesis <- getHypothesis(feature_names, 8)
+hypothesis <- getHypothesis(feature_names, 4)
 
 results <- train_and_get_accuracy(lambda_values, trainData, testData,
                                       testData, sarsData,
-                                      dataWeights = pesos, comb1)
+                                      dataWeights = pesos, hypothesis)
 
 acc_train <- results[[1]]$acc_train
 acc_val <- results[[1]]$acc_val
 acc_test <- results[[1]]$acc_test
 acc_sars <- results[[1]]$acc_sars
 
-plot_acc('comb1 - 2 e 4', acc_train, acc_val, acc_val_baseline, 
+plot_acc('hypothesis 6', acc_train, acc_val, acc_val_baseline, 
          acc_test, acc_sars, lambda_values)
 
 loss_train <- results[[1]]$train_loss
@@ -453,7 +475,7 @@ loss_val <- results[[1]]$val_loss
 loss_test <- results[[1]]$test_loss
 loss_sars <- results[[1]]$sars_loss
 
-plot_loss('comb1 - 2 e 4', loss_train, loss_val, loss_val_baseline, 
+plot_loss('hypothesis 6', loss_train, loss_val, loss_val_baseline, 
           loss_test, loss_sars, lambda_values)
 
 

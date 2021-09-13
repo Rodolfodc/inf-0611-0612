@@ -321,3 +321,90 @@ Dado o mapa de correlacoes da Figura \ref{fig:graf1}, observa-se que a variavel 
 Apos a etapda de inspecao dos dados, foi realizada a normalizacao utilizando o metodo Z-Norm. Em seguida, a partir dos dados nao balanceados foi gerada uma Baseline considerando todas as variaveis num polinomio de grau 1. Apos isso, foram aplicadas 3 tecnicas de balanceamento: SMOTE, undersample e a ponderada por pesos; dentre elas o balanceamento ponderado gerou melhores resultados. A partir disso, uma serie de hipoteses foram testadas para gerar o modelo: polinomios de 1 a 12, combinacoes considerando as variaveis de maior correlacao e a propria baseline.
 
 # Resultados e Conclusão
+```{r}
+
+lambda_values <- c(100, 10, 1.0, 0.1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10)
+
+acc_baseline <- c()
+loss_baseline <- c()
+acc_val_baseline <- c()
+loss_val_baseline <- c()
+acc_test_baseline <- c()
+loss_test_baseline <- c()
+
+i <- 1
+
+for(lambda in lambda_values) {
+  xTrain <- model.matrix(hypothesis, trainData)
+  yTrain <- trainData$target
+  
+  baselineModel <- glmnet(xTrain, yTrain, family="binomial", maxit=1e+5, 
+                          standardize = FALSE, alpha=0.008, lambda = lambda)
+  
+  trainPred <- predict(baselineModel, newx=xTrain, type="response")
+  
+  trainClassPred <- trainPred
+  trainClassPred[trainPred >= 0.3] <- 1
+  trainClassPred[trainPred < 0.3] <- 0
+  
+  cm_train <- confusionMatrix(data = as.factor(trainClassPred), 
+                        reference = as.factor(trainData$target), 
+                        positive='1')
+  
+  
+  cm_relative_train <- calculaMatrizConfusaoRelativa(cm)
+
+  acc_baseline[i] <- (cm_relative[1,1] + cm_relative[2,2])/2
+  
+  loss_baseline[i] <- getLoss(yTrain, trainClassPred)
+  
+  x_val <- model.matrix(hypothesis, valData)
+  y_val <- valData$target
+  valPred <- predict(baselineModel, newx = x_val, type="response")
+  
+  #converting to class
+  valClassPred <- valPred
+  
+  #### THRESHOLD ####
+  # Threshold = 0.5
+  valClassPred[valPred >= 0.5] <- 1
+  valClassPred[valPred < 0.5] <- 0
+  
+  cm_val <- confusionMatrix(data = as.factor(valClassPred), 
+                        reference = as.factor(valData$target), 
+                        positive='1')
+
+  cm_relative_val <- calculaMatrizConfusaoRelativa(cm)
+
+  acc_val_baseline[i] <- (cm_relative[1,1] + cm_relative[2,2])/2
+  
+  loss_val_baseline[i] <- getLoss(y_val, valClassPred)
+  
+  x_val <- model.matrix(hypothesis, testData)
+  y_val <- testData$target
+  testPred <- predict(baselineModel, newx = x_val, type="response")
+  
+  #converting to class
+  valClassPred <- testPred
+  
+  #### THRESHOLD ####
+  # Threshold = 0.5
+  testClassPred[valPred >= 0.5] <- 1
+  testClassPred[valPred < 0.5] <- 0
+  
+  cm_test <- confusionMatrix(data = as.factor(testClassPred), 
+                        reference = as.factor(testClassPred$target), 
+                        positive='1')
+  cm_test
+  
+  cm_test_relative <- calculaMatrizConfusaoRelativa(cm)
+  cm_test_relative
+  i <- i+1
+}
+ baseline_train_tpr <- TPR(cm_train, trainData)
+ baseline_val_tpr <- TPR(cm_val, valData)
+ baseline_test_tpr <- TPR(cm_test, trainData)
+```
+```{r}
+
+```
