@@ -5,9 +5,10 @@ author:
 - Nicole Nogueira
 date: "9/11/2021"
 output:
+  pdf_document: default
+  word_document: default
   html_document:
     df_print: paged
-  word_document: default
 subtitle: Trabalho 2 - Regressão Logistica
 header-includes: \usepackage[brazil, english, portuguese]{babel}
 ---
@@ -24,8 +25,8 @@ library(glmnet)
 library(caret)
 library(pROC)
 
-setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0615/t2")
-
+#setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0615/t2")
+setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0613/t2")
 set.seed(12)
 
 ```
@@ -256,9 +257,9 @@ plot_loss <- function(title, loss_train, loss_val, lambda_values) {
 
 ```
 
-# Introducao
+# Introdução
 
-O sistema imunologico humano, é o sistema responsavel por proteger o corpo de antigenos como virus e bacterias. A producao de globulos brancos, nome dado as celulas que compoem o sistema imunologico, é originada por algumas cadeias proteicas presentes no antigeno. Desse modo, propoe-se utilizar um modelo de regressao logistica com o objetivo, a partir de determinadas caracteristicas de uma cadeia proteica, a mesma pode gerar uma resposta do sistema imunilogico.
+O sistema imunológico humano é o sistema responsável por proteger o corpo de antígenos como vírus e bactérias. A produção de glóbulos brancos, nome dado às células que compoem o sistema imunologico, é originada por algumas cadeias proteicas presentes no antigeno. Desse modo, propoe-se utilizar um modelo de regressao logistica com o objetivo, a partir de determinadas caracteristicas de uma cadeia proteica, a mesma pode gerar uma resposta do sistema imunilogico.
 
 # Banco de dados
 
@@ -271,7 +272,7 @@ testData <- read.csv("proteins_test_set.csv", stringsAsFactors=TRUE)
 sarsData <- read.csv("SARS_test_set.csv", stringsAsFactors=TRUE)
 
 
-summary(trainData)
+#summary(trainData)
 
 
 #Inspecionando o banco de dados
@@ -293,16 +294,16 @@ summary(trainData[,8:ncol(trainData)]) %>%
 
 Na \ref{tab:dados} pode ser observado os dados que foram utilizados para o desenvolvimento do trabalho. Nota-se que todos praticamente sao dados numericos, e a coluna target é a coluna resultado. A base foi dividida em 3 partes da base e uma outra base externa para testes, sendo portanto, 1 parte de treino, 1 de validaçao, 1 de teste e 1 de teste sobre o virus SARS. Cada uma contem respectivamente 9204, 2303, 2878 e 520 linhas e um total de 11 colunas (como observado acima).
 
-# Analise Descritiva
+# Análise Descritiva
 
 ```{r}
 print(paste("Dados Faltantes no treino: ", any(is.na(trainData))))
-print(paste("Dados Faltantes na validacao: ", any(is.na(valData))))
+print(paste("Dados Faltantes na validação: ", any(is.na(valData))))
 print(paste("Dados Faltantes no teste: ", any(is.na(testData))))
 print(paste("Dados Faltantes no SARS: ", any(is.na(testData))))
 ```
 
-Como pode ser observado, a base nao possuia nenhum dado faltante para nenhuma das partes.
+Como pode ser observado, a base nao possui nenhum dado faltante para nenhuma das partes.
 
 ```{r fig.cap="\\label{fig:graf1} Correlações 2 a 2 das variáveis."}
 cor(trainData) %>%
@@ -319,4 +320,4 @@ Dado o mapa de correlacoes da Figura \ref{fig:graf1}, observa-se que a variavel 
 
 Apos a etapda de inspecao dos dados, foi realizada a normalizacao utilizando o metodo Z-Norm. Em seguida, a partir dos dados nao balanceados foi gerada uma Baseline considerando todas as variaveis num polinomio de grau 1. Apos isso, foram aplicadas 3 tecnicas de balanceamento: SMOTE, undersample e a ponderada por pesos; dentre elas o balanceamento ponderado gerou melhores resultados. A partir disso, uma serie de hipoteses foram testadas para gerar o modelo: polinomios de 1 a 12, combinacoes considerando as variaveis de maior correlacao e a propria baseline.
 
-# Resultados e Conclusao
+# Resultados e Conclusão
