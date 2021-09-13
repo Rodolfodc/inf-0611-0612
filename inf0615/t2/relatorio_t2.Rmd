@@ -1,13 +1,15 @@
 ---
-title: INF0615 -- Aprendizado de Máquina Supervisionado
-subtitle: Trabalho 2 - Regressão Logistica
-author: 
+title: "INF0615 -- Aprendizado de Máquina Supervisionado"
+author:
 - Rodolfo Dalla Costa
 - Nicole Nogueira
 date: "9/11/2021"
-output: word_document
-header-includes:
-- \usepackage[brazil, english, portuguese]{babel}
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+subtitle: Trabalho 2 - Regressão Logistica
+header-includes: \usepackage[brazil, english, portuguese]{babel}
 ---
 
 ```{r setup, include = FALSE}
@@ -29,6 +31,31 @@ set.seed(12)
 ```
 
 ```{r}
+
+set.seed(12)
+
+##############################################################################
+############################### Funcoes de ajuda #############################
+#----------------------------------------------------------------------------#
+getLoss <- function(y_true, y_pred){
+  y_true <- as.numeric(y_true) - 1
+  
+  totalLoss <- 0
+  eps <- 1e-9
+  # Recall: length(y_true) == length(y_pred)
+  # loss = (1-y)*log2(1 - p + eps)) + y*log(p + eps)
+  # eps is used for numerical stability, it is very close to 0.
+  # Supose we have y = 1 and p = 1 (perfect prediction), the loss (without eps)
+  # would be 0*log2(0) + 1*log(1). It would result in NaN
+  # because of 0*log2(0). With eps: 0*log2(1e-9) + 1*log(1 + 1e-9) 
+  for(i in 1:length(y_true)){
+    loss <- -1*((1 - y_true[i])*log2(1 - y_pred[i] + eps) + y_true[i]*log2(y_pred[i] + eps))
+    totalLoss <- totalLoss + loss
+  }
+  totalLoss <- totalLoss/(length(y_true))
+  return(totalLoss)
+}
+
 
 getHypothesis <- function(feature_names, degree){
   
@@ -75,13 +102,13 @@ TNR <- function(cm, data_set) {
   return(TN/n_negative)
 }
 
-LR_predict_and_get_cm <- function(model, x_values, data_set, pesos, lambda) {
+LR_predict_and_get_cm <- function(model, x_values, data_set, threshold = 0.5) {
   
   predicted <- predict(model, newx=x_values, type="response")
   
   predictedTarget <- predicted
-  predictedTarget[predicted >= 0.5] <- 1
-  predictedTarget[predicted < 0.5] <- 0
+  predictedTarget[predicted >= threshold] <- 1
+  predictedTarget[predicted < threshold] <- 0
   
   cm <- confusionMatrix(data = as.factor(predictedTarget), 
                         reference = as.factor(data_set$target), 
@@ -94,15 +121,35 @@ LR_predict_and_get_cm <- function(model, x_values, data_set, pesos, lambda) {
   tpr <- TPR(cm, data_set)
   tnr <- TNR(cm, data_set)
   
-  return(c(acc, tpr, tnr, cm, cm_relative))
+  loss_0 <- getLoss(data_set$target[data_set$target == 0], predictedTarget[data_set$target == 0])
+  loss_1 <- getLoss(data_set$target[data_set$target == 1], predictedTarget[data_set$target == 1])
+  mean_loss <- (loss_0 + loss_1) / 2
+  
+  result <- data.frame(acc, loss_0, loss_1, mean_loss, tpr, tnr)
+  
+  return(list(result, cm_relative, cm))
 }
 
-train_and_get_accuracy <- function(lambda_list, train_set, val_set, pesos) {
+train_and_get_accuracy <- function(lambda_list, train_set, val_set, 
+                                   dataWeights = NULL, hypothesis =NULL,
+                                   threshold = 0.5) {
   acc_train<- c()
   acc_val<- c()
   
+  train_loss <- c()
+  val_loss <- c()
+  
+  train_tpr <- c()
+  train_tnr <- c()
+  val_tpr <- c()
+  val_tnr <- c()
+  
+  train_cm_relative <- list()
+  val_cm_relative <- list()
+  
   feature_names <- colnames(train_set)[1:(ncol(train_set)-1)]
-  hypothesis <- getHypothesis(feature_names, 1)
+  if(is.null(hypothesis))
+    hypothesis <- getHypothesis(feature_names, 1)
   
   i<- 1
   for(lambda in lambda_list) {
@@ -113,52 +160,163 @@ train_and_get_accuracy <- function(lambda_list, train_set, val_set, pesos) {
     x_val_data <- model.matrix(hypothesis, val_set)
     y_val_data <- val_set$target
     
-    LRModel <- glmnet(x_data, y_data, family="binomial" , weights = pesos,
-                      standardize = FALSE, alpha=0, lambda = lambda)
+    if(is.null(dataWeights))
+    {
+      LRModel <- glmnet(x_data, y_data, family="binomial",
+                        standardize = FALSE, alpha=0, lambda = lambda)
+    } else {
+      LRModel <- glmnet(x_data, y_data, family="binomial" , weights = dataWeights,
+                        standardize = FALSE, alpha=0, lambda = lambda)
+    }
     
-    acc_train[i] <- LR_predict_and_get_cm(LRModel, x_data, train_set, pesos, lambda)[1]
-    acc_val[i] <- LR_predict_and_get_cm(LRModel, x_val_data, val_set, pesos, lambda)[1]
+    
+    train_predicted <- LR_predict_and_get_cm(LRModel, x_data, train_set)
+    df_train <- as.data.frame(train_predicted[1])
+    acc_train[i] <- df_train$acc
+    train_loss[i] <- df_train$mean_loss
+    train_tpr[i] <- df_train$tpr
+    train_tnr[i] <- df_train$tnr
+    
+    val_predicted <- LR_predict_and_get_cm(LRModel, x_val_data, val_set)
+    df_val <- as.data.frame(val_predicted[1])
+    acc_val[i] <- df_val$acc
+    val_loss[i] <- df_val$mean_loss
+    val_tpr[i] <- df_train$tpr
+    val_tnr[i] <- df_train$tnr
+    
+    train_cm_relative[[i]] <- train_predicted[2]
+    val_cm_relative[[i]] <- val_predicted[2]
+    
     i <- i+1
   }
-  return(list(acc_train, acc_val))
+  
+  result <-data.frame(acc_train, acc_val, train_loss, val_loss, train_tpr, train_tnr,
+                      val_tpr, val_tnr)
+  
+  return(list(result, train_cm_relative, val_cm_relative))
 }
+
+undersampling_balance <- function(data_set) {
+  ####### Balanceamento por Undersampling #######
+  positiveData <- data_set[data_set$target == 1,]
+  negativeData <- data_set[data_set$target == 0,]
+  
+  selectedIndex <- sample(1:nrow(negativeData), 1.2*nrow(positiveData), replace=FALSE)
+  undersampledNegData <- negativeData[selectedIndex,]
+  
+  newTrainData <- rbind(positiveData, undersampledNegData)
+  return(newTrainData)
+}
+
+plot_acc <- function(title, acc_train, acc_val, acc_baseline, lambda_values) {
+  plot(acc_train, xlab="Regularization factor (lambda)", ylab="Acc Balanced", 
+       pch="+", col="red",  xaxt="n", 
+       ylim=c(min(c(acc_train, acc_val, baseline_acc[[2]])),
+              max(c(acc_train, acc_val, baseline_acc[[2]]))))
+  
+  axis(1, at=1:length(lambda_values), labels=lambda_values, cex.axis=0.5, las=2)
+  points(acc_val, pch="*", col="blue")
+  #points(rep(acc_baseline[[2]], length(acc_val)), pch="o", col="green")
+  points(baseline_acc[[2]][1:length(acc_val)], pch="o", col="green")
+  
+  
+  lines(acc_train, col="red", lty=2)
+  lines(acc_val, col="blue", lty=2)
+  #lines(rep(acc_baseline[[2]], length(acc_val)), col="green", lty=2)
+  lines(baseline_acc[[2]][1:length(acc_val)], col="green", lty=2)
+  legend(0.5, 01, legend=c("Train", "Validation", "Baseline"),
+         col=c("red","blue","green"), lty=2, cex=0.7)
+  title(title)
+}
+
+
+plot_loss <- function(title, loss_train, loss_val, lambda_values) {
+  loss_train <- accuracies3[[1]]$train_loss
+  loss_val <- accuracies3[[1]]$val_loss
+  plot(loss_train, xlab="Regularization factor (lambda)", ylab="Loss", 
+       pch="+", col="red",  xaxt="n", 
+       ylim=c(min(c(loss_train, loss_val)),
+              max(c(loss_train, loss_val))))
+  
+  
+  axis(1, at=1:length(lambda_values), labels=lambda_values, 
+       cex.axis=0.5, las=2)
+  
+  points(loss_val, pch="*", col="blue")
+  
+  lines(loss_train, col="red", lty=2)
+  lines(loss_val, col="blue", lty=2)
+  legend(5, 0.5, legend=c("Train", "Validation"),
+         col=c("red","blue"), lty=2, cex=0.7)
+  title(title)
+}
+##############################################################################
+##################################    Fim     ################################
+##############################################################################
+
 ```
 
 # Introducao
-O sistema imunologico humano, é o sistema responsavel por proteger o corpo de antigenos como virus e bacterias. A producao de globulos brancos, nome dado as celular que compoe o sistema imunologico, 
+
+O sistema imunologico humano, é o sistema responsavel por proteger o corpo de antigenos como virus e bacterias. A producao de globulos brancos, nome dado as celulas que compoem o sistema imunologico, é originada por algumas cadeias proteicas presentes no antigeno. Desse modo, propoe-se utilizar um modelo de regressao logistica com o objetivo, a partir de determinadas caracteristicas de uma cadeia proteica, a mesma pode gerar uma resposta do sistema imunilogico.
+
 # Banco de dados
 
 ```{r}
 # Comandos que leem os conjuntos de treino e de validacao
-train_set <- read.csv("training_set_air_quality.csv", stringsAsFactors=TRUE)
-val_set <- read.csv("validation_set_air_quality.csv", stringsAsFactors=TRUE)
-test_set <- read.csv("test_set_air_quality.csv", stringsAsFactors=TRUE )
-
-
-#Inspecionando o banco de dados
-#str(train_set)
-
-summary(train_set[,2:9]) %>% 
-  kable("latex",  caption = "\\label{tab:dados}Estatísticas sumárias do banco de dados", booktabs = T) %>% 
-  kable_styling(latex_options = "hold_position", font_size = 8)
-
-summary(train_set[,10:ncol(train_set)]) %>% 
-  kable("latex", booktabs = T) %>% 
-  kable_styling(latex_options = "hold_position", font_size = 8)
-
 
 trainData <- read.csv("proteins_training_set.csv", stringsAsFactors=TRUE)
 valData <- read.csv("proteins_validation_set.csv", stringsAsFactors=TRUE)
+testData <- read.csv("proteins_test_set.csv", stringsAsFactors=TRUE)
+sarsData <- read.csv("SARS_test_set.csv", stringsAsFactors=TRUE)
 
-str(trainData)
 
-summary(trainData) %>%
+summary(trainData)
+
+
+#Inspecionando o banco de dados
+#str(trainData)
+
+summary(trainData[,2:4]) %>% 
   kable("latex",  caption = "\\label{tab:dados}Estatísticas sumárias do banco de dados", booktabs = T) %>% 
   kable_styling(latex_options = "hold_position", font_size = 8)
 
+summary(trainData[,5:7]) %>% 
+  kable("latex", booktabs = T) %>% 
+  kable_styling(latex_options = "hold_position", font_size = 8)
 
-summary(valData) %>%
-  kable("latex",  caption = "\\label{tab:dados}Estatísticas sumárias do banco de dados", booktabs = T) %>% 
+summary(trainData[,8:ncol(trainData)]) %>% 
+  kable("latex", booktabs = T) %>% 
   kable_styling(latex_options = "hold_position", font_size = 8)
 
 ```
+
+Na \ref{tab:dados} pode ser observado os dados que foram utilizados para o desenvolvimento do trabalho. Nota-se que todos praticamente sao dados numericos, e a coluna target é a coluna resultado. A base foi dividida em 3 partes da base e uma outra base externa para testes, sendo portanto, 1 parte de treino, 1 de validaçao, 1 de teste e 1 de teste sobre o virus SARS. Cada uma contem respectivamente 9204, 2303, 2878 e 520 linhas e um total de 11 colunas (como observado acima).
+
+# Analise Descritiva
+
+```{r}
+print(paste("Dados Faltantes no treino: ", any(is.na(trainData))))
+print(paste("Dados Faltantes na validacao: ", any(is.na(valData))))
+print(paste("Dados Faltantes no teste: ", any(is.na(testData))))
+print(paste("Dados Faltantes no SARS: ", any(is.na(testData))))
+```
+
+Como pode ser observado, a base nao possuia nenhum dado faltante para nenhuma das partes.
+
+```{r fig.cap="\\label{fig:graf1} Correlações 2 a 2 das variáveis."}
+cor(trainData) %>%
+  corrplot(., type = "lower", tl.col = "black", tl.srt = 45)
+
+# trainData %>% 
+#   ggplot(., aes(x=hydrophobicity, y=isoelectric_point, color=target, size=emini)) +
+#     geom_point(aes(alpha=0.01)) + theme_bw()
+```
+
+Dado o mapa de correlacoes da Figura \ref{fig:graf1}, observa-se que a variavel `target` nao possui correlacoes com um valor evidentemente alto, sendo notavel uma correlacao inversa com a variavel `target` com a variavel `isoeletric_point` e uma correlacao inversa mais baixa com `start_position` e `end_position`. Em contrapartida nota-se um correlacao positiva, porem mais fraca, com as variaveis `chou_fasm`, `hydrophobicity`, `emini` e `aromaticity`.
+
+# Metodologia
+
+Apos a etapda de inspecao dos dados, foi realizada a normalizacao utilizando o metodo Z-Norm. Em seguida, a partir dos dados nao balanceados foi gerada uma Baseline considerando todas as variaveis num polinomio de grau 1. Apos isso, foram aplicadas 3 tecnicas de balanceamento: SMOTE, undersample e a ponderada por pesos; dentre elas o balanceamento ponderado gerou melhores resultados. A partir disso, uma serie de hipoteses foram testadas para gerar o modelo: polinomios de 1 a 12, combinacoes considerando as variaveis de maior correlacao e a propria baseline.
+
+# Resultados e Conclusao
