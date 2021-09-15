@@ -5,10 +5,10 @@ author:
 - Nicole Nogueira
 date: "9/11/2021"
 output:
+  word_document: default
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
-  word_document: default
 subtitle: Trabalho 2 - Regressão Logistica
 header-includes: \usepackage[brazil, english, portuguese]{babel}
 ---
@@ -325,28 +325,41 @@ Apos a etapda de inspecao dos dados, foi realizada a normalizacao utilizando o m
 
 ## Normalizacao Z-norma 
 mean_features <- apply(trainData[,1:(ncol(trainData)-1)], 2, mean)
-mean_features
 
 sd_features <- apply(trainData[,1:(ncol(trainData)-1)], 2, sd)
-sd_features
 
 trainData[,1:(ncol(trainData)-1)] <- sweep(trainData[,1:(ncol(trainData)-1)], 2, mean_features, "-")
 trainData[,1:(ncol(trainData)-1)] <- sweep(trainData[,1:(ncol(trainData)-1)], 2, sd_features, "/")
-summary(trainData)
+#summary(trainData)
 
 valData[,1:(ncol(valData)-1)] <- sweep(valData[,1:(ncol(valData)-1)], 2, mean_features, "-")
 valData[,1:(ncol(valData)-1)] <- sweep(valData[,1:(ncol(valData)-1)], 2, sd_features, "/")
-summary(valData)
+#summary(valData)
+
+testData[,1:(ncol(valData)-1)] <- sweep(testData[,1:(ncol(testData)-1)], 2, mean_features, "-")
+testData[,1:(ncol(testData)-1)] <- sweep(testData[,1:(ncol(testData)-1)], 2, sd_features, "/")
+
+sarsData[,1:(ncol(sarsData)-1)] <- sweep(sarsData[,1:(ncol(sarsData)-1)], 2, mean_features, "-")
+sarsData[,1:(ncol(sarsData)-1)] <- sweep(sarsData[,1:(ncol(sarsData)-1)], 2, sd_features, "/")
 
 trainData$target <- as.factor(trainData$target)
-
-table(trainData$target)
-
 feature_names <- colnames(trainData)[1:(ncol(trainData)-1)]
 hypothesis <- getHypothesis(feature_names, 1)
 
-```
+###
+targets_frequency <- table(trainData$target)
+targets_frequency
 
-```{r}
+relative_targets_frequency <- targets_frequency/sum(targets_frequency)
+relative_targets_frequency
+###
+ w_positive <- 1 - relative_targets_frequency[2]
+w_negative <- 1 - relative_targets_frequency[1]
 
-```
+##
+pesos <- rep(0,dim(trainData)[1])
+
+
+  xTrain <- model.matrix(hypothesis, trainData)
+  yTrain <- trainData$target
+  
