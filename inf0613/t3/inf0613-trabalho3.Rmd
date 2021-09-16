@@ -3,9 +3,8 @@ title: INF0613 -- Aprendizado de Máquina Não Supervisionado
 output: pdf_document
 subtitle: Trabalho 3 - Técnicas de Agrupamento
 author: 
-  - Nome completo Integrante 1
-  - Nome completo Integrante 2
-  - Nome completo Integrante 3
+  - Nicole Nogueira Silva
+  - Rodolfo Dalla Costa
 ---
 
 
@@ -22,7 +21,12 @@ Antes de começar a implementação do seu trabalho configure o _workspace_ e im
 
 ```{r atv0-code}
 # Adicione os pacotes usados neste trabalho:
-
+library(dplyr)
+library(caret)
+library(NbClust)
+library(factoextra)
+library(dbscan)
+library(knitr)
 
 # Configure ambiente de trabalho na mesma pasta 
 # onde colocou a base de dados:
@@ -42,9 +46,35 @@ O conjunto de dados é composto por 205 amostras com 26 atributos cada descritos
 a) *Tratamento de dados Incompletos:* Amostras incompletas deverão ser tratadas, e você deve escolher a forma que achar mais adequada. Considere como uma amostra incompleta uma linha na qual faltam dados em alguma das colunas selecionadas anteriormente. Note que, dados faltantes nas amostras podem causar uma conversão do tipo do atributo de todas as amostras e isso pode impactar no item b). 
 
 ```{r atv1a-code}
-# Leitura da base
+### Leitura da base
+imports_85 <- read.table("imports-85.data",sep =",")
 
-# Tratamento de dados faltantes
+### Tratamento de dados faltantes
+#inspeção inicial
+head(imports_85,2) #identificação de ? como dado faltante
+
+### Removendo dados faltantes
+imports_85[imports_85 == "?"] <- NA #substituindo por NA
+
+#verificando se não está atrelado a uma categoria de seguro específica
+faltantes <- imports_85[rowSums(is.na(imports_85)) != 0, ] 
+
+table(faltantes$V1) %>%
+  kable(caption = "Risco do Seguro dos Dados faltantes", booktabs = T, linesep = "", digits = 2)
+
+#removendo os NAs
+imports_85 <- na.omit(imports_85) 
+
+#transformando os atributos em suas devidas classes
+imports_85 <- imports_85 %>% mutate(V2 = as.numeric(imports_85$V2),
+                      V19 = as.numeric(imports_85$V19),
+                      V20 = as.numeric(imports_85$V20),
+                      V22 = as.numeric(imports_85$V22),
+                      V23 = as.numeric(imports_85$V23),
+                      V26 = as.numeric(imports_85$V26))
+
+#verificando a nova estrutura
+#str(imports_85)
 
 ```
 
@@ -52,6 +82,61 @@ b) *Seleção de Atributos:* Atributos não-numéricos não podem ser usados com
 
 ```{r atv1b-code}
 # Seleção de atributos
+# Transformando os dados categóricos em numéricos através de one hot encoding
+#v4
+imports_85$v4gas <- as.numeric(imports_85$V4 == "gas")
+imports_85$v4diesel <- as.numeric(imports_85$V4 == "diesel")
+#v5
+imports_85$v5std <- as.numeric(imports_85$V5 == "std")
+imports_85$v5turbo <- as.numeric(imports_85$V5 == "turbo")
+#v6
+imports_85$v6four <- as.numeric(imports_85$V6 == "four")
+imports_85$v6two <- as.numeric(imports_85$V6 == "two")
+#v7
+imports_85$v7convertible <- as.numeric(imports_85$V7 == "convertible")
+imports_85$v7hardtop <- as.numeric(imports_85$V7 == "hardtop")
+imports_85$v7hatchback <- as.numeric(imports_85$V7 == "hatchback")
+imports_85$v7sedan <- as.numeric(imports_85$V7 == "sedan")
+imports_85$v7wagon <- as.numeric(imports_85$V7 == "wagon")
+#v8
+imports_85$v84wd <- as.numeric(imports_85$V8 == "4wd")
+imports_85$v8fwd <- as.numeric(imports_85$V8 == "fwd")
+imports_85$v8rwd <- as.numeric(imports_85$V8 == "rwd")
+#v9
+imports_85$v9front <- as.numeric(imports_85$V9 == "front")
+#v15
+imports_85$v15dohc <- as.numeric(imports_85$V15 == "dohc")
+imports_85$v15l <- as.numeric(imports_85$V15 == "l")
+imports_85$v15ohc <- as.numeric(imports_85$V15 == "ohc")
+imports_85$v15ohcf <- as.numeric(imports_85$V15 == "ohcf")
+imports_85$v15ohcv <- as.numeric(imports_85$V15 == "ohcv")
+#v16
+imports_85$V16eight <- as.numeric(imports_85$V16 == "eight")
+imports_85$V16five <- as.numeric(imports_85$V16 == "five")
+imports_85$V16four <- as.numeric(imports_85$V16 == "four")
+imports_85$V16six <- as.numeric(imports_85$V16 == "six")
+imports_85$V16three <- as.numeric(imports_85$V16 == "three")
+#V18
+imports_85$V181bbl <- as.numeric(imports_85$V18 == "1bbl")
+imports_85$V182bbl <- as.numeric(imports_85$V18 == "2bbl")
+imports_85$V18idi <- as.numeric(imports_85$V18 == "idi")
+imports_85$V18mfi <- as.numeric(imports_85$V18 == "mfi")
+imports_85$V18mpfi <- as.numeric(imports_85$V18 == "mpfi")
+imports_85$V18spdi <- as.numeric(imports_85$V18 == "spdi")
+
+#Matriz de correlação das variáveis
+numericos <- imports_85[,c(2,c(10:14),17,19:40,42:57)] #removendo categoricos e o V9 - Front
+matriz_corr <- cor(numericos)
+#print(matriz_corr)
+
+#Encontrando atributos fortemente correlacionados
+altamente_corr <- findCorrelation(matriz_corr, cutoff =0.5)
+print(altamente_corr)
+
+#Atributos relevantes
+atributos <- names(numericos[,-altamente_corr])
+imports_85sel <- imports_85 %>% select(atributos)
+
 
 
 ```
@@ -77,6 +162,9 @@ a) *Gráfico \textsl{Elbow Curve}:* Construa um gráfico com a soma das distânc
 
 ```{r atv2a-code}
 # Construindo um gráfico com as distâncias intra-cluster
+imports.scaled <- scale(imports_85sel)
+set.seed(7)
+fviz_nbclust(imports.scaled, kmeans,k.max = 30, method ="wss")
 
 
 ```
@@ -85,6 +173,7 @@ b) *Gráfico da Silhueta:* Construa um gráfico com o valor da silhueta para $K$
 
 ```{r atv2b-code}
 # Construindo um gráfico com os valores da silhueta
+fviz_nbclust(imports.scaled, kmeans, method ="silhouette", k.max = 30)
 
 
 ```
@@ -93,9 +182,12 @@ c) *Escolha do $K$:* Avalie os gráficos gerados nos itens anteriores e escolha 
 
 ```{r atv2c-code}
 # Aplicando o k-means com o k escolhido 
+#nb <- NbClust(imports.scaled, distance ="euclidean",min.nc =2 , max.nc =30 , method ="complete",index ="all")
+set.seed(7)
+final <- kmeans(imports.scaled, centers =22)
 
 # Construindo um gráfico de dispersão
-
+fviz_cluster(final, data =imports.scaled)
 ```
 
 ## Análises
