@@ -30,7 +30,8 @@ library(knitr)
 
 # Configure ambiente de trabalho na mesma pasta 
 # onde colocou a base de dados:
-# setwd("")
+setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0613/t3")
+
 
 
 ```
@@ -51,7 +52,8 @@ imports_85 <- read.table("imports-85.data",sep =",")
 
 ### Tratamento de dados faltantes
 #inspeção inicial
-head(imports_85,2) #identificação de ? como dado faltante
+head(imports_85,2) 
+#identificação de ? como dado faltante
 
 ### Removendo dados faltantes
 imports_85[imports_85 == "?"] <- NA #substituindo por NA
@@ -66,12 +68,13 @@ table(faltantes$V1) %>%
 imports_85 <- na.omit(imports_85) 
 
 #transformando os atributos em suas devidas classes
-imports_85 <- imports_85 %>% mutate(V2 = as.numeric(imports_85$V2),
-                      V19 = as.numeric(imports_85$V19),
-                      V20 = as.numeric(imports_85$V20),
-                      V22 = as.numeric(imports_85$V22),
-                      V23 = as.numeric(imports_85$V23),
-                      V26 = as.numeric(imports_85$V26))
+imports_85 <- imports_85 %>% 
+  mutate(V2 = as.numeric(imports_85$V2),
+        V19 = as.numeric(imports_85$V19),
+        V20 = as.numeric(imports_85$V20),
+        V22 = as.numeric(imports_85$V22),
+        V23 = as.numeric(imports_85$V23),
+        V26 = as.numeric(imports_85$V26))
 
 #verificando a nova estrutura
 #str(imports_85)
@@ -174,8 +177,6 @@ b) *Gráfico da Silhueta:* Construa um gráfico com o valor da silhueta para $K$
 ```{r atv2b-code}
 # Construindo um gráfico com os valores da silhueta
 fviz_nbclust(imports.scaled, kmeans, method ="silhouette", k.max = 30)
-
-
 ```
 
 c) *Escolha do $K$:* Avalie os gráficos gerados nos itens anteriores e escolha o melhor valor  de $K$ com base nas informações desses gráficos e na sua análise. Se desejar, use também a função `NbClust` para ajudar nas análises. Com o valor de $K$ definido, utilize o rótulo obtido para cada amostra, indicando o grupo ao qual ela pertence, para gerar um gráfico de dispersão (atribuindo cores diferentes para cada grupo).
@@ -207,11 +208,20 @@ Nesta atividade, você deverá agrupar os dados com o algoritmo *DBscan*. Para i
 a) *Ajuste de Parâmetros:* Experimente com valores diferentes para os parâmetros *eps* e *minPts*. Verifique o impacto dos diferentes valores nos agrupamentos.
 
 ```{r atv3a-code}
-# Experimento com valores de eps e minPts
+set.seed(7)
 
 # Experimento com valores de eps e minPts
+db <- dbscan(imports_85sel, eps =0.15 , minPts =5)
+print(db)
+
 
 # Experimento com valores de eps e minPts
+db <- dbscan(imports_85sel, eps =0.2 , minPts =10)
+print(db)
+
+# Experimento com valores de eps e minPts
+db <- dbscan(imports_85sel, eps =0.3 , minPts =15)
+print(db)
 
 
 ```
@@ -220,15 +230,18 @@ b) *Determinando Ruídos:* Escolha o valor de *minPts* que obteve o melhor resul
 
 ```{r atv3b-code}
 # Encontrando o melhor eps com o kNNdistplot
-
+kNNdistplot(imports_85sel, k =15)
 ```
 
 c) *Visualizando os Grupos:* Após a escolha dos parâmetros *eps* e *minPts*, utilize o rótulo obtido para cada amostra, indicando o grupo ao qual ela pertence, para gerar um gráfico de dispersão (atribuindo cores diferentes para cada grupo).
 
 ```{r atv3c-code}
 # Aplicando o DBscan com os parâmetros escolhidos
+db <-dbscan(imports_85sel, eps =0.2 , minPts =15)
 
 # Construindo um gráfico de dispersão
+fviz_cluster(db, data = imports_85sel , stand = FALSE, ellipse = FALSE , show.clust.cent = FALSE,
+geom ="point", palette ="jco", ggtheme = theme_classic())
 
 ```
 
