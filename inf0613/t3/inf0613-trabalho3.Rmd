@@ -147,6 +147,12 @@ Após as implementações escreva uma análise da base de dados. Em especial, de
 
 **Resposta:** <!-- Escreva sua resposta abaixo -->
 
+O banco de dados é formado por informações relacionadas a características de carros. Entre os 26 atributos disponibilizados, 25 correspondem a fatores descritores dos carros inclusive a coluna \textit{symboling}, representam o risco atrelado ao seguro do carro descrito. Ao realizar uma análise prévia, nota-se a existência de dados faltantes em 46 observações.
+
+Antes de remover as observações, é necessário entender se os dados faltantes estavam atrelados à uma categoria específica de risco de seguro. Como observamos que isto não ocorria, decidimos remover esses registros com dados faltantes, resultando em uma base com 159 registros.
+
+Após remover os dados faltantes, realizamos um tratamento das variáveis dado a presença de atributos categóricos. Assim, aplicamos a técnica de One-Hot-Encoding para conversão dos dados em variáveis numéricas, de forma a deixar o conjunto de dados mais preparado para a seleção. Com os dados transformados, a correlação entre todas as variáveis foi mensurada e a partir dos resultados da matriz, foi possível concluir que as variáveis, \textit{V2, V13, V19, V21, V23, v5turbo, v7convertible, v7hardtop, v7sedan, v7wagon, v84wd, v15dohc, v15l, v15ohcf, V16five, V16six, V16three, V181bbl, V18mfi, V18mpfi} eram suficientes para contribuir para a predição do risco do seguro.
+
 <!-- Fim da resposta -->
 
 # Atividade 2 -- Agrupamento com o $K$*-means*
