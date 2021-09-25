@@ -26,10 +26,9 @@ library(rpart.plot)
 library(randomForest)
 
 
-setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0615/t3")
+setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0615/t3")
 
 ```
-
 
 ```{r}
 # Funcao que calcula a matriz de confusao relativa para 3 classes
@@ -51,14 +50,11 @@ calculaMatrizConfusaoRelativa <- function(cm){
 
 ```
 
-
 # Introdução
 
-Durante o ano de 2020 e 2021, a humanidade foi afetada pela pandemia do vírus COVID-19 que ceifou milhares de vidas e gerou impactos em diversas áreas sociais. Milhões de pessoas de diferentes países foram contaminadas apresentando diferentes quadros clínicos de reação ao vírus. 
-Dessa forma, o objetivo desse trabalho é inferir o possível estado do paciente diagnosticado com o vírus COVID-19 dentre três possíveis classes: em tratamento, recuperado ou falecido.
+Durante o ano de 2020 e 2021, a humanidade foi afetada pela pandemia do vírus COVID-19 que ceifou milhares de vidas e gerou impactos em diversas áreas sociais. Milhões de pessoas de diferentes países foram contaminadas apresentando diferentes quadros clínicos de reação ao vírus. Dessa forma, o objetivo desse trabalho é inferir o possível estado do paciente diagnosticado com o vírus COVID-19 dentre três possíveis classes: em tratamento, recuperado ou falecido.
 
 # Banco de dados
-
 
 ```{r}
 # Comandos que leem os conjuntos de treino e de validacao
@@ -101,15 +97,13 @@ O banco de dados provem originalmente de um conjunto de dados reunidos por diver
 
 Além disso, verificou-se que não existem dados faltantes na base. Caso esse fato não fosse verdadeiro, poderíamos atuar com a remoção dos exemplos que tivessem alguma featura nula, desde que a ausência de informações não estivesse correlacionada com algum tipo de comportamento específico que pudesse viesar os resultados do modelo.
 
-Na base identifica-se que as features tratavam-se de variáveis contínuas (age, latitude,  longitude, date_onset_symptoms, date_admission_hospital, date_confirmation e date_death_or_discharge) e categóricas (sex, country, lives_in_Wuhan, travel_history_location, chronic_disease_binary, travel_history_binary e label). Neste problema, como a variável resposta é categória, utilizaremos um modelo de classificação a partir de árvores de decisão e florestas aleatórias. 
+Na base identifica-se que as features tratavam-se de variáveis contínuas (age, latitude, longitude, date_onset_symptoms, date_admission_hospital, date_confirmation e date_death_or_discharge) e categóricas (sex, country, lives_in_Wuhan, travel_history_location, chronic_disease_binary, travel_history_binary e label). Neste problema, como a variável resposta é categória, utilizaremos um modelo de classificação a partir de árvores de decisão e florestas aleatórias.
 
 É importante ressaltar que nossos labels não são balanceados, isto é, a target de mortos representa apenas x dos dados, a target de tratamento x e em tratamento y. Estes casos podem ser tratados com técnicas de oversampling ou SMOTE, entre outras. Além disso, foram encontrados valores duplicados no cojunto de dados, que foram excluídos para a realização da análise.
-
 
 # Análise descritiva
 
 Para entender as relações entre as variáveis e o estado do paciente (nosso Target), vamos analisar a distribuição da correlação entre as features numéricas. A Figura \ref{fig:graf1} apresenta um panorama geral da correlação. Nota-se que a variável date_admission_hospital e travel_history_dates possem correlação de com 79% e as variáveis travel_history_dates e longitude, representando -86%.
-
 
 ```{r, fig.cap="\\label{fig:graf1} Correlações 2 a 2 das variáveis.", fig.pos='H'}
 train_set %>% 
@@ -121,8 +115,7 @@ train_set %>%
 
 # Metodologia
 
-Para inferir o estado do paciente diagnosticado com COVID-19, é valido testar um modelo de árvore de decisão com todas as features e sem poda, esse será o baseline. Além disso, para verificar o desempenho do modelo, consideramos um conjunto de validação retirando uma amostra aleatória de 20% do dataset de treinamento. Desta forma, agora o conjunto de treinamento possui 24282 observações, enquanto validação possui 6069. 
-
+Para inferir o estado do paciente diagnosticado com COVID-19, é valido testar um modelo de árvore de decisão com todas as features e sem poda, esse será o baseline. Além disso, para verificar o desempenho do modelo, consideramos um conjunto de validação retirando uma amostra aleatória de 20% do dataset de treinamento. Desta forma, agora o conjunto de treinamento possui 24282 observações, enquanto validação possui 6069.
 
 ```{r}
 #Baseline treino
@@ -193,7 +186,7 @@ cm_relative_baseline_test %>%
 
 ## Baseline
 
-Inicialmente, consideramos o modelo baseline sem quaisquer transformações nos dados ou técnicas de reamostragem para verificar como o algoritmo se adapta as informações que temos em mãos. A Tabela \ref{tab:baseline}  reportam a matriz de confusão para os conjuntos de treino e validação, respectivamente. É possível observar uma boa performance do modelo, onde os maiores erros estão nas classificações entre "onTreatment" e "recovered". A acurácia balanceada para o treino foi de 95\%, para a validação 84\% enquanto no Teste a acurácia balanceada foi 83\% . É interessante observar como a performance da árvore de decisão foi alta nos conjuntos de treino e validação mesmo sem nenhuma técnica associada, porém não houve o mesmo comportamento no dataset de teste, onde a acurácia diminuiu significativamente, principalmente nas classes desbalanceadas. Associamos este tipo de desempenho ao overfittig.
+Inicialmente, consideramos o modelo baseline sem quaisquer transformações nos dados ou técnicas de reamostragem para verificar como o algoritmo se adapta as informações que temos em mãos. A Tabela \ref{tab:baseline} reportam a matriz de confusão para os conjuntos de treino e validação, respectivamente. É possível observar uma boa performance do modelo, onde os maiores erros estão nas classificações entre "onTreatment" e "recovered". A acurácia balanceada para o treino foi de 95%, para a validação 84% enquanto no Teste a acurácia balanceada foi 83% . É interessante observar como a performance da árvore de decisão foi alta nos conjuntos de treino e validação mesmo sem nenhuma técnica associada, porém não houve o mesmo comportamento no dataset de teste, onde a acurácia diminuiu significativamente, principalmente nas classes desbalanceadas. Associamos este tipo de desempenho ao overfittig.
 
 ## Tamanho das árvores
 
@@ -228,7 +221,7 @@ for (maxDepth in 1:number_of_depths){
     cm_val <- confusionMatrix(val_pred, val_set$label)
     
     cm_relative_val <- calculaMatrizConfusaoRelativa(cm_val)
-    acc_bal_val <- (cm_relative_train[1,1] + cm_relative_train[2,2] + cm_relative_train[3,3])/3
+    acc_bal_val <- (cm_relative_val[1,1] + cm_relative_val[2,2] + cm_relative_val[3,3])/3
     
     accPerDepth[maxDepth,] = c(maxDepth, acc_bal_train, 
                                acc_bal_val)
@@ -246,7 +239,7 @@ ggplot(data=accPerDepth2, aes(x=depth, y=value, colour=variable)) +
        
 ```
 
-Utilizando o modelo baseline com profundidade da árvore igual a 8, os resultados foram bastante satisfatórios, conforme representado na Tabela \ref{tab:profundidade}. Comparado ao resultado anterior, é possível identificar que aumentando a profundidade o modelo passou a errar menos na classificação "dead", desta forma, tivemos uma acurácia ainda maior no conjunto de teste, alcançando 84\%, matendo a performance dos modelos de validação e teste. Entretanto, o modelo ainda não consegue diferenciar corretamente a diferente entre as classes "onTreatmente" e "recoverd".
+Utilizando o modelo baseline com profundidade da árvore igual a 8, os resultados foram bastante satisfatórios, conforme representado na Tabela \ref{tab:profundidade}. Comparado ao resultado anterior, é possível identificar que aumentando a profundidade o modelo passou a errar menos na classificação "dead", desta forma, tivemos uma acurácia ainda maior no conjunto de teste, alcançando 84%, matendo a performance dos modelos de validação e teste. Entretanto, o modelo ainda não consegue diferenciar corretamente a diferente entre as classes "onTreatmente" e "recoverd".
 
 ```{r}
 ###### Melhor profundidade
@@ -274,11 +267,11 @@ cm_relative_test %>% kable(caption = "\\label{tab:profundidade}Matriz de confus�
 
 ## Seleção das features
 
-Para melhorar os resultados do modelo, podemos selecionar as features que mais contribuem para a predição.  Ao aplicar a árvore de decisão, podemos verificar quais atributos foram mais importantes para a classificação preditiva. Desta forma, as features mais relevantes para cada modelo em ordem crescente (baseline e max_depth=8) foram:
+Para melhorar os resultados do modelo, podemos selecionar as features que mais contribuem para a predição. Ao aplicar a árvore de decisão, podemos verificar quais atributos foram mais importantes para a classificação preditiva. Desta forma, as features mais relevantes para cada modelo em ordem crescente (baseline e max_depth=8) foram:
 
-- Feature selection 1: date_death_or_discharge, longitude, date_admission_hospital, country, travel_history_dates, lives_in_Wuhan, date_confirmation, age, latitude, sex, travel_history_location, data_onset_symptoms e travel_history_binary.
+-   Feature selection 1: date_death_or_discharge, longitude, date_admission_hospital, country, travel_history_dates, lives_in_Wuhan, date_confirmation, age, latitude, sex, travel_history_location, data_onset_symptoms e travel_history_binary.
 
-- Feature selection 2: date_death_or_discharge, date_admission_hospital, country, longitude, travel_history_dates, lives_in_Wuhan,age, date_confirmation, sex, latitude, travel_history_location e date_onset_symptoms e travel_history_binary.
+-   Feature selection 2: date_death_or_discharge, date_admission_hospital, country, longitude, travel_history_dates, lives_in_Wuhan,age, date_confirmation, sex, latitude, travel_history_location e date_onset_symptoms e travel_history_binary.
 
 Desta forma, para o primeiro conjunto desconsideramos as variáveis sex, travel_history_location, data_onset_symptoms e travel_history_binary. Já no segundo as features sex, latitude, travel_history_location, data_onset_symptoms e travel_history_binary foram descartadas por apresentarem importância relativa menor do que 0,03.
 
@@ -336,11 +329,9 @@ cm_relative_test %>% kable(caption = "\\label{tab:comb2}Matriz de confusão para
 
 ```
 
+A partir do primeiro conjunto, podemos observar que o modelo alcançou acurácia balanceada de 83%, enquanto a acurácia balanceada no segundo conjunto foi de 84% nos dados de validação. Desta forma, será considerado para o teste o conjunto e parâmetros que tiveram melhores performance, isto é, a combinação de features 2.
 
-A partir do primeiro conjunto, podemos observar que o modelo alcançou acurácia balanceada de 83\%, enquanto a acurácia balanceada no segundo conjunto foi de 84\% nos dados de validação. Desta forma, será considerado para o teste o conjunto e parâmetros que tiveram melhores performance, isto é, a combinação de features 2.
-
-Os resultados para o conjunto de teste estão apresentados na Tabela \ref{tab:comb2}, garantindo 83,3\% de acurácia no modelo. Novamente, ainda existem muitos erros na diferenciação entre "onTreatment" e "recovered", enquanto a classe "dead" se mostra muito bem segmentada.
-
+Os resultados para o conjunto de teste estão apresentados na Tabela \ref{tab:comb2}, garantindo 83,3% de acurácia no modelo. Novamente, ainda existem muitos erros na diferenciação entre "onTreatment" e "recovered", enquanto a classe "dead" se mostra muito bem segmentada.
 
 # Floresta Aleatória
 
@@ -370,7 +361,7 @@ for (i in 1:length(nTreeList)){
     cm_val <- confusionMatrix(val_pred, val_set$label)
     
     cm_relative_val <- calculaMatrizConfusaoRelativa(cm_val)
-    acc_bal_val <- (cm_relative_train[1,1] + cm_relative_train[2,2] + cm_relative_train[3,3])/3
+    acc_bal_val <- (cm_relative_val[1,1] + cm_relative_val[2,2] + cm_relative_val[3,3])/3
     
     
     accPerNTrees[i,] = c(nTreeList[i], 
@@ -385,8 +376,6 @@ ggplot(data=accPerNTrees, aes(x=ntree, y=value, colour=variable)) + geom_line() 
   labs(x = "Número de árvores", y = "Acurácia Balanceada", colour = "Legenda")
 
 ```
-
-
 
 ```{r tab10}
 
@@ -407,6 +396,4 @@ rfModel <- randomForest(formula = label ~ .,
 
 ```
 
-
 # Conclusão
-
