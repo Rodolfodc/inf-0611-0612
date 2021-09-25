@@ -55,7 +55,7 @@ calculaMatrizConfusaoRelativa <- function(cm){
 # Introdução
 
 Durante o ano de 2020 e 2021, a humanidade foi afetada pela pandemia do vírus COVID-19 que ceifou milhares de vidas e gerou impactos em diversas áreas sociais. Milhões de pessoas de diferentes países foram contaminadas apresentando diferentes quadros clínicos de reação ao vírus. 
-Dessa forma, o objetivo desse trabalho é inferir o possível estado do paciente diagnosticado com o vírus COVID-19 dentre tr~es possíveis classes: em tratamento, recuperado ou falecido.
+Dessa forma, o objetivo desse trabalho é inferir o possível estado do paciente diagnosticado com o vírus COVID-19 dentre três possíveis classes: em tratamento, recuperado ou falecido.
 
 # Banco de dados
 
@@ -63,15 +63,13 @@ Dessa forma, o objetivo desse trabalho é inferir o possível estado do paciente
 ```{r}
 # Comandos que leem os conjuntos de treino e de validacao
 train_val_set <- read.csv("train_val_set_patient_status_covid19.csv", stringsAsFactors = T)
-#test_set <- read.csv("test_set_patient_status_covid19.csv", stringsAsFactors=T)
+test_set <- read.csv("test_set_patient_status_covid19.csv", stringsAsFactors=T)
 
 train_val_set <- train_val_set %>% unique()
+test_set <- test_set %>% unique()
 
-
-
-# Configurem o valor da semente.
+#semente.
 set.seed(31) 
-
 
 # Separanco treino e validacao
 
@@ -84,38 +82,34 @@ val_set  <- train_val_set[-randomTrainValIndexes, ]
 ```{r}
 
 #Inspecionando o banco de dados
-str(train_set)
+#str(train_set)
 
 #Existência de dados em ambos os datasets
-merge(train_set, val_set)
+#merge(train_set, val_set)
 
 #### Verificando dados ausentes
-any(is.na(train_set))
-any(is.na(val_set))
+#any(is.na(train_set))
+#any(is.na(val_set))
 #any(is.na(test_set))
 
 
-summary(train_set[,9]) %>% 
-  kable("latex",  caption = "\\label{tab:dados}Estatísticas sumárias do banco de dados", booktabs = T) %>% 
-  kable_styling(latex_options = "hold_position", font_size = 8)
-
-summary(train_set[,10:ncol(train_val_set)]) %>% 
-  kable("latex", booktabs = T) %>% 
-  kable_styling(latex_options = "hold_position", font_size = 8)
+#summary(train_set) 
 
 ```
 
-O banco de dados provem originalmente de um conjunto de dados reunidos por diversos países no mundo e contém informações como data de internação, se o paciente tem ou não doenças crônicas, entre outras variáveis.
+O banco de dados provem originalmente de um conjunto de dados reunidos por diversos países no mundo e contém informações como data de internação, se o paciente tem ou não doenças crônicas, entre outras variáveis. O banco de dados fornecido para treino e validação possui 15 variáveis, sendo 14 atributos e a outra o nosso target, ou seja, o valor que queremos predizer, totalizando 36421 registros no total.
 
-Para a inspeção inicial e compreensão dos banco de dados fornecidos, foi avaliada a quantidade de dados, onde ao todo os bancos de dados fornecidos possuem 15 variáveis, sendo 14 atributos e a outra o nosso target, ou seja, o valor que queremos predizer, totalizando 36421 registros. Buscando por dados faltantes que pudessem impactar nas predições, não foi possível identificar nenhum exemplo que apresentasse dados ausentes. Caso esse fato não fosse verdadeiro, poderíamos atuar com a remoção dos exemplos que tivessem alguma featura nula, desde que a ausência de informações não estivesse correlacionada com algum tipo de comportamento específico que pudesse viesar os resultados do modelo. Foi possível identificar que as features tratavam-se de variáveis contínuas (age, latitude,  longitude, date_onset_symptoms, date_admission_hospital, date_confirmation e date_death_or_discharge) e categóricas (sex, country, lives_in_Wuhan, travel_history_location, chronic_disease_binary, travel_history_binary e label). Neste problema, como a variável resposta é categória, utilizaremos um modelo de classificação a partir de árvores de decisão e florestas aleatórias. É importante ressaltar que nossos labels não são balanceados, isto é,  a target de mortos representa apenas x dos dados, a target de tratamento x e em tratamento y. Estes casos podem ser tratados com técnicas de oversampling ou SMOTE, entre outras. Além disso, foram encontrados valores duplicados no cojunto de dados, que foram excluídos para a realização da análise.
+Além disso, verificou-se que não existem dados faltantes na base. Caso esse fato não fosse verdadeiro, poderíamos atuar com a remoção dos exemplos que tivessem alguma featura nula, desde que a ausência de informações não estivesse correlacionada com algum tipo de comportamento específico que pudesse viesar os resultados do modelo.
 
-A partir do summary apresentado na Tabela \ref{tab:dados} é possível observar um resumo dos dados.
+Na base identifica-se que as features tratavam-se de variáveis contínuas (age, latitude,  longitude, date_onset_symptoms, date_admission_hospital, date_confirmation e date_death_or_discharge) e categóricas (sex, country, lives_in_Wuhan, travel_history_location, chronic_disease_binary, travel_history_binary e label). Neste problema, como a variável resposta é categória, utilizaremos um modelo de classificação a partir de árvores de decisão e florestas aleatórias. 
 
+É importante ressaltar que nossos labels não são balanceados, isto é, a target de mortos representa apenas x dos dados, a target de tratamento x e em tratamento y. Estes casos podem ser tratados com técnicas de oversampling ou SMOTE, entre outras. Além disso, foram encontrados valores duplicados no cojunto de dados, que foram excluídos para a realização da análise.
 
 
 # Análise descritiva
 
-Para entender as relações entre as variáveis e o estado do paciente (nosso Target), vamos analisar a distribuição da correlação entre as colunas da base. A Figura \ref{fig:graf1} apresenta um panorama geral da correlação com todas as features. Nota-se que a variável resposta tem correlação considerável com as variáveis x
+Para entender as relações entre as variáveis e o estado do paciente (nosso Target), vamos analisar a distribuição da correlação entre as features numéricas. A Figura \ref{fig:graf1} apresenta um panorama geral da correlação. Nota-se que a variável date_admission_hospital e travel_history_dates possem correlação de com 79% e as variáveis travel_history_dates e longitude, representando -86%.
+
 
 ```{r, fig.cap="\\label{fig:graf1} Correlações 2 a 2 das variáveis.", fig.pos='H'}
 train_set %>% 
@@ -125,29 +119,13 @@ train_set %>%
 
 ```
 
-
-Além disso, como é possível notar por meio da Tabela \ref{tab:dados}, as colunas estão em escalas diferentes, por isso, aplicamos a normalização Z-norma nos dados de treino e os mesmos parâmetros para a validação. Dessa forma, cada feature está padronizada com média zero e desvio padrão correspondente.
-
-```{r}
-## Normalizacao Z-norm nas features numéricas
-
-mean_features <- apply(train_set %>% select_if(is.numeric), 2, mean)
-sd_features <- apply(train_set %>% select_if(is.numeric), 2, sd)
-
-a <-train_set %>%
-  select_if(is.numeric) %>%
-  sweep(.,2, mean_features, "-" )
-
-
-```
-
-
 # Metodologia
 
+Para inferir o estado do paciente diagnosticado com COVID-19, é valido testar um modelo de árvore de decisão com todas as features e sem poda, esse será o baseline. Além disso, para verificar o desempenho do modelo, consideramos um conjunto de validação retirando uma amostra aleatória de 20% do dataset de treinamento. Desta forma, agora o conjunto de treinamento possui 24282 observações, enquanto validação possui 6069. 
 
 
 ```{r}
-#Baseline
+#Baseline treino
 
 treeModelBaseline <- rpart(formula=label ~ age + country + longitude + date_onset_symptoms +
                        date_admission_hospital + lives_in_Wuhan + travel_history_location +
@@ -161,68 +139,78 @@ treeModelBaseline <- rpart(formula=label ~ age + country + longitude + date_onse
 
 importance_per_feature <- treeModelBaseline$variable.importanc
 relative_importance <- importance_per_feature/sum(importance_per_feature)
-relative_importance
+#summary(treemodel_baseline)
 
-printcp(treeModelBaseline)
+#Desempenho do modelo no conjunto de treino
+train_pred <- predict(treeModelBaseline, train_set, type="class")
 
-minCP <- treeModelBaseline$cptable[which.min(treeModelBaseline$cptable[,"xerror"]),"CP"]
-minCP
+cm <- confusionMatrix(train_pred, train_set$label)
 
-ptree <- prune(treeModelBaseline, cp=minCP)
-summary(ptree)
+cm_relative_baseline_train <- calculaMatrizConfusaoRelativa(cm)
+#cm_relative_baseline_train
 
-# Vamos ver a performance no conjunto de valida��o sem a poda
+acc_bal_baseline_train <- (cm_relative_baseline_train[1,1] + cm_relative_baseline_train[2,2] + cm_relative_baseline_train[3,3])/3
+#acc_bal_baseline_train
+
+#Desempenho do modelo no conjunto de validação
 val_pred <- predict(treeModelBaseline, val_set, type="class")
 
-cm <- confusionMatrix(data = as.factor(val_pred), 
-                      reference = as.factor(val_set$label))
+cm <- confusionMatrix(val_pred, val_set$label)
 
-cm_relative <- calculaMatrizConfusaoRelativa(cm)
-cm_relative
+cm_relative_baseline_val <- calculaMatrizConfusaoRelativa(cm)
+#cm_relative_baseline_val
 
-acc_bal <- (cm_relative[1,1] + cm_relative[2,2] + cm_relative[3,3])/3
-acc_bal
+acc_bal_baseline_val<- (cm_relative_baseline_val[1,1] + cm_relative_baseline_val[2,2] + cm_relative_baseline_val[3,3])/3
+#acc_bal_baseline_val
 
-# Agora vamos checar a performance do modelo ap�s a poda
-val_pred <- predict(ptree, val_set, type="class")
-cm <- confusionMatrix(data = as.factor(val_pred), 
-                      reference = as.factor(val_set$label))
+#Desempenho do modelo no conjunto de teste
+test_pred <- predict(treeModelBaseline, test_set, type="class")
 
-cm_relative <- calculaMatrizConfusaoRelativa(cm)
-cm_relative
+cm <- confusionMatrix(test_pred, test_set$label)
 
-acc_bal <- (cm_relative[1,1] + cm_relative[2,2] + cm_relative[3,3])/3
-acc_bal
+cm_relative_baseline_test <- calculaMatrizConfusaoRelativa(cm)
+#cm_relative_baseline_test
+
+acc_bal_baseline_test<- (cm_relative_baseline_test[1,1] + cm_relative_baseline_test[2,2] + cm_relative_baseline_test[3,3])/3
+#acc_bal_baseline_test
 
 
+cm_relative_baseline_train %>%
+  kable(caption = "\\label{tab:baseline}Matriz de confusão para Treino",
+        format = "latex", booktabs = T, linesep = "", digits = 2) %>% 
+  kable_styling(latex_options = c("HOLD_position"), font_size = 9)
+
+cm_relative_baseline_val %>%
+  kable(caption = "\\label{tab:baseline}Matriz de confusão para Validação",
+        format = "latex", booktabs = T, linesep = "", digits = 2) %>% 
+  kable_styling(latex_options = c("HOLD_position"), font_size = 9)
+
+cm_relative_baseline_test %>%
+  kable(caption = "\\label{tab:baseline}Matriz de confusão para Teste",
+        format = "latex", booktabs = T, linesep = "", digits = 2) %>% 
+  kable_styling(latex_options = c("HOLD_position"), font_size = 9)
 ```
 
-Para inferir o estado do paciente diagnosticado com COVID-19, é valido testar um modelo de árvore de decisão com todas as features e sem poda, esse será o baseline. A Tabela \ref{tab:baseline} apresenta as medidas do erro médio (MAE), erro quadrático médio (MSE) e o R2 do baseline para os dados de treino, validação e teste. O baseline apresentou um MAE de  no conjunto de teste. 
+## Baseline
 
-```{r}
-rbind(result_baseline_train, result_baseline_val,result_baseline_test) %>%
-  kable("latex",  caption = "\\label{tab:baseline}Resultado do baseline nos conjuntos de treino, validação e teste", booktabs = T, col.names = c("", "MAE", "MSE", "R2")) %>% 
-  kable_styling(latex_options = "hold_position", font_size = 8)
-  
-```
+Inicialmente, consideramos o modelo baseline sem quaisquer transformações nos dados ou técnicas de reamostragem para verificar como o algoritmo se adapta as informações que temos em mãos. A Tabela \ref{tab:baseline}  reportam a matriz de confusão para os conjuntos de treino e validação, respectivamente. É possível observar uma boa performance do modelo, onde os maiores erros estão nas classificações entre "onTreatment" e "recovered". A acurácia balanceada para o treino foi de 95\%, para a validação 84\% enquanto no Teste a acurácia balanceada foi 83\% . É interessante observar como a performance da árvore de decisão foi alta nos conjuntos de treino e validação mesmo sem nenhuma técnica associada, porém não houve o mesmo comportamento no dataset de teste, onde a acurácia diminuiu significativamente, principalmente nas classes desbalanceadas. Associamos este tipo de desempenho ao overfittig.
 
+## Tamanho das árvores
 
+Quanto maior o valor de profundidade da árvore, mais nós ela terá e mais segmentada ela será, fazendo classificações ainda mais assertivas. Porém, podemos observar a partir da Figura \ref{fig:graf1} que a acurácia balanceada atinge um platô muito rápido. Desta forma, a profundidade da árvore não precisa ser muito alta, o melhor resultado, a partir do conceito de parcimônia, foi para maxdepth = 8.
 
-```{r}
+```{r, fig.cap="\\label{fig:graf1} Acurácia balanceada do treino e validação.", fig.pos='H'}
 ########## ACC Vs Depth 
-# Vamos ver como as acur�cias no conjunto de treinamento e de valida��o
+# Vamos ver como as acurácias no conjunto de treinamento e de validação
 # variam conforme variamos o tamanho limite das arvores
+
 number_of_depths = 20
 accPerDepth <- data.frame(depth=numeric(number_of_depths), 
                           accTrain=numeric(number_of_depths), 
                           accVal=numeric(number_of_depths))
-summary(accPerDepth)
+
 for (maxDepth in 1:number_of_depths){
-    treeModel <- rpart(formula=label ~ age + country + longitude + date_onset_symptoms +
-                           date_admission_hospital + lives_in_Wuhan + travel_history_location +
-                           date_confirmation + sex + latitude + travel_history_dates +
-                           chronic_disease_binary + date_death_or_discharge +
-                           travel_history_binar, 
+    treeModel <- rpart(formula=label ~ . , 
                        data=train_set, method="class",
                        control=rpart.control(minsplit=2, cp=0.0, 
                                              maxdepth=maxDepth, xval = 0),
@@ -230,16 +218,14 @@ for (maxDepth in 1:number_of_depths){
     
     # Avaliando no conjunto de treino
     train_pred <- predict(treeModel, train_set, type="class")
-    cm_train <- confusionMatrix(data = as.factor(train_pred), 
-                                reference = as.factor(train_set$label))
+    cm_train <- confusionMatrix(train_pred,train_set$label)
     
     cm_relative_train <- calculaMatrizConfusaoRelativa(cm_train)
     acc_bal_train <- (cm_relative_train[1,1] + cm_relative_train[2,2] + cm_relative_train[3,3])/3
     
     # Avaliando no conjunto de validacao
     val_pred <- predict(treeModel, val_set, type="class")
-    cm_val <- confusionMatrix(data = as.factor(val_pred), 
-                              reference = as.factor(val_set$label))
+    cm_val <- confusionMatrix(val_pred, val_set$label)
     
     cm_relative_val <- calculaMatrizConfusaoRelativa(cm_val)
     acc_bal_val <- (cm_relative_train[1,1] + cm_relative_train[2,2] + cm_relative_train[3,3])/3
@@ -248,25 +234,179 @@ for (maxDepth in 1:number_of_depths){
                                acc_bal_val)
 }
 
+accPerDepth2 <- melt(accPerDepth, id="depth")
+
+
+ggplot(data=accPerDepth2, aes(x=depth, y=value, colour=variable)) + 
+  geom_line() + 
+  geom_point() +
+  labs(x = "Profundidade", y = "Acurácia Balanceada", colour = "Legenda") +
+  scale_x_continuous(breaks = seq(1,20, 1))
+
        
 ```
 
-Para melhorar a predição do CO, vamos criar um modelo com combinação de features. Para esse modelo, vamos utlizar todas as variáveis e combinar 2 a 2 as variáveis PM2.5, PM10, SO2, NO2, O3, TEMP, PRES e DEWP. Os resultados do MAE, MSE e R2 para o conjunto de validação podem ser observados na Tabela \ref{tab:comb1_2}. A primeira linha corresponde aos resultados do modelo com combinação 2 a 2 enquanto a segunda linha é o modelo utilizando a combinação 3 a 3. É possível observar que o o melhor modelo desta categoria foi o modelo com combinação 3 a 3. Aplicando esse modelo no conjunto de teste obtivemos um MAE de `r round(mae_test_comb2,1)`.
+Utilizando o modelo baseline com profundidade da árvore igual a 8, os resultados foram bastante satisfatórios, conforme representado na Tabela \ref{tab:profundidade}. Comparado ao resultado anterior, é possível identificar que aumentando a profundidade o modelo passou a errar menos na classificação "dead", desta forma, tivemos uma acurácia ainda maior no conjunto de teste, alcançando 84\%, matendo a performance dos modelos de validação e teste. Entretanto, o modelo ainda não consegue diferenciar corretamente a diferente entre as classes "onTreatmente" e "recoverd".
 
+```{r}
+###### Melhor profundidade
+treeModel_8 <- rpart(formula=label ~ ., 
+                   data=train_set, method="class",
+                   control=rpart.control(minsplit=2, cp=0.0, 
+                                         maxdepth=8, xval = 0),
+                   parms= list(split="information"))
 
-```{r , fig.cap="\\label{fig:mae} MAE do treino e validação para cada grau.", fig.pos='H'}
-accPerDepth <- melt(accPerDepth, id="depth")
-ggplot(data=accPerDepth, aes(x=depth, y=value, colour=variable)) + 
-  geom_line() +
-  geom_point() +
-  theme_bw() +
-  labs(x = "Complexidade do polinômio", y = "MAE", color = "Data Set")
+importance_per_feature <- treeModel_8$variable.importanc
+relative_importance <- importance_per_feature/sum(importance_per_feature)
+
+# Avaliando no conjunto de teste
+test_pred <- predict(treeModel, test_set, type="class")
+cm_test <- confusionMatrix(test_pred, test_set$label)
+    
+cm_relative_test <- calculaMatrizConfusaoRelativa(cm_test)
+acc_bal_test <- (cm_relative_test[1,1] + cm_relative_test[2,2] + cm_relative_test[3,3])/3
+    
+cm_relative_test %>% kable(caption = "\\label{tab:profundidade}Matriz de confusão para Teste",
+        format = "latex", booktabs = T, linesep = "", digits = 2) %>% 
+  kable_styling(latex_options = c("HOLD_position"))
 
 ```
 
-Por fim, vamos testar o modelo de regressão aumentando o grau das features. O gráfico da Figura \ref{fig:mae} apresenta o MAE para cada polinômio no conjunto de treino e validação. Podemos reparar que até o grau 3 estamos com underfitting pois o erro no treino e na validação são altos e muito similares. Porém, a partir do grau 6 temos overfitting já que o erro médio no conjunto de validação começa crescer enquanto no conjunto de treino cai. Dessa forma, o ponto ótimo do modelo dessa categoria é o modelo de grau 5. 
-Ajustando o nosso melhor modelo polinomial de grau 5 no conjunto de teste obtivemos um MAE de `r round(mae_test_poly, 2)`.
+## Seleção das features
+
+Para melhorar os resultados do modelo, podemos selecionar as features que mais contribuem para a predição.  Ao aplicar a árvore de decisão, podemos verificar quais atributos foram mais importantes para a classificação preditiva. Desta forma, as features mais relevantes para cada modelo em ordem crescente (baseline e max_depth=8) foram:
+
+- Feature selection 1: date_death_or_discharge, longitude, date_admission_hospital, country, travel_history_dates, lives_in_Wuhan, date_confirmation, age, latitude, sex, travel_history_location, data_onset_symptoms e travel_history_binary.
+
+- Feature selection 2: date_death_or_discharge, date_admission_hospital, country, longitude, travel_history_dates, lives_in_Wuhan,age, date_confirmation, sex, latitude, travel_history_location e date_onset_symptoms e travel_history_binary.
+
+Desta forma, para o primeiro conjunto desconsideramos as variáveis sex, travel_history_location, data_onset_symptoms e travel_history_binary. Já no segundo as features sex, latitude, travel_history_location, data_onset_symptoms e travel_history_binary foram descartadas por apresentarem importância relativa menor do que 0,03.
+
+```{r}
+###### Melhor profundidade e combinação 1
+
+formula1 <- paste("label ~ ", train_set %>% 
+                    select(date_death_or_discharge, longitude, date_admission_hospital, country, travel_history_dates, lives_in_Wuhan, date_confirmation, age, latitude) %>% 
+                    colnames() %>% 
+                    paste0(collapse = " + "))
+
+treeModel_depth_feat1 <- rpart(formula= formula1, 
+                   data=train_set, method="class",
+                   control=rpart.control(minsplit=2, cp=0.0, 
+                                         maxdepth=8, xval = 0),
+                   parms= list(split="information"))
+
+# Avaliando no conjunto de validacao
+val_pred <- predict(treeModel_depth_feat1, val_set, type="class")
+cm_val <- confusionMatrix(val_pred, val_set$label)
+    
+cm_relative_val <- calculaMatrizConfusaoRelativa(cm_val)
+acc_bal_val <- (cm_relative_val[1,1] + cm_relative_val[2,2] + cm_relative_val[3,3])/3
+    
+###### Melhor profundidade e combinação 2
+
+formula2 <- paste("label ~ ", train_set %>% 
+                    select(date_death_or_discharge, longitude, date_admission_hospital, country, travel_history_dates, lives_in_Wuhan, date_confirmation, age) %>% 
+                    colnames() %>% 
+                    paste0(collapse = " + "))
+
+treeModel_depth_feat2 <- rpart(formula= formula1, 
+                   data=train_set, method="class",
+                   control=rpart.control(minsplit=2, cp=0.0, 
+                                         maxdepth=8, xval = 0),
+                   parms= list(split="information"))
+
+# Avaliando no conjunto de validacao
+val_pred <- predict(treeModel_depth_feat2, val_set, type="class")
+cm_val <- confusionMatrix(val_pred, val_set$label)
+    
+cm_relative_val <- calculaMatrizConfusaoRelativa(cm_val)
+acc_bal_val <- (cm_relative_val[1,1] + cm_relative_val[2,2] + cm_relative_val[3,3])/3
+
+# Avaliando no conjunto de teste
+test_pred <- predict(treeModel_depth_feat2, test_set, type="class")
+cm_test <- confusionMatrix(test_pred, test_set$label)
+    
+cm_relative_test <- calculaMatrizConfusaoRelativa(cm_test)
+acc_bal_test <- (cm_relative_test[1,1] + cm_relative_test[2,2] + cm_relative_test[3,3])/3
+    
+cm_relative_test %>% kable(caption = "\\label{tab:comb2}Matriz de confusão para Teste do modelo com a combinação de features 2.",
+        format = "latex", booktabs = T, linesep = "", digits = 2) %>% 
+  kable_styling(latex_options = c("HOLD_position"))
+
+```
+
+
+A partir do primeiro conjunto, podemos observar que o modelo alcançou acurácia balanceada de 83\%, enquanto a acurácia balanceada no segundo conjunto foi de 84\% nos dados de validação. Desta forma, será considerado para o teste o conjunto e parâmetros que tiveram melhores performance, isto é, a combinação de features 2.
+
+Os resultados para o conjunto de teste estão apresentados na Tabela \ref{tab:comb2}, garantindo 83,3\% de acurácia no modelo. Novamente, ainda existem muitos erros na diferenciação entre "onTreatment" e "recovered", enquanto a classe "dead" se mostra muito bem segmentada.
+
+
+# Floresta Aleatória
+
+```{r fig5, fig.cap="Acurácia balanceada para treino e validação - Floresta Aleatória.",  fig.align='center', fig.width=10, fig.height=3.5, fig.pos='H'}
+library(randomForest)
+set.seed(24)
+nTreeList = c(1,5,10,15, 20, 25, 50)
+accPerNTrees <- data.frame(ntree=numeric(length(nTreeList)), 
+                            "Treino" =numeric(length(nTreeList)), 
+                           "Validação" =numeric(length(nTreeList)))
+
+#paste(formula2)
+
+for (i in 1:length(nTreeList)){
+    rfModel <- randomForest(formula = label ~ ., 
+                            data= train_set, ntree=nTreeList[i])
+    
+   # Avaliando no conjunto de treino
+    train_pred <- predict(rfModel, train_set, type="class")
+    cm_train <- confusionMatrix(train_pred,train_set$label)
+    
+    cm_relative_train <- calculaMatrizConfusaoRelativa(cm_train)
+    acc_bal_train <- (cm_relative_train[1,1] + cm_relative_train[2,2] + cm_relative_train[3,3])/3
+    
+    # Avaliando no conjunto de validacao
+    val_pred <- predict(rfModel, val_set, type="class")
+    cm_val <- confusionMatrix(val_pred, val_set$label)
+    
+    cm_relative_val <- calculaMatrizConfusaoRelativa(cm_val)
+    acc_bal_val <- (cm_relative_train[1,1] + cm_relative_train[2,2] + cm_relative_train[3,3])/3
+    
+    
+    accPerNTrees[i,] = c(nTreeList[i], 
+                         acc_bal_train, 
+                         acc_bal_val)
+    #print(valResults)
+}
+
+accPerNTrees <- melt(accPerNTrees, id="ntree")  # convert to long format
+ggplot(data=accPerNTrees, aes(x=ntree, y=value, colour=variable)) + geom_line() + geom_point() +
+  theme_bw() +
+  labs(x = "Número de árvores", y = "Acurácia Balanceada", colour = "Legenda")
+
+```
+
+
+
+```{r tab10}
+
+rfModel <- randomForest(formula = label ~ ., 
+                            data = train_set, ntree=25)
+    
+# Avaliando no conjunto de teste
+#test_pred <- predict(rfModel, test_set, type="class")
+#cm_test <- confusionMatrix(test_pred, test_set$label)
+    
+#cm_relative_test <- calculaMatrizConfusaoRelativa(cm_test)
+#acc_bal_test <- (cm_relative_test[1,1] + cm_relative_test[2,2] + cm_relative_test[3,3])/3
+    
+#cm_relative_test %>% kable(caption = "\\label{tab:rf}Matriz de confusão para Teste do modelo com a combinação de features 2.",
+#        format = "latex", booktabs = T, linesep = "", digits = 2) %>% 
+#  kable_styling(latex_options = c("HOLD_position"))
+
+
+```
+
 
 # Conclusão
 
-O modelo que apresentou menor erro médio foi o modelo utilizando todas as variáveis com grau 1 e a combinação 3 a 3 das variáveis que possuem maior correlação com a concentração de monóxido de carbono. O baseline, modelo mais simples, apresentou o pior desempenho quando comparado com os outros. O modelo polinomial apresentou resultados razoáveis porém possui uma complexidade alta e exige muito processamento para treinar. Assim, o modelo com combinação 3 a 3 tem vantagem além de possuir o menor MAE. É interessante observar que, selecionar melhor quais variáveis são mais relevantes para predizer a concentração de CO trouxe ganhos significativos no erro médio. 
