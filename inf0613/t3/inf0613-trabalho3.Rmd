@@ -26,11 +26,11 @@ library(NbClust)
 library(factoextra)
 library(dbscan)
 library(knitr)
+library(cluster)
 
 # Configure ambiente de trabalho na mesma pasta 
 # onde colocou a base de dados:
 setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0613/t3")
-
 
 
 ```
@@ -74,13 +74,14 @@ imports_85 <- imports_85 %>%
         V26 = as.numeric(imports_85$V26))
 
 #verificando a nova estrutura
-#str(imports_85)
+str(imports_85)
 
 ```
 
 b)  *Seleção de Atributos:* Atributos não-numéricos não podem ser usados com as técnicas agrupamento vistas em aula. Portanto, você deve selecionar um conjunto de atributos numéricos que serão usados para o agrupamento. Além disso você deve analisar se os atributos não-numéricos são descritivos para a realização dos agrupamentos. Caso um dos atributos não numéricos seja necessário, use a técnica do *one hot encoding* para transformá-lo em numérico. **Não** aplique essa técnica nos atributos `symboling` e `make` para os agrupamentos subsequentes, eles não devem fazer parte do agrupamento.
 
 ```{r atv1b-code}
+
 # Seleção de atributos
 # Transformando os dados categóricos em numéricos através de one hot encoding
 #v4
@@ -137,8 +138,6 @@ print(altamente_corr)
 atributos <- names(numericos[,-altamente_corr])
 imports_85sel <- imports_85 %>% select(atributos)
 
-
-
 ```
 
 ## Análises
@@ -165,10 +164,12 @@ a)  *Gráfico* \textsl{Elbow Curve}: Construa um gráfico com a soma das distân
 
 ```{r atv2a-code}
 # Construindo um gráfico com as distâncias intra-cluster
-imports.scaled <- scale(imports_85sel)
-set.seed(7)
-fviz_nbclust(imports.scaled, kmeans,k.max = 30, method ="wss")
+set.seed(13)
 
+imports_scaled <- scale(imports_85sel)
+
+fviz_nbclust(imports_85sel, kmeans,k.max = 30, method ="wss")
+fviz_nbclust(imports_scaled, kmeans,k.max = 30, method ="wss")
 
 ```
 
@@ -176,23 +177,46 @@ b)  *Gráfico da Silhueta:* Construa um gráfico com o valor da silhueta para $K
 
 ```{r atv2b-code}
 # Construindo um gráfico com os valores da silhueta
-fviz_nbclust(imports.scaled, kmeans, method ="silhouette", k.max = 30)
+fviz_nbclust(imports_85sel, kmeans, method ="silhouette", k.max = 30)
+fviz_nbclust(imports_scaled, kmeans, method ="silhouette", k.max = 30)
+
 ```
 
 c)  *Escolha do* $K$: Avalie os gráficos gerados nos itens anteriores e escolha o melhor valor de $K$ com base nas informações desses gráficos e na sua análise. Se desejar, use também a função `NbClust` para ajudar nas análises. Com o valor de $K$ definido, utilize o rótulo obtido para cada amostra, indicando o grupo ao qual ela pertence, para gerar um gráfico de dispersão (atribuindo cores diferentes para cada grupo).
 
 ```{r atv2c-code}
 # Aplicando o k-means com o k escolhido 
-nb <- NbClust(imports.scaled, distance ="euclidean",min.nc =2 , max.nc =30 , method ="complete",index ="all")
 
+set.seed(137)
+
+nb <- NbClust(imports_scaled, distance ="euclidean", min.nc =2, max.nc =30, method ="complete", index ="all")
+# 
 fviz_nbclust(nb) + theme_minimal()
 
-set.seed(7)
 
-final <- kmeans(imports.scaled, centers = 18,  nstart=15)
+```
 
+
+```{r atv2c-code}
+# Normalizada
+final <- kmeans(imports_scaled, centers = 2,  nstart=37)
 # Construindo um gráfico de dispersão
-fviz_cluster(final, data =imports.scaled)
+fviz_cluster(final, data =imports_scaled)
+
+#Nao normalizada
+# k = 8
+final <- kmeans(imports_85sel, centers = 8,  nstart=37)
+# Construindo um gráfico de dispersão
+fviz_cluster(final, data =imports_85sel)
+
+# k = 14
+final <- kmeans(imports_85sel, centers = 14,  nstart=37)
+# Construindo um gráfico de dispersão
+fviz_cluster(final, data =imports_85sel)
+
+final <- kmeans(imports_scaled, centers = 29,  nstart=37)
+# Construindo um gráfico de dispersão
+fviz_cluster(final, data =imports_85sel)
 ```
 
 ## Análises
@@ -200,7 +224,10 @@ fviz_cluster(final, data =imports.scaled)
 Descreva cada um dos gráficos gerados nos itens acima e analise-os. Inclua na sua análise as informações mais importantes que podemos retirar desses gráficos. Discuta sobre a escolha do valor $K$ e sobre a apresentação dos dados no gráfico de dispersão.
 
 **Resposta:** <!-- Escreva sua resposta abaixo -->
-
+Primeiramente foi gerado os graficos elbow e silhueta, para identificar possiveis valores otimos de K, observa-se que os graficos foram gerados em cima da base nao normalizada e da base normalizada. Para a base nao normalizaad, o grafico elbow  estima  um valor otimo para K de aproximadamente 8, ja de acordo com o grafico de silhueta, o valor otimo para K seria 14. Para a base normalizada, o grafico elbow nao apresentou a caracterizacao esperada, mas, quando analisado em conjunto com o silhueta, percebe-se que o nuemro ideal sugerido para K eh 29. 
+A funcao DbCluster foi utilizada para que pudesse ser obtido uma outra perspectiva de valor otimo para K, a mesma retornou que o mais indicado eh o valor 2 e soh pode ser executada na base normalizada.
+A aplicacao do K-means foi realizada para ambas as bases, normalizada e nao normalizada, seguindo os valores indicados como otimos para cada caso, percebe-se desse modo que a clusterizacao para o dado normalizado obteve uma perspectiva interessante, mas ainda sim apresenta sobreposicao dos clusters, ja para a base nao normalizada, observa-se que tanto para k = 8 quanto k = 14, o agrupamento se demonstrou confuso.
+Por fim, ao observar o comportamento dos dados normalizados nos graficos Elbow e Silhueta e o desempenho da clusterizacao para ambos, estima-se que o algoritmo k-means nao seja o mais adequado para que seja realizado um agrupamento da base.
 <!-- Fim da resposta -->
 
 # Atividade 3 -- Agrupamento com o *DBscan*
@@ -210,15 +237,46 @@ Nesta atividade, você deverá agrupar os dados com o algoritmo *DBscan*. Para i
 a)  *Ajuste de Parâmetros:* Experimente com valores diferentes para os parâmetros *eps* e *minPts*. Verifique o impacto dos diferentes valores nos agrupamentos.
 
 ```{r atv3a-code}
-set.seed(7)
+set.seed(137)
 
 # Experimento com valores de eps e minPts
-db <- dbscan(imports_85sel, eps =0.15 , minPts =2)
+db <- dbscan(imports_scaled, eps =0.15 , minPts = 2)
+ print(db)
+
+# Experimento com valores de eps e minPts
+db <- dbscan(imports_scaled, eps =0.15 , minPts =3)
+print(db)
+
+db <- dbscan(imports_scaled, eps =0.15 , minPts =4)
+print(db)
+
+db <- dbscan(imports_scaled, eps =0.15 , minPts =5)
+print(db)
+
+
+# Experimento com valores de eps e minPts
+db <- dbscan(imports_scaled, eps =0.2 , minPts =15)
 print(db)
 
 # Experimento com valores de eps e minPts
-db <- dbscan(imports_85sel, eps =0.19 , minPts =3)
+db <- dbscan(imports_scaled, eps =0.3 , minPts =50)
 print(db)
+```
+
+```{r}
+db <- dbscan(imports_85sel, eps =0.15 , minPts = 2)
+ print(db)
+
+# Experimento com valores de eps e minPts
+db <- dbscan(imports_85sel, eps =0.15 , minPts =3)
+print(db)
+
+db <- dbscan(imports_85sel, eps =0.15 , minPts =4)
+print(db)
+
+db <- dbscan(imports_85sel, eps =0.15 , minPts =5)
+print(db)
+
 
 # Experimento com valores de eps e minPts
 db <- dbscan(imports_85sel, eps =0.2 , minPts =15)
@@ -227,25 +285,48 @@ print(db)
 # Experimento com valores de eps e minPts
 db <- dbscan(imports_85sel, eps =0.3 , minPts =50)
 print(db)
-
-
 ```
 
 b)  *Determinando Ruídos:* Escolha o valor de *minPts* que obteve o melhor resultado no item anterior e use a função `kNNdistplot` do pacote `dbscan` para determinar o melhor valor de *eps* para esse valor de *minPts*. Lembre-se que o objetivo não é remover todos os ruídos.
 
 ```{r atv3b-code}
 # Encontrando o melhor eps com o kNNdistplot
+kNNdistplot(imports_scaled, k = 2)
+kNNdistplot(imports_scaled, k = 3)
+
+kNNdistplot(imports_85sel, k = 2)
 kNNdistplot(imports_85sel, k = 3)
 ```
 
 c)  *Visualizando os Grupos:* Após a escolha dos parâmetros *eps* e *minPts*, utilize o rótulo obtido para cada amostra, indicando o grupo ao qual ela pertence, para gerar um gráfico de dispersão (atribuindo cores diferentes para cada grupo).
 
 ```{r atv3c-code}
-# Aplicando o DBscan com os parâmetros escolhidos
-db <-dbscan(imports_85sel, eps =105 , minPts = 2)
+#Aplicando DBScan para a base nao normalizada (nn)
+db_k2_nn <-dbscan(imports_85sel, eps = 107 , minPts = 2)
 
 # Construindo um gráfico de dispersão
-fviz_cluster(db, data = imports_85sel , stand = FALSE, ellipse = FALSE , show.clust.cent = FALSE,
+fviz_cluster(db_k2_nn, data = imports_85sel , stand = FALSE, ellipse = FALSE , show.clust.cent = FALSE,
+geom ="point", palette ="jco", ggtheme = theme_classic())
+
+# Aplicando o DBscan com os parâmetros escolhidos
+db_k3_nn <-dbscan(imports_85sel, eps = 107 , minPts = 3)
+
+# Construindo um gráfico de dispersão
+fviz_cluster(db_k3_nn, data = imports_85sel , stand = FALSE, ellipse = FALSE , show.clust.cent = FALSE,
+geom ="point", palette ="jco", ggtheme = theme_classic())
+
+# Aplicando o DBscan para a base normalizada
+db_k2 <-dbscan(imports_scaled, eps = 5 , minPts = 2)
+
+# Construindo um gráfico de dispersão
+fviz_cluster(db_k2, data = imports_scaled , stand = FALSE, ellipse = FALSE , show.clust.cent = FALSE,
+geom ="point", palette ="jco", ggtheme = theme_classic())
+
+# Aplicando o DBscan com os parâmetros escolhidos
+db_k3 <-dbscan(imports_scaled, eps = 5 , minPts = 3)
+
+# Construindo um gráfico de dispersão
+fviz_cluster(db_k3, data = imports_scaled , stand = FALSE, ellipse = FALSE , show.clust.cent = FALSE,
 geom ="point", palette ="jco", ggtheme = theme_classic())
 
 ```
@@ -255,18 +336,54 @@ geom ="point", palette ="jco", ggtheme = theme_classic())
 Descreva os experimentos feitos para a escolha dos parâmetros *eps* e *minPts*. Inclua na sua análise as informações mais importantes que podemos retirar dos gráficos gerados. Justifique a escolha dos valores dos parâmetros e analise a apresentação dos dados no gráfico de dispersão.
 
 **Resposta:** <!-- Escreva sua resposta abaixo -->
-
+As analises para o DBScan foram realizadas para as bases normalizada e nao normalizada. Inicialmente o algorimto DBScan foi previamente executado com valores arbitrariamente escolhidos, a partir dos resultados, constatou-se que, para ambas as bases, os valores de K mais promissores eram 3 e 2, sendo que para k = 2 foram encontrados 31 grupos nas duas bases, e para k = 3, foram encontrados 6 grupos para a nao normalizada e 8 para a normalizada, ou seja, minPts pode assumir o valor 2 ou 3 para ambos os casos.
+A partir disso, utilizou-se ou algoritmo kNNdistplot para que fosse possivel identificar os possiveis valores mais adequados para eps, a partir disso constatou-se que para os dados normalizados, o valor ideal seria em torno de 5 e para os nao normalizados, o valor seria em torno de 107. Portanto:
+- Normalizados:
+   - minPts = 2 ou 3
+   - eps = 5
+- Nao Normalizado:
+   - minpts = 2 ou 3
+   - eps = 107
+A partir desses parametros, aplicou-se novamente o algoritmo DBScan e os resultados foram colocados em grafico. A partir disso, percebeu-se que o resultado que visualmente indica ser o mais adequado, eh o DBScan aplicado aos dados nao normalizados com  minPts = 2 e eps = 107, pois nele eh possivel verificar o agrupamento adequadamente separado.
 <!-- Fim da resposta -->
 
 # Atividade 4 -- Comparando os Algoritmos
 
-```{=html}
-<!-- Use o espaço abaixo para escrever os códigos necessários 
-    para responder as perguntas a seguir  -->
-```
 ```{r atv4-code}
-length(unique(imports_85$V1))
+imports_85_v3_described <- imports_85
+imports_85_v3_described$V3[imports_85$V3 == "audi"] <- 1
+imports_85_v3_described$V3[imports_85$V3 == "bmw"] <- 2
+imports_85_v3_described$V3[imports_85$V3 == "chevrolet"] <- 3
+imports_85_v3_described$V3[imports_85$V3 == "dodge"] <- 4
+imports_85_v3_described$V3[imports_85$V3 == "honda"] <- 5
+imports_85_v3_described$V3[imports_85$V3 == "jaguar"] <- 6
+imports_85_v3_described$V3[imports_85$V3 == "mazda"] <- 7
+imports_85_v3_described$V3[imports_85$V3 == "mercedes-benz"] <- 8
+imports_85_v3_described$V3[imports_85$V3 == "mitsubishi"] <- 9
+imports_85_v3_described$V3[imports_85$V3 == "nissan"] <- 10
+imports_85_v3_described$V3[imports_85$V3 == "peugot"] <- 11
+imports_85_v3_described$V3[imports_85$V3 == "plymouth"] <- 12
+imports_85_v3_described$V3[imports_85$V3 == "porsche"] <- 13
+imports_85_v3_described$V3[imports_85$V3 == "saab"] <- 14
+imports_85_v3_described$V3[imports_85$V3 == "subaru"] <- 15
+imports_85_v3_described$V3[imports_85$V3 == "toyota"] <- 16
+imports_85_v3_described$V3[imports_85$V3 == "volkswagen"] <- 17
+imports_85_v3_described$V3[imports_85$V3 == "volvo"] <- 18
 
+imports_clistered <- cbind(imports_85, db_k2_nn$cluster)
+imports_clistered$cluster <- imports_clistered$`db_k2_nn$cluster`
+
+plot(imports_85_v3_described$V1, col=db_k2_nn$cluster)
+
+plot(imports_85_v3_described$V3, col=db_k2_nn$cluster)
+
+db_k18_nn <-dbscan(imports_85sel, eps = 37 , minPts = 2)
+
+# Construindo um gráfico de dispersão
+fviz_cluster(db_k18_nn, data = imports_85sel , stand = FALSE, ellipse = FALSE , show.clust.cent = FALSE,
+geom ="point", palette ="jco", ggtheme = theme_classic())
+
+plot(imports_85_v3_described$V3, col=db_k18_nn$cluster)
 ```
 
 Com base nas atividades anteriores, faça uma conclusão dos seus experimentos respondendo às seguintes perguntas:
@@ -281,7 +398,7 @@ d)  Analisando o campo `make` que contém as marcas dos carros, os agrupamentos 
 
 **Respostas:**
 
-a)  O metodo que apresentou os melhores resulados foi o DBSCAN, a partir das orientacoes vistas em aula, foi possivel obter um numero de clisters que condiz com a quantidade de valores a serem classificados para o risco, e os clusters nao se sobrepunham. Ja o algoritmo K-Means, nao conseguiu produzir clusters que nao se sobrepunham, mesmo com o menor numero de centroides possivel (2), ainda sim, os clusters se sobrepuseram, o que geraria uma classificacao com maior chance de erro.
-b)  Foi possivel obter ate 7 agrupamentos
-c)  Considerando que na base fornecida, haviam apenas 6 categorias para o campo Symboling, pode-se dizer que sim, pois o algoritmo foi capaz de gerar a mesma quantidade de grupos.
-d)  
+a)  O metodo que apresentou os melhores resulados foi o DBSCAN, o resultado visual do agrupamento com minPts = 2 e eps = 107 demonstrou uma adequada clusterizacao com 7 agrupamentos.
+b)  No caso do algoritmo com melhor desempenho, foi obtido 7 agrupamentos.
+c)  Considerando que na base fornecida, haviam apenas 6 categorias para o campo Symboling, pode-se dizer que sim, pois o algoritmo foi capaz de gerar a mesma quantidade de grupos. No entanto na base estao presentes apenas 6 valores (-2  1  0 -1  3 -2), ou seja, o setimos grupo eh provavelmente correspondente a outliers, o que, de certo modo, ainda se encaixa na solucao. Porem o grafico indica que os clusters nao estao, de fato, separando por Symboling, ja que pode-se encontrar uma mistura de cores para algumas categorias, ainda assim, percebe-se que a categoria -1 por exemplo eh a unica que contem a cor amarela, ou que a categoria 0 eh a unica que contem a cor vermelha. mas aidna sim, a cor preta eh a mais presente e domina os extremos (-2 e 3). Portanto, para a calssificacao adequada do Symboling, seria necessario observar mais profundamente as features, ou propor outro algoritmo.
+d)  O agrupamento nao foi capaz de separar os carros por marca adequadamente, apesar de haver 18 marcas, e nenhum dos agrupamentos com valores apontados como ideais tendeu a k = 18. Porem, a partir da tentativa e erro, foi possivel obter 18 clusters com minPts = 2 e eps = 37 para o algoritmo DBScan. O modelo de agrupamento foi entao utilizado para produzir o ultimo grafico, que indica que eh possivel, de certo modo agrupar por montadora do carro, no entanto, o algoritmo ainda sim aparenta possuir uma aciracia baixa.
