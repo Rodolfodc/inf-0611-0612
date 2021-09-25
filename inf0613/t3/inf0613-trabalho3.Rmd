@@ -30,7 +30,9 @@ library(cluster)
 
 # Configure ambiente de trabalho na mesma pasta 
 # onde colocou a base de dados:
-setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0613/t3")
+#setwd("/Users/rodolfodc/Documents/mineracao-dados-complexos/homeworks/inf-0611-0612/inf0613/t3")
+setwd("C:/Users/nicol/Documents/Mineração de dados/inf-0611-0612/inf0613/t2")
+
 
 
 ```
@@ -197,7 +199,7 @@ fviz_nbclust(nb) + theme_minimal()
 ```
 
 
-```{r atv2c-code}
+```{r }
 # Normalizada
 final <- kmeans(imports_scaled, centers = 2,  nstart=37)
 # Construindo um gráfico de dispersão
